@@ -323,8 +323,9 @@
                         </div>
                     </div>
                     <div class="pdf-container">
-                        <iframe src="${pdfFile}" type="application/pdf"></iframe>
-                    </div>
+       
+
+   <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(window.location.origin + '/' + pdfFile)}" type="application/pdf"></iframe>                 </div>
                     <div style="text-align: center; margin-top: 20px; color: #6c757d;">
                         <p>💡 PDF가 보이지 않으면 <a href="${pdfFile}" target="_blank" style="color: #667eea; font-weight: 600;">여기</a>를 클릭하여 새 탭에서 열어보세요.</p>
                     </div>
