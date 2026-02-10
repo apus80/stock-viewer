@@ -18,6 +18,94 @@
             padding: 20px;
         }
 
+        /* 비밀번호 입력 화면 */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .password-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .password-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .password-box p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-error {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .password-hint {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+
+        /* 메인 컨텐츠 (비밀번호 통과 후) */
+        .main-content {
+            display: none;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -32,6 +120,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -42,6 +131,25 @@
         .header p {
             opacity: 0.9;
             font-size: 1.1em;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
         }
 
         .controls {
@@ -118,11 +226,9 @@
             border: 2px solid #e9ecef;
             border-radius: 8px;
             overflow: hidden;
-            background: #f8f9fa;
         }
 
-        /* PDF.js를 사용한 임베드 */
-        .pdf-embed {
+        .pdf-container iframe {
             width: 100%;
             height: 100%;
             border: none;
@@ -193,30 +299,6 @@
             font-weight: 700;
         }
 
-        .view-options {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-option {
-            padding: 8px 20px;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-
-        .btn-option:hover {
-            background: #667eea;
-            color: white;
-        }
-
         @media (max-width: 768px) {
             .date-selector {
                 flex-direction: column;
@@ -233,47 +315,145 @@
             .pdf-container {
                 height: 500px;
             }
+
+            .logout-btn {
+                position: static;
+                margin-top: 15px;
+                display: block;
+                width: fit-content;
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 주식 분석 리포트 뷰어</h1>
-            <p>날짜를 선택하여 투자 분석 리포트를 확인하세요</p>
-        </div>
+    <!-- 비밀번호 입력 화면 -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-box">
+            <h2>🔐 접근 제한</h2>
+            <p>리포트를 보려면 비밀번호를 입력하세요</p>
+            
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="비밀번호 입력"
+                onkeypress="if(event.key==='Enter') checkPassword()">
+            
+            <button class="password-btn" onclick="checkPassword()">
+                확인
+            </button>
+            
+            <div id="passwordError" class="password-error">
+                ❌ 비밀번호가 올바르지 않습니다
+            </div>
 
-        <div class="controls">
-            <div class="date-selector">
-                <label for="reportDate">📅 리포트 날짜:</label>
-                <select id="reportDate">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport()">리포트 불러오기</button>
+            <div class="password-hint">
+                💡 힌트: 비밀번호를 잊으셨나요?<br>
+                관리자에게 문의하세요.
             </div>
         </div>
+    </div>
 
-        <div class="pdf-viewer">
-            <div id="pdfContent" class="info">
-                <h3>👋 환영합니다!</h3>
-                <p>위에서 날짜를 선택하고 "리포트 불러오기" 버튼을 클릭하세요.</p>
-                <p style="margin-top: 10px; font-size: 0.9em; color: #6c757d;">
-                    💡 PDF는 브라우저에서 바로 표시됩니다. 다운로드가 필요하지 않습니다.
-                </p>
+    <!-- 메인 컨텐츠 (비밀번호 통과 후) -->
+    <div id="mainContent" class="main-content">
+        <div class="container">
+            <div class="header">
+                <button class="logout-btn" onclick="logout()">🔒 로그아웃</button>
+                <h1>📊 주식 분석 리포트 뷰어</h1>
+                <p>날짜를 선택하여 투자 분석 리포트를 확인하세요</p>
+            </div>
+
+            <div class="controls">
+                <div class="date-selector">
+                    <label for="reportDate">📅 리포트 날짜:</label>
+                    <select id="reportDate">
+                        <option value="">날짜를 선택하세요...</option>
+                    </select>
+                    <button class="btn-load" onclick="loadReport()">리포트 불러오기</button>
+                </div>
+            </div>
+
+            <div class="pdf-viewer">
+                <div id="pdfContent" class="info">
+                    <h3>👋 환영합니다!</h3>
+                    <p>위에서 날짜를 선택하고 "리포트 불러오기" 버튼을 클릭하세요.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // PDF 파일 목록 (날짜: 파일명 매핑)
+        // ============================================
+        // 🔐 비밀번호 설정 (여기를 수정하세요!)
+        // ============================================
+        const CORRECT_PASSWORD = "0103";  // ← 원하는 비밀번호로 변경!
+
+        // 세션 저장 키
+        const SESSION_KEY = "report_authenticated";
+
+        // 페이지 로드 시 인증 확인
+        window.onload = function() {
+            // 이미 인증되었는지 확인
+            if (sessionStorage.getItem(SESSION_KEY) === "true") {
+                showMainContent();
+            }
+        };
+
+        // 비밀번호 확인
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                // 인증 성공
+                sessionStorage.setItem(SESSION_KEY, "true");
+                showMainContent();
+                error.style.display = 'none';
+            } else {
+                // 인증 실패
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+                
+                // 흔들림 애니메이션
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // 메인 컨텐츠 표시
+        function showMainContent() {
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // 날짜 목록 로드
+            loadDateList();
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                sessionStorage.removeItem(SESSION_KEY);
+                location.reload();
+            }
+        }
+
+        // ============================================
+        // 📊 리포트 관련 기능
+        // ============================================
+
         const reportFiles = {
             '2026-02-10': 'reports/2026-02-10_analysis.pdf',
             '2026-02-09': 'reports/2026-02-09_analysis.pdf',
+            '2026-02-06': 'reports/2026-02-06_analysis.pdf',
             // 새로운 리포트 추가 시 여기에 계속 추가
         };
 
-        // 페이지 로드 시 날짜 목록 생성
-        window.onload = function() {
+        function loadDateList() {
             const dateSelect = document.getElementById('reportDate');
             const dates = Object.keys(reportFiles).sort().reverse();
 
@@ -290,7 +470,7 @@
                 dateSelect.value = dateParam;
                 loadReport();
             }
-        };
+        }
 
         function formatDate(dateStr) {
             const date = new Date(dateStr);
@@ -337,89 +517,21 @@
             window.history.pushState({date: selectedDate}, '', newUrl);
 
             setTimeout(() => {
-                displayPDF(pdfFile, selectedDate);
+                pdfContent.innerHTML = `
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="label">선택한 날짜</div>
+                            <div class="value">${formatDate(selectedDate)}</div>
+                        </div>
+                    </div>
+                    <div class="pdf-container">
+                        <iframe src="${pdfFile}" type="application/pdf"></iframe>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px; color: #6c757d;">
+                        <p>💡 PDF가 보이지 않으면 <a href="${pdfFile}" target="_blank" style="color: #667eea; font-weight: 600;">여기</a>를 클릭하여 새 탭에서 열어보세요.</p>
+                    </div>
+                `;
             }, 500);
-        }
-
-        function displayPDF(pdfPath, date) {
-            const pdfContent = document.getElementById('pdfContent');
-            
-            // PDF.js를 사용한 뷰어 (가장 안정적)
-            const pdfJsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(window.location.origin + window.location.pathname.replace('index.html', '') + pdfPath)}`;
-            
-            pdfContent.innerHTML = `
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="label">선택한 날짜</div>
-                        <div class="value">${formatDate(date)}</div>
-                    </div>
-                </div>
-                <div class="pdf-container">
-                    <iframe 
-                        class="pdf-embed" 
-                        src="${pdfJsUrl}"
-                        type="application/pdf">
-                    </iframe>
-                </div>
-                <div class="view-options">
-                    <button class="btn-option" onclick="openInNewTab('${pdfPath}')">
-                        🔗 새 탭에서 열기
-                    </button>
-                    <button class="btn-option" onclick="downloadPDF('${pdfPath}', '${date}')">
-                        💾 다운로드
-                    </button>
-                    <button class="btn-option" onclick="useAlternativeViewer('${pdfPath}')">
-                        🔄 다른 뷰어 사용
-                    </button>
-                </div>
-            `;
-        }
-
-        function useAlternativeViewer(pdfPath) {
-            const pdfContent = document.getElementById('pdfContent');
-            const fullPath = window.location.origin + window.location.pathname.replace('index.html', '') + pdfPath;
-            
-            // Google Docs Viewer 사용 (대체 방법)
-            const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fullPath)}&embedded=true`;
-            
-            pdfContent.innerHTML = `
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="label">뷰어</div>
-                        <div class="value">Google Docs Viewer</div>
-                    </div>
-                </div>
-                <div class="pdf-container">
-                    <iframe 
-                        class="pdf-embed" 
-                        src="${googleViewerUrl}">
-                    </iframe>
-                </div>
-                <div class="view-options">
-                    <button class="btn-option" onclick="loadReport()">
-                        🔙 기본 뷰어로 돌아가기
-                    </button>
-                    <button class="btn-option" onclick="openInNewTab('${pdfPath}')">
-                        🔗 새 탭에서 열기
-                    </button>
-                    <button class="btn-option" onclick="downloadPDF('${pdfPath}', 'report')">
-                        💾 다운로드
-                    </button>
-                </div>
-            `;
-        }
-
-        function openInNewTab(pdfPath) {
-            window.open(pdfPath, '_blank');
-        }
-
-        function downloadPDF(pdfPath, date) {
-            const link = document.createElement('a');
-            link.href = pdfPath;
-            link.download = `stock_analysis_${date}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
 
         window.onpopstate = function(event) {
@@ -428,6 +540,17 @@
                 loadReport();
             }
         };
+
+        // 흔들림 애니메이션
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+                20%, 40%, 60%, 80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
