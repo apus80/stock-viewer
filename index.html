@@ -207,32 +207,6 @@
             font-size: 0.9em;
         }
 
-        .source-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 8px;
-            padding: 6px 12px;
-            background: #f0f4ff;
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 0.85em;
-            transition: all 0.3s;
-            border: 1px solid #d0dcff;
-        }
-
-        .source-link:hover {
-            background: #667eea;
-            color: white;
-            transform: translateX(3px);
-        }
-
-        .source-link::before {
-            content: "📺";
-            font-size: 1.1em;
-        }
-
         .badge {
             display: inline-block;
             padding: 4px 12px;
@@ -425,7 +399,7 @@
 
         .footer {
             background: #f8f9fa;
-            padding: 20px 30px;
+            padding: 30px;
             border-top: 2px solid #e9ecef;
             text-align: center;
         }
@@ -437,21 +411,22 @@
 
         .footer h4 {
             color: #495057;
-            margin-bottom: 15px;
-            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-size: 1.2em;
         }
 
         .footer-source {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 24px;
+            padding: 15px 30px;
             background: white;
             border: 2px solid #667eea;
             border-radius: 8px;
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
+            font-size: 1.05em;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
@@ -469,9 +444,10 @@
         }
 
         .footer p {
-            margin-top: 15px;
+            margin-top: 20px;
             color: #6c757d;
-            font-size: 0.9em;
+            font-size: 0.95em;
+            line-height: 1.6;
         }
 
         @media (max-width: 768px) {
@@ -504,9 +480,9 @@
                 margin-right: auto;
             }
 
-            .source-link {
-                display: block;
-                text-align: center;
+            .footer-source {
+                font-size: 0.95em;
+                padding: 12px 24px;
             }
         }
     </style>
@@ -580,9 +556,6 @@
                         <div class="category-title">
                             <h3>[분석1] 미국 시장 유동성 메커니즘</h3>
                             <p>연준 정책, 넷 리퀴디티, 금융 여건 분석</p>
-                            <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="source-link">
-                                분석방법 출처
-                            </a>
                         </div>
                     </div>
                     <div class="selector-row">
@@ -601,9 +574,6 @@
                         <div class="category-title">
                             <h3>[분석2] ETF 자금 흐름 분석</h3>
                             <p>스마트 머니 추적 및 섹터 로테이션 (월간)</p>
-                            <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="source-link">
-                                분석방법 출처
-                            </a>
                         </div>
                     </div>
                     <div class="selector-row">
@@ -622,9 +592,6 @@
                         <div class="category-title">
                             <h3>[분석3] 내부자 매수 분석</h3>
                             <p>경영진 고확신 매수 시그널 추적</p>
-                            <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="source-link">
-                                분석방법 출처
-                            </a>
                         </div>
                     </div>
                     <div class="selector-row">
@@ -643,9 +610,6 @@
                         <div class="category-title">
                             <h3>[분석4] 애널리스트 목표가 분석</h3>
                             <p>월스트리트 고확신 목표가 상향 추적</p>
-                            <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="source-link">
-                                분석방법 출처
-                            </a>
                         </div>
                     </div>
                     <div class="selector-row">
@@ -672,7 +636,7 @@
                 </div>
             </div>
 
-            <!-- Footer with Source -->
+            <!-- Footer with Source (출처 통합) -->
             <div class="footer">
                 <div class="footer-content">
                     <h4>📚 4가지 분석 프레임워크 출처</h4>
@@ -690,9 +654,9 @@
 
     <script>
         // ============================================
-        // 🔐 비밀번호 설정 (여기를 수정하세요!)
+        // 🔐 비밀번호 설정
         // ============================================
-        const CORRECT_PASSWORD = "9803";  // ← 원하는 비밀번호로 변경!
+        const CORRECT_PASSWORD = "1212";
 
         // 세션 저장 키
         const SESSION_KEY = "report_authenticated";
@@ -743,15 +707,13 @@
         // 📊 리포트 관련 기능
         // ============================================
 
-        // PDF 파일 목록 (현재 구조에 맞춤!)
+        // PDF 파일 목록
         const reportFiles = {
-            // 추천 종목: reports 바로 아래!
             stocks: {
                 '2026-02-10': 'reports/2026-02-10_analysis.pdf',
                 '2026-02-09': 'reports/2026-02-09_analysis.pdf',
                 '2026-02-06': 'reports/2026-02-06_analysis.pdf',
             },
-            // 분석1~4: reports/analysis1/ 등
             analysis1: {
                 '2026-02-17': 'reports/analysis1/2026-02-17_liquidity.pdf',
                 '2026-02-10': 'reports/analysis1/2026-02-10_liquidity.pdf',
