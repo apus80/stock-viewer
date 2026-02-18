@@ -1034,21 +1034,23 @@
                 </div>
             `;
         }
+window.onpopstate = function(event) {
+    if (event.state && event.state.category && event.state.date) {
+        const category = categories[event.state.category];
+        document.getElementById(category.selectId).value = event.state.date;
+        loadReport(event.state.category);
+    }
+};
 
-        window.onpopstate = function(event) {
-            if (event.state && event.state.category && event.state.date) {
-                const category = categories[event.state.category];
-                document.getElementById(category.selectId).value = event.state.date;
-               loadReport(event.state.category);
-            }
+// ✅ 반드시 밖에 위치해야 함
 function openMemoryReport() {
   window.open(
-    "memory_report.html",
-    "_blank",
-    "width=1100,height=800,scrollbars=yes,resizable=yes"
+    "https://apus80.github.io/stock/memory_report.html",
+    "_blank"
   );
 }
-        };
+
+
     </script>
 </body>
 </html>
