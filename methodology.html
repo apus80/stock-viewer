@@ -3,162 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>분석 방법론 비교 가이드</title>
+    <title>Quantamental Strategy Comparison</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg: #f8f9fa;
-            --dark: #2d3436;
+            --bg-dark: #0a0e14;
+            --card-dark: #161b22;
             --gold: #d4af37;
+            --navy: #1a2a44;
+            --text-main: #e6edf3;
+            --text-dim: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
         }
+
         body {
-            font-family: 'Pretendard', sans-serif;
-            background: var(--bg);
-            color: var(--dark);
-            margin: 0; padding: 20px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
-        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 40px; }
-        header { text-align: center; border-bottom: 2px solid var(--bg); margin-bottom: 40px; padding-bottom: 20px; }
-        h1 { color: var(--primary); font-size: 2rem; margin-bottom: 10px; }
-        
-        /* 비교 카드 섹션 */
-        .comparison-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
-        .card { border-radius: 15px; padding: 25px; border: 1px solid #eee; position: relative; overflow: hidden; }
-        .card.mid { border-left: 5px solid var(--primary); background: #f0f4ff; }
-        .card.short { border-left: 5px solid #ff4757; background: #fff0f0; }
-        .card h2 { margin-top: 0; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
-        
-        /* 점수 산정 표 */
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 10px; overflow: hidden; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        tr:hover { background: #f9f9f9; }
 
-        /* 비중 그래프 (CSS Bar) */
-        .gauge-container { margin-bottom: 15px; }
-        .gauge-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; }
-        .gauge-bar { background: #eee; height: 10px; border-radius: 5px; overflow: hidden; }
-        .gauge-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-        .back-btn { display: inline-block; margin-bottom: 20px; text-decoration: none; color: var(--primary); font-weight: bold; }
-        .highlight { color: #e84393; font-weight: bold; }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            border-bottom: 1px solid var(--navy);
+            padding-bottom: 30px;
+        }
 
-        @media (max-width: 768px) { .comparison-cards { grid-template-columns: 1fr; } }
+        h1 {
+            color: var(--gold);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .meta-info {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Grid Layout */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-dark);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover { transform: translateY(-5px); border-color: var(--gold); }
+
+        .card-header {
+            border-bottom: 2px solid var(--navy);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title { font-size: 1.5rem; font-weight: bold; color: var(--gold); }
+
+        /* Data Weightage Visualization */
+        .source-bar {
+            margin-bottom: 15px;
+        }
+
+        .bar-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; }
+
+        .bar-bg { background: #21262d; height: 8px; border-radius: 4px; overflow: hidden; }
+
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--navy), var(--accent-blue)); }
+
+        /* Scoring Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+        }
+
+        th { color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: var(--navy);
+            color: var(--accent-blue);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background: var(--navy);
+            border-radius: 8px;
+            color: var(--gold);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 돌아가기</a>
-        <header>
-            <h1>📊 중기 vs 단기 추천종목 분석 방법론</h1>
-            <p>2026. 02. 16 | [cite_start]데이터 기반 정밀 분석 프레임워크 [cite: 56]</p>
-        </header>
 
-        <div class="comparison-cards">
-            <div class="card mid">
-                <h2><i class="fas fa-chart-line"></i> 중기 전략</h2>
-                <ul>
-                    [cite_start]<li><strong>보유 기간:</strong> 3주 ~ 3개월 [cite: 57]</li>
-                    [cite_start]<li><strong>핵심 철학:</strong> 좋은 회사를 싼 가격에 [cite: 103]</li>
-                    [cite_start]<li><strong>재평가:</strong> 주간 단위 [cite: 58]</li>
-                    [cite_start]<li><strong>대상:</strong> NVDA, AAPL, MSFT, PLTR 등 [cite: 59]</li>
-                </ul>
+<div class="container">
+    <header>
+        <h1>📊 중기 vs 단기 분석 방법론 마스터</h1>
+        <div class="meta-info">작성일: 2026년 2월 16일 | 목적: 데이터 기반 투자 의사결정 프레임워크 최적화 </div>
+    </header>
+
+    <div class="comparison-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-chart-line"></i> 중기 추천종목</div>
+                <span class="tag">3주 ~ 3개월 [cite: 2]</span>
             </div>
-            <div class="card short">
-                <h2><i class="fas fa-bolt"></i> 단기 전략</h2>
-                <ul>
-                    [cite_start]<li><strong>보유 기간:</strong> 3일 ~ 2주 [cite: 60]</li>
-                    [cite_start]<li><strong>핵심 철학:</strong> 명확한 촉매에 베팅 [cite: 103]</li>
-                    [cite_start]<li><strong>재평가:</strong> 일간 단위 [cite: 61]</li>
-                    [cite_start]<li><strong>대상:</strong> TSLA, AMD, COIN, PLTR 등 [cite: 61]</li>
-                </ul>
-            </div>
+            <ul>
+                <li><strong>보유 전략:</strong> 스윙 트레이딩 [cite: 2]</li>
+                <li><strong>재평가 주기:</strong> 주간 단위 [cite: 3]</li>
+                <li><strong>추천 수:</strong> 5-7개 [cite: 3]</li>
+                <li><strong>핵심 종목:</strong> NVDA, AAPL, MSFT, PLTR 등 [cite: 4]</li>
+            </ul>
         </div>
 
-        <section>
-            <h3 style="border-left: 4px solid var(--secondary); padding-left: 10px;">🔍 데이터 소스별 활용 비중</h3>
-            <div class="comparison-cards">
-                <div>
-                    <h4>중기 우선순위</h4>
-                    <div class="gauge-container">
-                        [cite_start]<div class="gauge-label"><span>Alpha Vantage (재무) [cite: 65]</span><span>100%</span></div>
-                        <div class="gauge-bar"><div class="gauge-fill" style="width: 100%;"></div></div>
-                    </div>
-                    <div class="gauge-container">
-                        [cite_start]<div class="gauge-label"><span>FRED (매크로) [cite: 62]</span><span>80%</span></div>
-                        <div class="gauge-bar"><div class="gauge-fill" style="width: 80%;"></div></div>
-                    </div>
-                </div>
-                <div>
-                    <h4>단기 우선순위</h4>
-                    <div class="gauge-container">
-                        [cite_start]<div class="gauge-label"><span>Alpha Vantage (옵션/가격) [cite: 66]</span><span>100%</span></div>
-                        <div class="gauge-bar"><div class="gauge-fill" style="width: 100%; background: #ff4757;"></div></div>
-                    </div>
-                    <div class="gauge-container">
-                        [cite_start]<div class="gauge-label"><span>Firecrawl (실시간 속보) [cite: 71]</span><span>100%</span></div>
-                        <div class="gauge-bar"><div class="gauge-fill" style="width: 100%; background: #ff4757;"></div></div>
-                    </div>
-                </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-bolt"></i> 단기 추천종목</div>
+                <span class="tag">3일 ~ 2주 [cite: 5]</span>
             </div>
-        </section>
+            <ul>
+                <li><strong>보유 전략:</strong> 촉매 기반 트레이딩 [cite: 5]</li>
+                <li><strong>재평가 주기:</strong> 일간 단위 [cite: 6]</li>
+                <li><strong>추천 수:</strong> 3-5개 [cite: 6]</li>
+                <li><strong>핵심 종목:</strong> TSLA, AMD, COIN 등 [cite: 6]</li>
+            </ul>
+        </div>
+    </div>
 
-        <section>
-            <h3 style="border-left: 4px solid var(--secondary); padding-left: 10px;">📈 점수 산정 알고리즘</h3>
+    <section>
+        <h2 style="color: var(--gold); border-left: 4px solid var(--gold); padding-left: 15px;">🔍 데이터 소스 활용 비중</h2>
+        <div class="comparison-grid">
+            <div class="card">
+                <h3>중기 데이터 가중치</h3>
+                <div class="source-bar"><div class="bar-label"><span>Alpha Vantage (재무) [cite: 10]</span><span>100%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 100%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>FRED (거시) [cite: 7]</span><span>80%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 80%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>yfinance (기술)</span><span>60%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 60%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>SEC EDGAR (내부자) [cite: 12]</span><span>60%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 60%"></div></div></div>
+            </div>
+            <div class="card">
+                <h3>단기 데이터 가중치</h3>
+                <div class="source-bar"><div class="bar-label"><span>Alpha Vantage (옵션) [cite: 11]</span><span>100%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 100%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>Firecrawl (뉴스속보) [cite: 16]</span><span>100%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 100%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>SEC EDGAR (8-K) [cite: 12]</span><span>80%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 80%"></div></div></div>
+                <div class="source-bar"><div class="bar-label"><span>yfinance (모멘텀) [cite: 9]</span><span>80%</span></div><div class="bar-bg"><div class="bar-fill" style="width: 80%"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2 style="color: var(--gold); border-left: 4px solid var(--gold); padding-left: 15px;">📊 점수 산정 알고리즘 [cite: 18]</h2>
+        <div class="card" style="margin-bottom: 30px;">
+            <p style="text-align: center; font-style: italic;">"중기는 기초 체력을, 단기는 폭발적 촉매를 봅니다."</p>
             <table>
                 <thead>
                     <tr>
                         <th>구분</th>
-                        [cite_start]<th>중기 지표 (100점) [cite: 74]</th>
-                        [cite_start]<th>단기 지표 (100점) [cite: 86]</th>
+                        <th>중기 지표 (100점 만점) [cite: 19]</th>
+                        <th>단기 지표 (100점 만점) [cite: 30]</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>핵심 요소</strong></td>
-                        [cite_start]<td>펀더멘털 (40점: ROE, 성장률) [cite: 75]</td>
-                        [cite_start]<td>촉매 강도 (40점: 8-K 공시, 실적) [cite: 87]</td>
+                        <td>펀더멘털 (40점) [cite: 20]</td>
+                        <td>촉매 강도 (40점) [cite: 31]</td>
                     </tr>
                     <tr>
                         <td><strong>차순위</strong></td>
-                        [cite_start]<td>기술적 분석 (30점: 장기 추세) [cite: 77]</td>
-                        [cite_start]<td>기술적 분석 (35점: 실시간 모멘텀) [cite: 91]</td>
+                        <td>기술적 분석 (30점) [cite: 22]</td>
+                        <td>기술적 분석 (35점) [cite: 35]</td>
                     </tr>
                     <tr>
                         <td><strong>보조 요소</strong></td>
-                        [cite_start]<td>4-프레임워크 (30점: FRED, 내부자) [cite: 79]</td>
-                        [cite_start]<td>옵션 활동 (25점: UOA, IV 급등) [cite: 93]</td>
+                        <td>4-프레임워크 (30점) [cite: 25]</td>
+                        <td>옵션 활동 (25점) [cite: 38]</td>
                     </tr>
                     <tr>
                         <td><strong>합격 기준</strong></td>
-                        [cite_start]<td><span class="highlight">70점 이상 (Buy)</span> [cite: 83]</td>
-                        [cite_start]<td><span class="highlight" style="color:#ff4757">75점 이상 (Strong Buy)</span> [cite: 96]</td>
+                        <td>70점 이상 (Buy) [cite: 28]</td>
+                        <td>75점 이상 (Strong Buy) [cite: 41]</td>
                     </tr>
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <section style="background: #f1f2f6; padding: 20px; border-radius: 15px;">
-            [cite_start]<h3>🛡️ 리스크 관리 규정 [cite: 100]</h3>
-            <div class="comparison-cards">
+    <section>
+        <h2 style="color: var(--gold); border-left: 4px solid var(--gold); padding-left: 15px;">🛡️ 리스크 관리 규정 [cite: 45]</h2>
+        <div class="comparison-grid">
+            <div class="card" style="border-left: 4px solid var(--accent-blue);">
+                <h3>중기 리스크 관리</h3>
                 <ul>
-                    <li><strong>중기 손절:</strong> -7%</li>
-                    <li><strong>중기 목표:</strong> +12~15%</li>
-                    <li><strong>현금 비중:</strong> 15~20%</li>
-                </ul>
-                <ul>
-                    <li><strong>단기 손절:</strong> -5% (타이트)</li>
-                    <li><strong>단기 목표:</strong> +8~12%</li>
-                    <li><strong>현금 비중:</strong> 30~40%</li>
+                    <li>손절선: -7%</li>
+                    <li>목표가: +12~15%</li>
+                    <li>포지션 크기: 10~15%</li>
+                    <li>현금 비중: 15~20%</li>
                 </ul>
             </div>
-        </section>
+            <div class="card" style="border-left: 4px solid var(--accent-green);">
+                <h3>단기 리스크 관리</h3>
+                <ul>
+                    <li>손절선: -5% (타이트)</li>
+                    <li>목표가: +8~12%</li>
+                    <li>포지션 크기: 5~10%</li>
+                    <li>현금 비중: 30~40%</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 
-        <p style="text-align: center; color: #666; margin-top: 30px;">
-            [cite_start]📌 <strong>결론:</strong> 중기는 재무 건전성 중심의 안정적 수익을, 단기는 강력한 촉매 중심의 빠른 수익을 지향합니다. [cite: 110]
-        </p>
+    <div class="footer-note">
+        📌 결론: 중기는 재무 건전성과 성장을, 단기는 명확한 촉매와 수급에 집중하여 안정성과 수익성을 동시에 확보합니다. [cite: 55]
     </div>
+</div>
+
 </body>
 </html>
