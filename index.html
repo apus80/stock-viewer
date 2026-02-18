@@ -914,7 +914,7 @@
                         const newsData = reportFiles[categoryKey][date];
                         option.textContent = `${formatDate(date)}: ${newsData.title}`;
                     } 
-                      else if (categoryKey === 'stocks') {
+                      else if (categoryKey === 'recommendation') {
                         const stockData = reportFiles[categoryKey][date];
                         option.textContent = `${formatDate(date)} · ${stockData.title}`;
                       }
@@ -962,12 +962,12 @@
 
             // News 카테고리는 객체에서 file 가져오기
             let pdfFile;
-            if (categoryKey === 'news') {
-                const newsData = reportFiles[categoryKey][selectedDate];
-                pdfFile = newsData ? newsData.file : null;
-            } else {
-                pdfFile = reportFiles[categoryKey][selectedDate];
-            }
+        if (categoryKey === 'news' || categoryKey === 'recommendation') {
+    const data = reportFiles[categoryKey][selectedDate];
+    pdfFile = data ? data.file : null;
+} else {
+    pdfFile = reportFiles[categoryKey][selectedDate];
+}
             
             if (!pdfFile) {
                 pdfContent.innerHTML = `
