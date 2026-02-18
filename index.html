@@ -900,7 +900,12 @@
                     if (categoryKey === 'news') {
                         const newsData = reportFiles[categoryKey][date];
                         option.textContent = `${formatDate(date)}: ${newsData.title}`;
-                    } else {
+                    } 
+                      else if (categoryKey === 'stocks') {
+                        const stockData = reportFiles[categoryKey][date];
+                        option.textContent = `${formatDate(date)} · ${stockData.title}`;
+                      }
+                    else {
                         option.textContent = formatDate(date);
                     }
                     
