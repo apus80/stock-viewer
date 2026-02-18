@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+
+
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyC-gjzBVl7sVnqpuU1UlhCIKrrTUu4FuEM",
+        authDomain: "apus-stock-90363.firebaseapp.com",
+        projectId: "apus-stock-90363",
+        storageBucket: "apus-stock-90363.firebasestorage.app",
+        messagingSenderId: "367135594782",
+        appId: "1:367135594782:web:631ba05930b90a6172110f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+</script>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>주식 분석 통합 리포트 뷰어</title>
@@ -598,6 +617,90 @@
             </div>
 
             <div class="controls">
+
+<div class="memo-section">
+    <div class="memo-container">
+        <div class="memo-card admin-note">
+            <div class="memo-header">
+                <span><i class="fas fa-user-shield"></i> 관리자 메모</span>
+            </div>
+            <div class="memo-input-group">
+                <textarea id="adminInput" placeholder="공지사항을 입력하세요..."></textarea>
+                <button onclick="postAdminMemo()" class="btn-send">전송</button>
+            </div>
+            <div id="adminMemoList" class="memo-list"></div>
+        </div>
+
+        <div class="memo-card visitor-note">
+            <div class="memo-header">
+                <span><i class="fas fa-users"></i> 방문자 한줄평</span>
+                <span class="char-count" id="charCount">0/60</span>
+            </div>
+            <div class="memo-input-group">
+                <input type="text" id="visitorInput" maxlength="60" placeholder="의견을 남겨주세요 (60자 이내)">
+                <button onclick="postVisitorMemo()" class="btn-send">전송</button>
+            </div>
+            <div id="visitorMemoList" class="memo-list"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .memo-section { margin-bottom: 30px; }
+    .memo-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .memo-card { background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+    .memo-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; color: #fff; font-size: 1.1rem; }
+    .memo-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+    .memo-input-group textarea, .memo-input-group input { 
+        flex: 1; background: rgba(0,0,0,0.2); border: 1px solid #444; border-radius: 8px; 
+        color: white; padding: 10px; font-size: 0.9rem;
+    }
+    .btn-send { background: #667eea; color: white; border: none; border-radius: 8px; padding: 0 15px; cursor: pointer; white-space: nowrap; }
+    .memo-list { max-height: 250px; overflow-y: auto; }
+    .memo-item { 
+        background: rgba(255,255,255,0.03); margin-bottom: 8px; padding: 12px; border-radius: 8px; 
+        font-size: 0.85rem; border-left: 3px solid #667eea;
+    }
+    .memo-meta { display: flex; justify-content: space-between; font-size: 0.7rem; color: #aaa; margin-top: 5px; }
+    .like-btn { cursor: pointer; color: #ff4757; }
+    .delete-btn { cursor: pointer; color: #666; margin-left: 8px; }
+    @media (max-width: 768px) { .memo-container { grid-template-columns: 1fr; } }
+/* 기존 스타일들 아래에 추가하세요 */
+
+/* 메모장 헤더 가독성 강화 (골드 & 스카이블루) */
+.memo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 관리자 메모 제목: 골드 포인트 */
+.admin-note .memo-header span:first-child {
+    color: #ffce00 !important; /* 확실한 황금색 */
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 방문자 한줄평 제목: 스카이블루 포인트 */
+.visitor-note .memo-header span:first-child {
+    color: #00d2ff !important; /* 확실한 하늘색 */
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.char-count {
+    font-size: 0.8rem;
+    color: #00d2ff;
+    opacity: 0.8;
+}
+
+</style>
+
                               <!-- 추천 종목 리포트 (기존) -->
                 <div class="category-section featured">
 <div class="category-header">
@@ -1034,22 +1137,112 @@
                 </div>
             `;
         }
-window.onpopstate = function(event) {
-    if (event.state && event.state.category && event.state.date) {
-        const category = categories[event.state.category];
-        document.getElementById(category.selectId).value = event.state.date;
-        loadReport(event.state.category);
-    }
-};
 
-// ✅ 반드시 밖에 위치해야 함
+        window.onpopstate = function(event) {
+            if (event.state && event.state.category && event.state.date) {
+                const category = categories[event.state.category];
+                document.getElementById(category.selectId).value = event.state.date;
+               loadReport(event.state.category);
+            }
 function openMemoryReport() {
   window.open(
-    "https://apus80.github.io/stock/memory_report.html",
-    "_blank"
+    "memory_report.html",
+    "_blank",
+    "width=1100,height=800,scrollbars=yes,resizable=yes"
   );
 }
+        };
+// 욕설 필터링 (기본 예시)
+const badWords = ["시발", "병신", "바보","씨발","사기꾼","사기"]; // 실제 사용 시 리스트를 확장하세요
+function filterProfanity(text) {
+    let filtered = text;
+    badWords.forEach(word => {
+        const reg = new RegExp(word, 'gi');
+        filtered = filtered.replace(reg, '**');
+    });
+    return filtered;
+}
 
+// 60자 제한 카운터
+document.getElementById('visitorInput').oninput = function() {
+    document.getElementById('charCount').innerText = this.value.length + "/60";
+};
+
+// 관리자 메모 저장
+async function postAdminMemo() {
+    const pwd = prompt("관리자 비밀번호를 입력하세요.");
+    if (pwd !== '9834') return alert("권한이 없습니다.");
+    
+    const content = document.getElementById('adminInput').value;
+    if (!content) return;
+
+    await db.collection("adminNotes").add({
+        content: content,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('adminInput').value = '';
+}
+
+// 방문자 메모 저장
+async function postVisitorMemo() {
+    let content = document.getElementById('visitorInput').value;
+    if (!content) return;
+    
+    content = filterProfanity(content);
+
+    await db.collection("visitorNotes").add({
+        content: content,
+        likes: 0,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('visitorInput').value = '';
+}
+
+// 실시간 리스트업 (Snapshot)
+db.collection("adminNotes").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    let html = '';
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        const date = data.timestamp ? data.timestamp.toDate().toLocaleString() : '';
+        html += `<div class="memo-item">${data.content}<div class="memo-meta"><span>${date}</span></div></div>`;
+    });
+    document.getElementById('adminMemoList').innerHTML = html;
+});
+
+db.collection("visitorNotes").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+    let html = '';
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        const date = data.timestamp ? data.timestamp.toDate().toLocaleString() : '';
+        html += `
+            <div class="memo-item">
+                ${data.content}
+                <div class="memo-meta">
+                    <span>${date}</span>
+                    <span>
+                        <span class="like-btn" onclick="likeMemo('${doc.id}', ${data.likes})">❤️ ${data.likes}</span>
+                        <span class="delete-btn" onclick="deleteMemo('${doc.id}')"><i class="fas fa-trash"></i></span>
+                    </span>
+                </div>
+            </div>`;
+    });
+    document.getElementById('visitorMemoList').innerHTML = html;
+});
+
+// 좋아요 기능
+function likeMemo(id, currentLikes) {
+    db.collection("visitorNotes").doc(id).update({ likes: currentLikes + 1 });
+}
+
+// 삭제 기능 (관리자 전용)
+function deleteMemo(id) {
+    const pwd = prompt("삭제를 위해 관리자 비밀번호를 입력하세요.");
+    if (pwd === '9834') {
+        db.collection("visitorNotes").doc(id).delete();
+    } else {
+        alert("비밀번호가 틀렸습니다.");
+    }
+}
 
     </script>
 </body>
