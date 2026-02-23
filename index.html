@@ -1,1167 +1,1146 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주식 분석 통합 리포트 뷰어</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* 비밀번호 입력 화면 */
-        .password-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .password-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .password-box h2 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.8em;
-        }
-
-        .password-box p {
-            color: #6c757d;
-            margin-bottom: 30px;
-        }
-
-        .password-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .password-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .password-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .password-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .password-error {
-            color: #dc3545;
-            margin-top: 15px;
-            font-size: 0.9em;
-            display: none;
-        }
-
-        .password-hint {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #dee2e6;
-            color: #6c757d;
-            font-size: 0.85em;
-        }
-
-        /* 메인 컨텐츠 */
-        .main-content {
-            display: none;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 20px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: white;
-            color: #667eea;
-        }
-
-        .controls {
-            padding: 30px;
-            background: #f8f9fa;
-        }
-
-        .category-section {
-            margin-bottom: 25px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .category-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-
-        .category-section.featured {
-            border: 3px solid #667eea;
-            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-        }
-
-        .category-section.news {
-            border: 3px solid #28a745;
-            background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .category-icon {
-            font-size: 2em;
-        }
-
-        .category-title {
-            flex: 1;
-        }
-
-        .category-title h3 {
-            color: #667eea;
-            font-size: 1.3em;
-            margin-bottom: 5px;
-        }
-
-        .category-title.featured h3 {
-            color: #5a67d8;
-            font-weight: 700;
-        }
-
-        .category-title.news h3 {
-            color: #28a745;
-            font-weight: 700;
-        }
-
-        .category-title p {
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #667eea;
-            color: white;
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .badge.news {
-            background: #28a745;
-        }
-
-        .selector-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .selector-row label {
-            font-weight: 600;
-            color: #495057;
-            min-width: 80px;
-        }
-
-        .selector-row select {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 15px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 1em;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .selector-row select:hover {
-            border-color: #667eea;
-        }
-
-        .selector-row select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn-load {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-load:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-load:active {
-            transform: translateY(0);
-        }
-
-        .pdf-viewer {
-            padding: 30px;
-            min-height: 600px;
-            background: white;
-        }
-
-        .pdf-container {
-            width: 100%;
-            height: 800px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #f8f9fa;
-        }
-
-        .pdf-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .current-view {
-            background: #e7f3ff;
-            border: 2px solid #2196F3;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .current-view h4 {
-            color: #0c5460;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .current-view .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .info-item {
-            background: white;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .info-item .label {
-            color: #6c757d;
-            font-size: 0.85em;
-            margin-bottom: 5px;
-        }
-
-        .info-item .value {
-            color: #667eea;
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #6c757d;
-        }
-
-        .loading .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-            20%, 40%, 60%, 80% { transform: translateX(10px); }
-        }
-
-        .error {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .info {
-            background: #e7f3ff;
-            border: 2px solid #2196F3;
-            color: #0c5460;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .info h3 {
-            margin-bottom: 15px;
-            color: #0c5460;
-        }
-
-        .info ul {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
-            margin: 30px 0;
-        }
-
-        /* TradingView 전광판 */
-        .tradingview-ticker-container {
-            background: white;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .tradingview-widget-container {
-            width: 100%;
-            height: 46px;
-        }
-
-        .tradingview-widget-container__widget {
-            width: 100%;
-            height: 100%;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 30px;
-            border-top: 2px solid #e9ecef;
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .footer h4 {
-            color: #495057;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-
-        .footer-source {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 15px 30px;
-            background: white;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.05em;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .footer-source:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .footer-source::before {
-            content: "🎥";
-            font-size: 1.4em;
-        }
-
-        .footer p {
-            margin-top: 20px;
-            color: #6c757d;
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .selector-row {
-                flex-direction: column;
-            }
-
-            .selector-row select {
-                width: 100%;
-            }
-
-            .header h1 {
-                font-size: 1.5em;
-            }
-
-            .pdf-container {
-                height: 500px;
-            }
-
-            .category-title h3 {
-                font-size: 1.1em;
-            }
-
-            .logout-btn {
-                position: static;
-                margin-top: 15px;
-                display: block;
-                width: fit-content;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .footer-source {
-                font-size: 0.95em;
-                padding: 12px 24px;
-            }
-        }
-
-        .economic-calendar{background:#fff;padding:20px;margin:20px 0;border-radius:10px}
-        .economic-calendar h2{text-align:center;color:#667eea;margin-bottom:15px}
-        .calendar-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;max-width:700px;margin:0 auto 15px}
-        .month-calendar{background:#f8f9fa;border-radius:8px;padding:10px}
-        .month-header{text-align:center;font-weight:700;margin-bottom:8px;border-bottom:2px solid #667eea;padding-bottom:5px}
-        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.7em;margin-bottom:5px}
-        .dates{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-        .date{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px;border-radius:4px;background:#fff;font-size:0.75em;position:relative}
-        .date.has-event{background:#e7f0ff;border:1px solid #667eea;font-weight:600}
-        .date.empty{background:transparent}
-        .event-icon{font-size:0.8em}
-        .event-summary{background:#f8f9fa;padding:12px;border-radius:6px;font-size:0.9em}
-    </style>
-</head>
-<body>
-    <!-- 비밀번호 입력 화면 -->
-    <div id="passwordOverlay" class="password-overlay">
-        <div class="password-box">
-            <h2>🔐 접근 제한</h2>
-            <p>리포트를 보려면 비밀번호를 입력하세요</p>
-            
-            <input 
-                type="password" 
-                id="passwordInput" 
-                class="password-input" 
-                placeholder="비밀번호 입력"
-                onkeypress="if(event.key==='Enter') checkPassword()">
-            
-            <button class="password-btn" onclick="checkPassword()">
-                확인
-            </button>
-            
-            <div id="passwordError" class="password-error">
-                ❌ 비밀번호가 올바르지 않습니다
-            </div>
-
-            <div class="password-hint">
-                💡 힌트: 비밀번호를 잊으셨나요?<br>
-                관리자에게 문의하세요.
-            </div>
-
-            <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #dee2e6; color: #667eea; font-size: 0.95em; font-weight: 600;">
-                📧 문의사항 : <a href="mailto:aiinvestflow@gmail.com" data-cfemail="3e5f575750485b4d4a585251497e59535f5752105d5153">[email&#160;protected]</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- 메인 컨텐츠 -->
-    <div id="mainContent" class="main-content">
-        <div class="container">
-            <div class="header">
-                <button class="logout-btn" onclick="logout()">🔒 로그아웃</button>
-                <h1>📊 주식 분석 통합 리포트 뷰어</h1>
-                <p>추천 종목부터 시장 분석까지, 모든 리포트를 한 곳에서</p>
-            </div>
-
-            <!-- TradingView 실시간 전광판 -->
-            <div class="tradingview-ticker-container">
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-                    {
-                        "symbols": [
-                            {
-                                "proName": "FOREXCOM:SPXUSD",
-                                "title": "S&P 500"
-                            },
-                            {
-                                "proName": "FOREXCOM:DJI",
-                                "title": "Dow Jones"
-                            },
-                            {
-                                "proName": "NASDAQ:AAPL",
-                                "title": "Apple"
-                            },
-                            {
-                                "proName": "NASDAQ:NVDA",
-                                "title": "NVIDIA"
-                            },
-                            {
-                                "proName": "TVC:GOLD",
-                                "title": "Gold"
-                            },
-                            {
-                                "proName": "BITSTAMP:BTCUSD",
-                                "title": "Bitcoin"
-                            }
-                        ],
-                        "showSymbolLogo": true,
-                        "colorTheme": "light",
-                        "isTransparent": false,
-                        "displayMode": "adaptive",
-                        "locale": "kr"
-                    }
-                    </script>
-                </div>
-            </div>
-
-            <div class="economic-calendar">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주식 분석 통합 리포트 뷰어</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 비밀번호 입력 화면 */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .password-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .password-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .password-box p {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-error {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .password-hint {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+
+        /* 메인 컨텐츠 */
+        .main-content {
+            display: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .category-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .category-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .category-section.featured {
+            border: 3px solid #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        }
+
+        .category-section.news {
+            border: 3px solid #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-icon {
+            font-size: 2em;
+        }
+
+        .category-title {
+            flex: 1;
+        }
+
+        .category-title h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .category-title.featured h3 {
+            color: #5a67d8;
+            font-weight: 700;
+        }
+
+        .category-title.news h3 {
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .category-title p {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.news {
+            background: #28a745;
+        }
+
+        .selector-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-row label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 80px;
+        }
+
+        .selector-row select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .selector-row select:hover {
+            border-color: #667eea;
+        }
+
+        .selector-row select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-load {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-load:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-load:active {
+            transform: translateY(0);
+        }
+
+        .pdf-viewer {
+            padding: 30px;
+            min-height: 600px;
+            background: white;
+        }
+
+        .pdf-container {
+            width: 100%;
+            height: 800px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .current-view {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .current-view h4 {
+            color: #0c5460;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .current-view .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .info-item .label {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+
+        .loading .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .error {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .info h3 {
+            margin-bottom: 15px;
+            color: #0c5460;
+        }
+
+        .info ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            margin: 30px 0;
+        }
+
+        /* TradingView 전광판 */
+        .tradingview-ticker-container {
+            background: white;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tradingview-widget-container {
+            width: 100%;
+            height: 46px;
+        }
+
+        .tradingview-widget-container__widget {
+            width: 100%;
+            height: 100%;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer h4 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .footer-source {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .footer-source:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .footer-source::before {
+            content: "🎥";
+            font-size: 1.4em;
+        }
+
+        .footer p {
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .selector-row {
+                flex-direction: column;
+            }
+
+            .selector-row select {
+                width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .pdf-container {
+                height: 500px;
+            }
+
+            .category-title h3 {
+                font-size: 1.1em;
+            }
+
+            .logout-btn {
+                position: static;
+                margin-top: 15px;
+                display: block;
+                width: fit-content;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .footer-source {
+                font-size: 0.95em;
+                padding: 12px 24px;
+            }
+        }
+
+        .eco-cal{background:#fff;padding:15px;margin:15px 0;border-radius:8px}
+        .eco-cal h2{text-align:center;color:#667eea;font-size:1.3em;margin-bottom:12px}
+        .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:650px;margin:0 auto 12px}
+        .mon-cal{background:#f8f9fa;border-radius:6px;padding:10px}
+        .mon-hdr{text-align:center;font-weight:700;margin-bottom:6px;border-bottom:2px solid #667eea;padding-bottom:4px;font-size:0.95em}
+        .wkdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.65em;margin-bottom:4px;color:#6c757d}
+        .dts{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+        .dt{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;border-radius:4px;background:#fff;font-size:0.7em;position:relative}
+        .dt.evt{background:#e7f0ff;border:1px solid #667eea;font-weight:600}
+        .dt.emp{background:transparent}
+        .evt-i{font-size:0.75em}
+        .cal-sum{background:#f8f9fa;padding:10px;border-radius:5px;font-size:0.85em;text-align:center}
+
+    </style>
+</head>
+<body>
+    <!-- 비밀번호 입력 화면 -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-box">
+            <h2>🔐 접근 제한</h2>
+            <p>리포트를 보려면 비밀번호를 입력하세요</p>
+            
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="비밀번호 입력"
+                onkeypress="if(event.key==='Enter') checkPassword()">
+            
+            <button class="password-btn" onclick="checkPassword()">
+                확인
+            </button>
+            
+            <div id="passwordError" class="password-error">
+                ❌ 비밀번호가 올바르지 않습니다
+            </div>
+
+            <div class="password-hint">
+                💡 힌트: 비밀번호를 잊으셨나요?<br>
+                관리자에게 문의하세요.
+            </div>
+
+            <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #dee2e6; color: #667eea; font-size: 0.95em; font-weight: 600;">
+                📧 문의사항 : <a href="mailto:aiinvestflow@gmail.com" style="color:#667eea;text-decoration:none;font-weight:600">aiinvestflow@gmail.com</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <div id="mainContent" class="main-content">
+        <div class="container">
+            <div class="header">
+                <button class="logout-btn" onclick="logout()">🔒 로그아웃</button>
+                <h1>📊 주식 분석 통합 리포트 뷰어</h1>
+                <p>추천 종목부터 시장 분석까지, 모든 리포트를 한 곳에서</p>
+            </div>
+
+            <!-- TradingView 실시간 전광판 -->
+            <div class="tradingview-ticker-container">
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                    {
+                        "symbols": [
+                            {
+                                "proName": "FOREXCOM:SPXUSD",
+                                "title": "S&P 500"
+                            },
+                            {
+                                "proName": "FOREXCOM:DJI",
+                                "title": "Dow Jones"
+                            },
+                            {
+                                "proName": "NASDAQ:AAPL",
+                                "title": "Apple"
+                            },
+                            {
+                                "proName": "NASDAQ:NVDA",
+                                "title": "NVIDIA"
+                            },
+                            {
+                                "proName": "TVC:GOLD",
+                                "title": "Gold"
+                            },
+                            {
+                                "proName": "BITSTAMP:BTCUSD",
+                                "title": "Bitcoin"
+                            }
+                        ],
+                        "showSymbolLogo": true,
+                        "colorTheme": "light",
+                        "isTransparent": false,
+                        "displayMode": "adaptive",
+                        "locale": "kr"
+                    }
+                    </script>
+                </div>
+            </div>
+
+            <div class="eco-cal">
                 <h2>📆 2026년 2-3월 주요 일정</h2>
-                <div class="calendar-grid">
-                    <div class="month-calendar">
-                        <div class="month-header">2월</div>
-                        <div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
-                        <div class="dates" id="cal-feb"></div>
+                <div class="cal-grid">
+                    <div class="mon-cal">
+                        <div class="mon-hdr">2월</div>
+                        <div class="wkdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+                        <div class="dts" id="c-feb"></div>
                     </div>
-                    <div class="month-calendar">
-                        <div class="month-header">3월</div>
-                        <div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
-                        <div class="dates" id="cal-mar"></div>
-                    </div>
-                </div>
-                <div class="event-summary">
-                    <strong>📌 핵심:</strong> 2/6 NFP | 2/11 CPI | 2/25 NVDA | 2/27 PPI | 3/6 NFP | 3/11 CPI | 3/13 GDP | 3/18-19 FOMC
-                </div>
-            </div>
-
-            <div class="controls">
-                              <!-- 추천 종목 리포트 (기존) -->
-                <div class="category-section featured">
-<div class="category-header">
-    <span class="category-icon">🎯</span>
-    <div class="category-title featured">
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <h3>
-                단기/중기 종목 리포트
-                <span class="badge">MAIN</span>
-            </h3>
-<a href="methodology.html"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="btn-load"
-   style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
-    📝 분석 방법론 보기
-</a>
-        </div>
-        <p>투자 추천 종목 및 매매 전략</p>
-    </div>
-</div>
-                    <div class="selector-row">
-                        <label for="dateRecommendation">📅 날짜:</label>
-                        <select id="dateRecommendation">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('recommendation')">불러오기</button>
+                    <div class="mon-cal">
+                        <div class="mon-hdr">3월</div>
+                        <div class="wkdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+                        <div class="dts" id="c-mar"></div>
                     </div>
                 </div>
-
-                <div class="divider"></div>
-
-                <!-- 급등 종목 리포트 -->
-                <div class="category-section featured">
-                    <div class="category-header">
-                        <span class="category-icon">🚀</span>
-                        <div class="category-title featured">
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <h3>
-                                    급등 종목 리포트
-                                    <span class="badge">ALERT</span>
-                                </h3>
-                                <a href="7Factor.html"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="btn-load"
-                                   style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
-                                    📝 분석 방법론 보기
-                                </a>
-                            </div>
-                            <p>급등 종목 탐지 및 7가지 요소 분석</p>
-                        </div>
-                    </div>
-                    <div class="selector-row">
-                        <label for="dateShoot">📅 날짜:</label>
-                        <select id="dateShoot">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('shoot')">불러오기</button>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <!-- 종목 뉴스 & 보고서 -->
-                <div class="category-section news">
-                    <div class="category-header">
-                        <span class="category-icon">📰</span>
-                        <div class="category-title news">
-                            <h3>
-                                시황 & 보고서
-                                <span class="badge news">NEW</span>
-                            </h3>
-                            <p>주요 종목 뉴스 및 시장 동향</p>
-                        </div>
-                    </div>
-<li class="dropdown-header">주요 보고서</li>
-
-<li style="list-style:none;">
-  - 
-  <a href="#" onclick="openMemoryReport(); return false;">
-    메모리 사업의 전망 
-    <span style="color:#888; font-size:12px;">
-      (상세한 내용은 하단 2월 16일 보고서(pdf) 참조 )
-    </span>
-  </a>
-</li>
-
-                    <div class="selector-row">
-                        <label for="dateNews">📅 날짜:</label>
-                        <select id="dateNews">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('news')">불러오기</button>
-                    </div>
-                </div>
-
-                <div class="divider"></div>
-
-                <!-- 분석 1: 미국 시장 유동성 -->
-                <div class="category-section">
-                    <div class="category-header">
-                        <span class="category-icon">💰</span>
-                        <div class="category-title">
-                            <h3>[분석1] 미국 시장 유동성 메커니즘</h3>
-                            <p>연준 정책, 넷 리퀴디티, 금융 여건 분석</p>
-                        </div>
-                    </div>
-                    <div class="selector-row">
-                        <label for="dateAnalysis1">📅 날짜:</label>
-                        <select id="dateAnalysis1">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('analysis1')">불러오기</button>
-                    </div>
-                </div>
-
-                <!-- 분석 2: ETF 자금 흐름 -->
-                <div class="category-section">
-                    <div class="category-header">
-                        <span class="category-icon">📈</span>
-                        <div class="category-title">
-                            <h3>[분석2] ETF 자금 흐름 분석</h3>
-                            <p>스마트 머니 추적 및 섹터 로테이션 (월간)</p>
-                        </div>
-                    </div>
-                    <div class="selector-row">
-                        <label for="dateAnalysis2">📅 날짜:</label>
-                        <select id="dateAnalysis2">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('analysis2')">불러오기</button>
-                    </div>
-                </div>
-
-                <!-- 분석 3: 내부자 매수 -->
-                <div class="category-section">
-                    <div class="category-header">
-                        <span class="category-icon">👔</span>
-                        <div class="category-title">
-                            <h3>[분석3] 내부자 매수 분석</h3>
-                            <p>경영진 고확신 매수 시그널 추적</p>
-                        </div>
-                    </div>
-                    <div class="selector-row">
-                        <label for="dateAnalysis3">📅 날짜:</label>
-                        <select id="dateAnalysis3">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('analysis3')">불러오기</button>
-                    </div>
-                </div>
-
-                <!-- 분석 4: 애널리스트 목표가 -->
-                <div class="category-section">
-                    <div class="category-header">
-                        <span class="category-icon">🎯</span>
-                        <div class="category-title">
-                            <h3>[분석4] 애널리스트 목표가 분석</h3>
-                            <p>월스트리트 고확신 목표가 상향 추적</p>
-                        </div>
-                    </div>
-                    <div class="selector-row">
-                        <label for="dateAnalysis4">📅 날짜:</label>
-                        <select id="dateAnalysis4">
-                            <option value="">날짜를 선택하세요...</option>
-                        </select>
-                        <button class="btn-load" onclick="loadReport('analysis4')">불러오기</button>
-                    </div>
+                <div class="cal-sum">
+                    <strong>주요:</strong> 2/6 NFP | 2/11 CPI | 2/25 NVDA | 2/27 PPI | 3/6 NFP | 3/11 CPI | 3/13 GDP | 3/19 FOMC
                 </div>
             </div>
 
-            <div class="pdf-viewer">
-                <div id="pdfContent" class="info">
-                    <h3>👋 환영합니다!</h3>
-                    <p style="margin-top: 10px;">위에서 카테고리와 날짜를 선택한 후 "불러오기" 버튼을 클릭하세요.</p>
-                    <ul style="margin-top: 15px;">
-                        <li><strong>추천 종목:</strong> 투자 추천 및 매매 전략</li>
-                        <li><strong>급등 종목:</strong> 급등 종목 탐지 및 7가지 요소 분석 <span style="color: #dc3545; font-weight: 700;">🚀 NEW!</span></li>
-                        <li><strong>종목 뉴스:</strong> 주요 종목 뉴스 및 시장 동향 <span style="color: #28a745; font-weight: 700;">NEW!</span></li>
-                        <li><strong>분석1:</strong> 미국 시장 유동성 및 자산 배분</li>
-                        <li><strong>분석2:</strong> ETF 자금 흐름 및 섹터 로테이션</li>
-                        <li><strong>분석3:</strong> 내부자 매수 시그널</li>
-                        <li><strong>분석4:</strong> 애널리스트 목표가 상향</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Footer with Source (출처 통합) -->
-            <div class="footer">
-                <div class="footer-content">
-                    <h4>📚 4가지 분석 프레임워크 출처</h4>
-                    <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="footer-source">
-                        분석 방법론 상세 영상 보기
-                    </a>
-                    <p>
-                        분석1~4의 프레임워크는 위 영상을 기반으로 작성되었습니다.<br>
-                        투자에 대한 모든 책임은 투자자 본인에게 있습니다.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ============================================
-        // 🔐 비밀번호 설정
-        // ============================================
-        const CORRECT_PASSWORD = "9803";
-
-        // 세션 저장 키
-        const SESSION_KEY = "report_authenticated";
-
-        // 페이지 로드 시 인증 확인
-        window.onload = function() {
-            if (sessionStorage.getItem(SESSION_KEY) === "true") {
-                showMainContent();
-            }
-        };
-
-        // 비밀번호 확인
-        function checkPassword() {
-            const input = document.getElementById('passwordInput');
-            const error = document.getElementById('passwordError');
-            
-            if (input.value === CORRECT_PASSWORD) {
-                sessionStorage.setItem(SESSION_KEY, "true");
-                showMainContent();
-                error.style.display = 'none';
-            } else {
-                error.style.display = 'block';
-                input.value = '';
-                input.focus();
-                input.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    input.style.animation = '';
-                }, 500);
-            }
-        }
-
-        // 메인 컨텐츠 표시
-        function showMainContent() {
-            document.getElementById('passwordOverlay').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            loadDateList();
-        }
-
-        // 로그아웃
-        function logout() {
-            if (confirm('로그아웃 하시겠습니까?')) {
-                sessionStorage.removeItem(SESSION_KEY);
-                location.reload();
-            }
-        }
-
-        // ============================================
-        // 📊 리포트 관련 기능
-        // ============================================
-
-        // PDF 파일 목록
-        const reportFiles = {
-    recommendation: {
-
-        '2026-02-22': {
-            file: 'reports/recommendation/2026-02-22_catalyst.pdf',
-            title: '단기'
-        },
-        '2026-02-21': {
-            file: 'reports/recommendation/2026-02-22_analysis.pdf',
-            title: '중기'
-        },
-        '2026-02-18': {
-            file: 'reports/recommendation/2026-02-18_catalyst.pdf',
-            title: '단기'
-        },
-        '2026-02-12': {
-            file: 'reports/recommendation/2026-02-12_catalyst.pdf',
-            title: '단기'
-        },
-        '2026-02-09': {
-            file: 'reports/recommendation/2026-02-09_analysis.pdf',
-            title: '중기'
-        },
-        '2026-02-06': {
-            file: 'reports/recommendation/2026-02-06_analysis.pdf',
-            title: '중기'
-        }
-    },
-            
-            shoot: {
-                '2026-02-22': {
-                    file: 'reports/shoot/2026-02-22_shoot.pdf',
-                    title: 'VRNS/KKR/QDEL/RAL'
-                }
-            },
-            
-            news: {
-                '2026-02-17': {
-                    file: 'reports/news/US_Market_Analysis_20260217.pdf',
-                    title: '금일 미국 시황'
-                },
-                '2026-02-16': {
-                    file: 'reports/news/memory_supercycle.pdf',
-                    title: '메모리 사업의 전망'
-                },
-                '2026-02-15': {
-                    file: 'reports/news/2026-02-15_news.pdf',
-                    title: '주간 시장 동향'
-                }
-            },
-            analysis1: {
-                '2026-03-02': 'reports/analysis1/2026-03-02_liquidity.pdf',
-                '2026-02-10': 'reports/analysis1/2026-02-10_liquidity.pdf',
-            },
-            analysis2: {
-                '2026-03-02': 'reports/analysis2/2026-03-02_etf.pdf',
-                '2026-02-10': 'reports/analysis2/2026-02-10_etf.pdf',
-            },
-            analysis3: {
-                '2026-03-02': 'reports/analysis3/2026-03-02_insider.pdf',
-                '2026-02-10': 'reports/analysis3/2026-02-10_insider.pdf',
-            },
-            analysis4: {
-                '2026-03-02': 'reports/analysis4/2026-03-02_analyst.pdf',
-                '2026-02-10': 'reports/analysis4/2026-02-10_analyst.pdf',
-            }
-        };
-
-        // 카테고리 정보
-        const categories = {
-            'recommendation': { 
-                name: '추천 종목 리포트', 
-                icon: '🎯',
-                selectId: 'dateRecommendation'
-            },
-            'shoot': { 
-                name: '급등 종목 리포트', 
-                icon: '🚀',
-                selectId: 'dateShoot'
-            },
-            'news': { 
-                name: '종목 뉴스', 
-                icon: '📰',
-                selectId: 'dateNews'
-            },
-            'analysis1': { 
-                name: '미국 시장 유동성 메커니즘', 
-                icon: '💰',
-                selectId: 'dateAnalysis1'
-            },
-            'analysis2': { 
-                name: 'ETF 자금 흐름 분석', 
-                icon: '📈',
-                selectId: 'dateAnalysis2'
-            },
-            'analysis3': { 
-                name: '내부자 매수 분석', 
-                icon: '👔',
-                selectId: 'dateAnalysis3'
-            },
-            'analysis4': { 
-                name: '애널리스트 목표가 분석', 
-                icon: '🎯',
-                selectId: 'dateAnalysis4'
-            }
-        };
-
-        function loadDateList() {
-            Object.keys(categories).forEach(categoryKey => {
-                const category = categories[categoryKey];
-                const dateSelect = document.getElementById(category.selectId);
-                const dates = Object.keys(reportFiles[categoryKey]).sort().reverse();
-
-                dates.forEach(date => {
-                    const option = document.createElement('option');
-                    option.value = date;
-                    
-                    // News 카테고리는 제목 추가
-                    if (categoryKey === 'news') {
-                        const newsData = reportFiles[categoryKey][date];
-                        option.textContent = `${formatDate(date)}: ${newsData.title}`;
-                    } 
-                    else if (categoryKey === 'recommendation') {
-                        const stockData = reportFiles[categoryKey][date];
-                        option.textContent = `${formatDate(date)} · ${stockData.title}`;
-                    }
-                    else if (categoryKey === 'shoot') {
-                        const shootData = reportFiles[categoryKey][date];
-                        option.textContent = `${formatDate(date)} · ${shootData.title}`;
-                    }
-                    else {
-                        option.textContent = formatDate(date);
-                    }
-                    
-                    dateSelect.appendChild(option);
-                });
-            });
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryParam = urlParams.get('category');
-            const dateParam = urlParams.get('date');
-            
-            if (categoryParam && dateParam && categories[categoryParam]) {
-                document.getElementById(categories[categoryParam].selectId).value = dateParam;
-                loadReport(categoryParam);
-            }
-        }
-
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
-            return `${year}년 ${month}월 ${day}일 (${weekday})`;
-        }
-
-        function loadReport(categoryKey) {
-            const category = categories[categoryKey];
-            const dateSelect = document.getElementById(category.selectId);
-            const selectedDate = dateSelect.value;
-            const pdfContent = document.getElementById('pdfContent');
-
-            if (!selectedDate) {
-                pdfContent.innerHTML = `
-                    <div class="error">
-                        ⚠️ 날짜를 선택해주세요.
-                    </div>
-                `;
-                return;
-            }
-
-            // News 카테고리는 객체에서 file 가져오기
-            let pdfFile;
-        if (categoryKey === 'news' || categoryKey === 'recommendation' || categoryKey === 'shoot') {
-    const data = reportFiles[categoryKey][selectedDate];
-    pdfFile = data ? data.file : null;
-} else {
-    pdfFile = reportFiles[categoryKey][selectedDate];
-}
-            
-            if (!pdfFile) {
-                pdfContent.innerHTML = `
-                    <div class="error">
-                        ❌ 해당 날짜의 리포트를 찾을 수 없습니다.<br>
-                        <small style="margin-top: 10px; display: block;">
-                            카테고리: ${category.name}<br>
-                            날짜: ${formatDate(selectedDate)}
-                        </small>
-                    </div>
-                `;
-                return;
-            }
-
-            pdfContent.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>${category.icon} ${category.name} 리포트를 불러오는 중...</p>
-                </div>
-            `;
-
-            const newUrl = `${window.location.pathname}?category=${categoryKey}&date=${selectedDate}`;
-            window.history.pushState({category: categoryKey, date: selectedDate}, '', newUrl);
-
-            setTimeout(() => {
-                displayPDF(pdfFile, selectedDate, category);
-            }, 500);
-        }
-
-        function displayPDF(pdfPath, date, category) {
-            const pdfContent = document.getElementById('pdfContent');
-            
-            pdfContent.innerHTML = `
-                <div class="current-view">
-                    <h4>${category.icon} ${category.name}</h4>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="label">선택한 날짜</div>
-                            <div class="value">${formatDate(date)}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="label">카테고리</div>
-                            <div class="value">${category.name}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pdf-container">
-                    <iframe src="${pdfPath}" type="application/pdf"></iframe>
-                </div>
-                <div style="text-align: center; margin-top: 20px; color: #6c757d;">
-                    <p>💡 PDF가 보이지 않으면 <a href="${pdfPath}" target="_blank" style="color: #667eea; font-weight: 600;">여기</a>를 클릭하여 새 탭에서 열어보세요.</p>
-                </div>
-            `;
-        }
-window.onpopstate = function(event) {
-    if (event.state && event.state.category && event.state.date) {
-        const category = categories[event.state.category];
-        document.getElementById(category.selectId).value = event.state.date;
+            <div class="controls">
+                              <!-- 추천 종목 리포트 (기존) -->
+                <div class="category-section featured">
+<div class="category-header">
+    <span class="category-icon">🎯</span>
+    <div class="category-title featured">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <h3>
+                단기/중기 종목 리포트
+                <span class="badge">MAIN</span>
+            </h3>
+<a href="methodology.html"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="btn-load"
+   style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
+    📝 분석 방법론 보기
+</a>
+        </div>
+        <p>투자 추천 종목 및 매매 전략</p>
+    </div>
+</div>
+                    <div class="selector-row">
+                        <label for="dateRecommendation">📅 날짜:</label>
+                        <select id="dateRecommendation">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('recommendation')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 급등 종목 리포트 -->
+                <div class="category-section featured">
+                    <div class="category-header">
+                        <span class="category-icon">🚀</span>
+                        <div class="category-title featured">
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <h3>
+                                    급등 종목 리포트
+                                    <span class="badge">ALERT</span>
+                                </h3>
+                                <a href="7Factor.html"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn-load"
+                                   style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
+                                    📝 분석 방법론 보기
+                                </a>
+                            </div>
+                            <p>급등 종목 탐지 및 7가지 요소 분석</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateShoot">📅 날짜:</label>
+                        <select id="dateShoot">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('shoot')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 종목 뉴스 & 보고서 -->
+                <div class="category-section news">
+                    <div class="category-header">
+                        <span class="category-icon">📰</span>
+                        <div class="category-title news">
+                            <h3>
+                                시황 & 보고서
+                                <span class="badge news">NEW</span>
+                            </h3>
+                            <p>주요 종목 뉴스 및 시장 동향</p>
+                        </div>
+                    </div>
+<li class="dropdown-header">주요 보고서</li>
+
+<li style="list-style:none;">
+  - 
+  <a href="#" onclick="openMemoryReport(); return false;">
+    메모리 사업의 전망 
+    <span style="color:#888; font-size:12px;">
+      (상세한 내용은 하단 2월 16일 보고서(pdf) 참조 )
+    </span>
+  </a>
+</li>
+
+                    <div class="selector-row">
+                        <label for="dateNews">📅 날짜:</label>
+                        <select id="dateNews">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('news')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 분석 1: 미국 시장 유동성 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">💰</span>
+                        <div class="category-title">
+                            <h3>[분석1] 미국 시장 유동성 메커니즘</h3>
+                            <p>연준 정책, 넷 리퀴디티, 금융 여건 분석</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis1">📅 날짜:</label>
+                        <select id="dateAnalysis1">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis1')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 2: ETF 자금 흐름 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">📈</span>
+                        <div class="category-title">
+                            <h3>[분석2] ETF 자금 흐름 분석</h3>
+                            <p>스마트 머니 추적 및 섹터 로테이션 (월간)</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis2">📅 날짜:</label>
+                        <select id="dateAnalysis2">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis2')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 3: 내부자 매수 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">👔</span>
+                        <div class="category-title">
+                            <h3>[분석3] 내부자 매수 분석</h3>
+                            <p>경영진 고확신 매수 시그널 추적</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis3">📅 날짜:</label>
+                        <select id="dateAnalysis3">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis3')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 4: 애널리스트 목표가 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">🎯</span>
+                        <div class="category-title">
+                            <h3>[분석4] 애널리스트 목표가 분석</h3>
+                            <p>월스트리트 고확신 목표가 상향 추적</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis4">📅 날짜:</label>
+                        <select id="dateAnalysis4">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis4')">불러오기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pdf-viewer">
+                <div id="pdfContent" class="info">
+                    <h3>👋 환영합니다!</h3>
+                    <p style="margin-top: 10px;">위에서 카테고리와 날짜를 선택한 후 "불러오기" 버튼을 클릭하세요.</p>
+                    <ul style="margin-top: 15px;">
+                        <li><strong>추천 종목:</strong> 투자 추천 및 매매 전략</li>
+                        <li><strong>급등 종목:</strong> 급등 종목 탐지 및 7가지 요소 분석 <span style="color: #dc3545; font-weight: 700;">🚀 NEW!</span></li>
+                        <li><strong>종목 뉴스:</strong> 주요 종목 뉴스 및 시장 동향 <span style="color: #28a745; font-weight: 700;">NEW!</span></li>
+                        <li><strong>분석1:</strong> 미국 시장 유동성 및 자산 배분</li>
+                        <li><strong>분석2:</strong> ETF 자금 흐름 및 섹터 로테이션</li>
+                        <li><strong>분석3:</strong> 내부자 매수 시그널</li>
+                        <li><strong>분석4:</strong> 애널리스트 목표가 상향</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer with Source (출처 통합) -->
+            <div class="footer">
+                <div class="footer-content">
+                    <h4>📚 4가지 분석 프레임워크 출처</h4>
+                    <a href="https://youtu.be/R8Re7W02oxg?si=-Yi1xNDBs4HaYRyO" target="_blank" class="footer-source">
+                        분석 방법론 상세 영상 보기
+                    </a>
+                    <p>
+                        분석1~4의 프레임워크는 위 영상을 기반으로 작성되었습니다.<br>
+                        투자에 대한 모든 책임은 투자자 본인에게 있습니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🔐 비밀번호 설정
+        // ============================================
+        const CORRECT_PASSWORD = "9803";
+
+        // 세션 저장 키
+        const SESSION_KEY = "report_authenticated";
+
+        // 페이지 로드 시 인증 확인
+        window.onload = function() {
+            if (sessionStorage.getItem(SESSION_KEY) === "true") {
+                showMainContent();
+            }
+        };
+
+        // 비밀번호 확인
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                sessionStorage.setItem(SESSION_KEY, "true");
+                showMainContent();
+                error.style.display = 'none';
+            } else {
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // 메인 컨텐츠 표시
+        function showMainContent() {
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            loadDateList();
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                sessionStorage.removeItem(SESSION_KEY);
+                location.reload();
+            }
+        }
+
+        // ============================================
+        // 📊 리포트 관련 기능
+        // ============================================
+
+        // PDF 파일 목록
+        const reportFiles = {
+    recommendation: {
+
+        '2026-02-22': {
+            file: 'reports/recommendation/2026-02-22_catalyst.pdf',
+            title: '단기'
+        },
+        '2026-02-21': {
+            file: 'reports/recommendation/2026-02-22_analysis.pdf',
+            title: '중기'
+        },
+        '2026-02-18': {
+            file: 'reports/recommendation/2026-02-18_catalyst.pdf',
+            title: '단기'
+        },
+        '2026-02-12': {
+            file: 'reports/recommendation/2026-02-12_catalyst.pdf',
+            title: '단기'
+        },
+        '2026-02-09': {
+            file: 'reports/recommendation/2026-02-09_analysis.pdf',
+            title: '중기'
+        },
+        '2026-02-06': {
+            file: 'reports/recommendation/2026-02-06_analysis.pdf',
+            title: '중기'
+        }
+    },
+            
+            shoot: {
+                '2026-02-22': {
+                    file: 'reports/shoot/2026-02-22_shoot.pdf',
+                    title: 'VRNS/KKR/QDEL/RAL'
+                }
+            },
+            
+            news: {
+                '2026-02-17': {
+                    file: 'reports/news/US_Market_Analysis_20260217.pdf',
+                    title: '금일 미국 시황'
+                },
+                '2026-02-16': {
+                    file: 'reports/news/memory_supercycle.pdf',
+                    title: '메모리 사업의 전망'
+                },
+                '2026-02-15': {
+                    file: 'reports/news/2026-02-15_news.pdf',
+                    title: '주간 시장 동향'
+                }
+            },
+            analysis1: {
+                '2026-03-02': 'reports/analysis1/2026-03-02_liquidity.pdf',
+                '2026-02-10': 'reports/analysis1/2026-02-10_liquidity.pdf',
+            },
+            analysis2: {
+                '2026-03-02': 'reports/analysis2/2026-03-02_etf.pdf',
+                '2026-02-10': 'reports/analysis2/2026-02-10_etf.pdf',
+            },
+            analysis3: {
+                '2026-03-02': 'reports/analysis3/2026-03-02_insider.pdf',
+                '2026-02-10': 'reports/analysis3/2026-02-10_insider.pdf',
+            },
+            analysis4: {
+                '2026-03-02': 'reports/analysis4/2026-03-02_analyst.pdf',
+                '2026-02-10': 'reports/analysis4/2026-02-10_analyst.pdf',
+            }
+        };
+
+        // 카테고리 정보
+        const categories = {
+            'recommendation': { 
+                name: '추천 종목 리포트', 
+                icon: '🎯',
+                selectId: 'dateRecommendation'
+            },
+            'shoot': { 
+                name: '급등 종목 리포트', 
+                icon: '🚀',
+                selectId: 'dateShoot'
+            },
+            'news': { 
+                name: '종목 뉴스', 
+                icon: '📰',
+                selectId: 'dateNews'
+            },
+            'analysis1': { 
+                name: '미국 시장 유동성 메커니즘', 
+                icon: '💰',
+                selectId: 'dateAnalysis1'
+            },
+            'analysis2': { 
+                name: 'ETF 자금 흐름 분석', 
+                icon: '📈',
+                selectId: 'dateAnalysis2'
+            },
+            'analysis3': { 
+                name: '내부자 매수 분석', 
+                icon: '👔',
+                selectId: 'dateAnalysis3'
+            },
+            'analysis4': { 
+                name: '애널리스트 목표가 분석', 
+                icon: '🎯',
+                selectId: 'dateAnalysis4'
+            }
+        };
+
+        function loadDateList() {
+            Object.keys(categories).forEach(categoryKey => {
+                const category = categories[categoryKey];
+                const dateSelect = document.getElementById(category.selectId);
+                const dates = Object.keys(reportFiles[categoryKey]).sort().reverse();
+
+                dates.forEach(date => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    
+                    // News 카테고리는 제목 추가
+                    if (categoryKey === 'news') {
+                        const newsData = reportFiles[categoryKey][date];
+                        option.textContent = `${formatDate(date)}: ${newsData.title}`;
+                    } 
+                    else if (categoryKey === 'recommendation') {
+                        const stockData = reportFiles[categoryKey][date];
+                        option.textContent = `${formatDate(date)} · ${stockData.title}`;
+                    }
+                    else if (categoryKey === 'shoot') {
+                        const shootData = reportFiles[categoryKey][date];
+                        option.textContent = `${formatDate(date)} · ${shootData.title}`;
+                    }
+                    else {
+                        option.textContent = formatDate(date);
+                    }
+                    
+                    dateSelect.appendChild(option);
+                });
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+            const dateParam = urlParams.get('date');
+            
+            if (categoryParam && dateParam && categories[categoryParam]) {
+                document.getElementById(categories[categoryParam].selectId).value = dateParam;
+                loadReport(categoryParam);
+            }
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+            return `${year}년 ${month}월 ${day}일 (${weekday})`;
+        }
+
+        function loadReport(categoryKey) {
+            const category = categories[categoryKey];
+            const dateSelect = document.getElementById(category.selectId);
+            const selectedDate = dateSelect.value;
+            const pdfContent = document.getElementById('pdfContent');
+
+            if (!selectedDate) {
+                pdfContent.innerHTML = `
+                    <div class="error">
+                        ⚠️ 날짜를 선택해주세요.
+                    </div>
+                `;
+                return;
+            }
+
+            // News 카테고리는 객체에서 file 가져오기
+            let pdfFile;
+        if (categoryKey === 'news' || categoryKey === 'recommendation' || categoryKey === 'shoot') {
+    const data = reportFiles[categoryKey][selectedDate];
+    pdfFile = data ? data.file : null;
+} else {
+    pdfFile = reportFiles[categoryKey][selectedDate];
+}
+            
+            if (!pdfFile) {
+                pdfContent.innerHTML = `
+                    <div class="error">
+                        ❌ 해당 날짜의 리포트를 찾을 수 없습니다.<br>
+                        <small style="margin-top: 10px; display: block;">
+                            카테고리: ${category.name}<br>
+                            날짜: ${formatDate(selectedDate)}
+                        </small>
+                    </div>
+                `;
+                return;
+            }
+
+            pdfContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>${category.icon} ${category.name} 리포트를 불러오는 중...</p>
+                </div>
+            `;
+
+            const newUrl = `${window.location.pathname}?category=${categoryKey}&date=${selectedDate}`;
+            window.history.pushState({category: categoryKey, date: selectedDate}, '', newUrl);
+
+            setTimeout(() => {
+                displayPDF(pdfFile, selectedDate, category);
+            }, 500);
+        }
+
+        function displayPDF(pdfPath, date, category) {
+            const pdfContent = document.getElementById('pdfContent');
+            
+            pdfContent.innerHTML = `
+                <div class="current-view">
+                    <h4>${category.icon} ${category.name}</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">선택한 날짜</div>
+                            <div class="value">${formatDate(date)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">카테고리</div>
+                            <div class="value">${category.name}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pdf-container">
+                    <iframe src="${pdfPath}" type="application/pdf"></iframe>
+                </div>
+                <div style="text-align: center; margin-top: 20px; color: #6c757d;">
+                    <p>💡 PDF가 보이지 않으면 <a href="${pdfPath}" target="_blank" style="color: #667eea; font-weight: 600;">여기</a>를 클릭하여 새 탭에서 열어보세요.</p>
+                </div>
+            `;
+        }
+window.onpopstate = function(event) {
+    if (event.state && event.state.category && event.state.date) {
+        const category = categories[event.state.category];
+        document.getElementById(category.selectId).value = event.state.date;
         .category, date: event.state.date});
     }
 };
 
-// 경제 캘린더
-var evt={'2-6':'💼','2-11':'📊','2-25':'💎','2-27':'🏭','3-6':'💼','3-11':'📊','3-13':'💹','3-18':'🏦','3-19':'🏦'};
-function drawCal(m,id){
-    var c=document.getElementById(id);if(!c)return;
-    var fd=new Date(2026,m-1,1).getDay(),dm=new Date(2026,m,0).getDate(),h='';
-    for(var i=0;i<fd;i++)h+='<div class="date empty"></div>';
-    for(var d=1;d<=dm;d++){
-        var k=m+'-'+d,e=evt[k];
-        h+='<div class="date'+(e?' has-event':'')+'">';
-        h+='<div>'+d+'</div>';
-        if(e)h+='<div class="event-icon">'+e+'</div>';
-        h+='</div>';
-    }
-    c.innerHTML=h;
-}
-
-// 캘린더 초기화
-if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',function(){
-        drawCal(2,'cal-feb');
-        drawCal(3,'cal-mar');
-    });
-}else{
-    drawCal(2,'cal-feb');
-    drawCal(3,'cal-mar');
-}
+// 캘린더
+var ce={'2-6':'💼','2-11':'📊','2-25':'💎','2-27':'🏭','3-6':'💼','3-11':'📊','3-13':'💹','3-19':'🏦'};
+function dc(m,id){var c=document.getElementById(id);if(!c)return;var fd=new Date(2026,m-1,1).getDay(),dm=new Date(2026,m,0).getDate(),h='';for(var i=0;i<fd;i++)h+='<div class="dt emp"></div>';for(var d=1;d<=dm;d++){var k=m+'-'+d,e=ce[k];h+='<div class="dt'+(e?' evt':'')+'">';h+='<div>'+d+'</div>';if(e)h+='<div class="evt-i">'+e+'</div>';h+='</div>';}c.innerHTML=h;}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){dc(2,'c-feb');dc(3,'c-mar');});}else{dc(2,'c-feb');dc(3,'c-mar');}
 
 function openMemoryReport() {
     window.open("https://apus80.github.io/stock/memory_report.html", "_blank");
