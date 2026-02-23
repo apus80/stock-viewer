@@ -516,20 +516,36 @@
             }
         }
 
-        .eco-cal{background:#fff;padding:15px;margin:15px 0;border-radius:8px}
-        .eco-cal h2{text-align:center;color:#667eea;margin-bottom:12px}
-        .cal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:650px;margin:0 auto 12px}
-        .mon-cal{background:#f8f9fa;border-radius:6px;padding:8px}
-        .mon-hdr{text-align:center;font-weight:700;margin-bottom:6px;border-bottom:2px solid #667eea;padding-bottom:4px}
-        .wkdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.65em;margin-bottom:4px}
-        .dts{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-        .dt{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;border-radius:4px;background:#fff;font-size:0.7em}
-        .dt.evt{background:#e7f0ff;border:1px solid #667eea;font-weight:600}
-        .dt.emp{background:transparent}
-        .evt-i{font-size:0.75em}
-        .cal-sum{background:#f8f9fa;padding:10px;border-radius:5px;font-size:0.85em;text-align:center}
-    </style>
+        /* 경제 캘린더 */
+        .economic-calendar{background:#fff;padding:30px;margin:20px 0;border-radius:12px}
+        .economic-calendar h2{text-align:center;color:#667eea;font-size:1.6em;margin-bottom:20px}
+        .calendar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px;max-width:800px;margin-left:auto;margin-right:auto}
+        .month-calendar{background:#f8f9fa;border-radius:10px;padding:15px;box-shadow:0 3px 10px rgba(0,0,0,0.08)}
+        .month-header{text-align:center;font-size:1.1em;font-weight:700;color:#495057;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #667eea}
+        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px;text-align:center;font-weight:600;color:#6c757d;font-size:0.75em}
+        .dates{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+        .date{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;border-radius:6px;background:#fff;cursor:pointer;transition:all 0.3s;position:relative;min-height:45px;font-size:0.8em}
+        .date:hover:not(.empty){transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+        .date.empty{background:transparent;cursor:default}
+        .date.has-event{background:linear-gradient(135deg,#fff 0%,#f0f4ff 100%);border:2px solid #667eea;font-weight:600}
+        .event-icon{font-size:0.9em;margin-top:2px}
+        .tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:6px 10px;border-radius:5px;font-size:0.75em;z-index:1000;margin-bottom:5px;max-width:180px;white-space:normal;text-align:center}
+        .date:hover .tooltip{display:block}
+        .event-summary{background:#f8f9fa;border-radius:12px;padding:20px}
+        .event-summary h3{color:#495057;margin-bottom:15px;font-size:1.2em}
+        .category-section{margin-bottom:20px}
+        .category-header-cal{font-weight:700;color:#fff;padding:10px;border-radius:8px;margin-bottom:12px;text-align:center;font-size:0.95em}
+        .event-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+        .event-item-cal{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border-radius:8px;border-left:4px solid #667eea;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all 0.3s}
+        .event-item-cal:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+        .event-icon-large{font-size:1.4em;min-width:30px;text-align:center}
+        .event-details-cal{flex:1}
+        .event-date-cal{font-weight:700;color:#495057;font-size:0.9em}
+        .event-title-cal{color:#6c757d;font-size:0.85em;line-height:1.3}
+        .event-time-cal{color:#adb5bd;font-size:0.75em;margin-top:2px}
+        @media (max-width:768px){.calendar-grid{grid-template-columns:1fr}.event-grid{grid-template-columns:1fr}}
 
+    </style>
 </head>
 <body>
     <!-- 비밀번호 입력 화면 -->
@@ -559,7 +575,7 @@
             </div>
 
             <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #dee2e6; color: #667eea; font-size: 0.95em; font-weight: 600;">
-                📧 문의사항 : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dfbeb6b6b1a9baacabb9b3b0a89fb8b2beb6b3f1bcb0b2">[email&#160;protected]</a>
+                📧 문의사항 : <a href="mailto:aiinvestflow@gmail.com" style="color:#667eea;font-weight:600;text-decoration:none"  data-cfemail="07666e6e6971627473616b687047606a666e6b2964686a">[email&#160;protected]</a>
             </div>
         </div>
     </div>
@@ -615,17 +631,111 @@
                 </div>
             </div>
 
-            <div class="eco-cal">
-                <h2>📆 2026년 2-3월</h2>
-                <div class="cal-grid">
-                    <div class="mon-cal"><div class="mon-hdr">2월</div><div class="wkdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div><div class="dts" id="cf"></div></div>
-                    <div class="mon-cal"><div class="mon-hdr">3월</div><div class="wkdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div><div class="dts" id="cm"></div></div>
+            <!-- 경제 캘린더 -->
+            <div class="economic-calendar">
+                <h2>📆 2026년 2-3월 경제 일정 (53개)</h2>
+                
+                <div class="calendar-grid">
+                    <div class="month-calendar">
+                        <div class="month-header">2월</div>
+                        <div class="weekdays">
+                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                        </div>
+                        <div class="dates" id="cal-feb"></div>
+                    </div>
+                    <div class="month-calendar">
+                        <div class="month-header">3월</div>
+                        <div class="weekdays">
+                            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                        </div>
+                        <div class="dates" id="cal-mar"></div>
+                    </div>
                 </div>
-                <div class="cal-sum"><strong>주요:</strong> 2/6 NFP | 2/11 CPI | 2/25 NVDA | 3/13 GDP | 3/19 FOMC</div>
+
+                <div class="event-summary">
+                    <h3>📌 전체 53개 이벤트</h3>
+                    
+                    <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px;border-radius:8px;margin-bottom:20px;text-align:center;font-weight:700">
+                        2월: 24개 | 3월: 29개
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)">💎 실적 발표 (3개)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/3 (화)</div><div class="event-title-cal">Palantir Q4</div><div class="event-time-cal">장마감후</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/25 (수)</div><div class="event-title-cal">⭐ NVIDIA Q4</div><div class="event-time-cal">16:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">3/4 (수)</div><div class="event-title-cal">Broadcom Q1</div><div class="event-time-cal">장마감후</div></div></div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#6f42c1 0%,#8e44ad 100%)">💼 고용 지표 (12개)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/3 (화)</div><div class="event-title-cal">JOLTS 12월</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/4 (수)</div><div class="event-title-cal">Metro 고용</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/6 (금)</div><div class="event-title-cal">⭐ NFP 1월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/18 (수)</div><div class="event-title-cal">Union</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">⚠️</div><div class="event-details-cal"><div class="event-date-cal">2/19 (목)</div><div class="event-title-cal">산재</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/19 (목)</div><div class="event-title-cal">State JOLTS</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/20 (금)</div><div class="event-title-cal">파업</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">2/24 (화)</div><div class="event-title-cal">ECEC Q3</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">2/26 (목)</div><div class="event-title-cal">BED Q2</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">3/6 (금)</div><div class="event-title-cal">⭐ NFP 2월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">3/10 (화)</div><div class="event-title-cal">CEWQ Q3</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">3/28 (토)</div><div class="event-title-cal">JOLTS 2월</div><div class="event-time-cal">24:00</div></div></div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#fd7e14 0%,#e74c3c 100%)">📊 물가 지표 (11개)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">2/10 (화)</div><div class="event-title-cal">ECI Q4</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">2/10 (화)</div><div class="event-title-cal">수입수출 12월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">2/11 (수)</div><div class="event-title-cal">⭐ CPI 1월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💵</div><div class="event-details-cal"><div class="event-date-cal">2/11 (수)</div><div class="event-title-cal">실질임금 1월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏭</div><div class="event-details-cal"><div class="event-date-cal">2/27 (금)</div><div class="event-title-cal">⭐ PPI 1월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">3/5 (목)</div><div class="event-title-cal">생산성 Q4</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">3/5 (목)</div><div class="event-title-cal">수입수출 1월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">3/11 (수)</div><div class="event-title-cal">⭐ CPI 2월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💵</div><div class="event-details-cal"><div class="event-date-cal">3/11 (수)</div><div class="event-title-cal">실질임금 2월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏭</div><div class="event-details-cal"><div class="event-date-cal">3/12 (목)</div><div class="event-title-cal">⭐ PPI 2월</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">3/24 (화)</div><div class="event-title-cal">생산성 개정</div><div class="event-time-cal">22:30</div></div></div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#28a745 0%,#20c997 100%)">💹 GDP/무역 (5개)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/5 (목)</div><div class="event-title-cal">무역수지</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/5 (목)</div><div class="event-title-cal">야외경제</div><div class="event-time-cal">24:00</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/13 (금)</div><div class="event-title-cal">⭐ GDP 2차</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">3/13 (금)</div><div class="event-title-cal">개인소득</div><div class="event-time-cal">22:30</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/25 (수)</div><div class="event-title-cal">국제거래</div><div class="event-time-cal">22:30</div></div></div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#0056b3 0%,#004085 100%)">🏦 FOMC (2일)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">🏦</div><div class="event-details-cal"><div class="event-date-cal">3/18 (수)</div><div class="event-title-cal">FOMC Day 1</div><div class="event-time-cal">회의중</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏦</div><div class="event-details-cal"><div class="event-date-cal">3/19 (목)</div><div class="event-title-cal">⭐ 금리발표</div><div class="event-time-cal">03:00</div></div></div>
+                        </div>
+                    </div>
+
+                    <div class="category-section">
+                        <div class="category-header-cal" style="background:linear-gradient(135deg,#e91e63 0%,#c2185b 100%)">🏛️ 공휴일 (1일)</div>
+                        <div class="event-grid">
+                            <div class="event-item-cal"><div class="event-icon-large">🏛️</div><div class="event-details-cal"><div class="event-date-cal">2/16 (월)</div><div class="event-title-cal">대통령의 날</div><div class="event-time-cal">휴장</div></div></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:15px;padding:12px;background:#fff3cd;border-left:4px solid #ffc107;border-radius:5px;font-size:0.9em">
+                        <strong>⭐ 시장 영향도 높은 핵심 지표</strong>
+                    </div>
+                </div>
             </div>
 
             <div class="controls">
-
                               <!-- 추천 종목 리포트 (기존) -->
                 <div class="category-section featured">
 <div class="category-header">
@@ -834,7 +944,6 @@
         const CORRECT_PASSWORD = "9803";
         const SESSION_KEY = "report_authenticated";
 
-        // 날짜 데이터
         const reportFiles = {
             recommendation: {
                 '2026-02-22': { file: 'reports/recommendation/2026-02-22_catalyst.pdf', title: '단기' },
@@ -880,14 +989,12 @@
             analysis4: { name: '애널리스트', icon: '📊', selectId: 'dateAnalysis4' }
         };
 
-        // 페이지 로드
         window.onload = function() {
             if (sessionStorage.getItem(SESSION_KEY) === "true") {
                 showMainContent();
             }
         };
 
-        // 비밀번호 확인
         function checkPassword() {
             const input = document.getElementById('passwordInput');
             const error = document.getElementById('passwordError');
@@ -903,14 +1010,12 @@
             }
         }
 
-        // 메인 표시
         function showMainContent() {
             document.getElementById('passwordOverlay').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             loadDateList();
         }
 
-        // 로그아웃
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
                 sessionStorage.removeItem(SESSION_KEY);
@@ -918,7 +1023,6 @@
             }
         }
 
-        // 날짜 목록 로드
         function loadDateList() {
             Object.keys(categories).forEach(categoryKey => {
                 const category = categories[categoryKey];
@@ -943,7 +1047,6 @@
             });
         }
 
-        // 날짜 포맷
         function formatDate(dateStr) {
             const date = new Date(dateStr);
             const month = date.getMonth() + 1;
@@ -952,7 +1055,6 @@
             return month + '월 ' + day + '일 (' + weekday + ')';
         }
 
-        // 리포트 로드
         function loadReport(categoryKey) {
             const category = categories[categoryKey];
             const select = document.getElementById(category.selectId);
@@ -975,29 +1077,77 @@
             displayPDF(pdfFile, date, category);
         }
 
-        // PDF 표시
         function displayPDF(pdfPath, date, category) {
             const pdfContent = document.getElementById('pdfContent');
             pdfContent.innerHTML = '<div class="current-view"><h4>' + category.icon + ' ' + category.name + '</h4><div class="info-grid"><div class="info-item"><div class="label">날짜</div><div class="value">' + formatDate(date) + '</div></div></div></div><div class="pdf-container"><iframe src="' + pdfPath + '" type="application/pdf"></iframe></div><div style="text-align:center;margin-top:20px;color:#6c757d"><p>💡 PDF가 보이지 않으면 <a href="' + pdfPath + '" target="_blank" style="color:#667eea;font-weight:600">여기</a>를 클릭하세요.</p></div>';
         }
 
-        // 캘린더
-        var ce={'2-6':'💼','2-11':'📊','2-25':'💎','2-27':'🏭','3-6':'💼','3-11':'📊','3-13':'💹','3-19':'🏦'};
-        function dc(m,id){
-            var c=document.getElementById(id);if(!c)return;
-            var fd=new Date(2026,m-1,1).getDay(),dm=new Date(2026,m,0).getDate(),h='';
-            for(var i=0;i<fd;i++)h+='<div class="dt emp"></div>';
-            for(var d=1;d<=dm;d++){
-                var k=m+'-'+d,e=ce[k];
-                h+='<div class="dt'+(e?' evt':'')+'">';
-                h+='<div>'+d+'</div>';
-                if(e)h+='<div class="evt-i">'+e+'</div>';
-                h+='</div>';
+        // 경제 캘린더 (53개 이벤트)
+        var calendarEvents = {
+            '2-3': [{i:'💼',t:'JOLTS'},{i:'💎',t:'PLTR'}],
+            '2-4': [{i:'💼',t:'Metro'}],
+            '2-6': [{i:'💼',t:'NFP⭐'}],
+            '2-10': [{i:'💰',t:'ECI'},{i:'📈',t:'수입수출'}],
+            '2-11': [{i:'📊',t:'CPI⭐'},{i:'💵',t:'실질임금'}],
+            '2-16': [{i:'🏛️',t:'휴장'}],
+            '2-18': [{i:'💼',t:'Union'}],
+            '2-19': [{i:'⚠️',t:'산재'},{i:'💼',t:'JOLTS'}],
+            '2-20': [{i:'💼',t:'파업'}],
+            '2-24': [{i:'💰',t:'ECEC'}],
+            '2-25': [{i:'💎',t:'NVDA⭐'}],
+            '2-26': [{i:'📊',t:'BED'}],
+            '2-27': [{i:'🏭',t:'PPI⭐'}],
+            '3-4': [{i:'💎',t:'AVGO'}],
+            '3-5': [{i:'💹',t:'무역'},{i:'📈',t:'생산성'}],
+            '3-6': [{i:'💼',t:'NFP⭐'}],
+            '3-10': [{i:'💰',t:'CEWQ'}],
+            '3-11': [{i:'📊',t:'CPI⭐'},{i:'💵',t:'실질임금'}],
+            '3-12': [{i:'🏭',t:'PPI⭐'}],
+            '3-13': [{i:'💹',t:'GDP⭐'},{i:'💰',t:'소득'}],
+            '3-18': [{i:'🏦',t:'FOMC'}],
+            '3-19': [{i:'🏦',t:'금리⭐'}],
+            '3-24': [{i:'📈',t:'생산성R'}],
+            '3-25': [{i:'💹',t:'국제'}],
+            '3-28': [{i:'💼',t:'JOLTS'}]
+        };
+
+        function drawCalendar(month, elementId) {
+            var container = document.getElementById(elementId);
+            if (!container) return;
+            
+            var firstDay = new Date(2026, month - 1, 1).getDay();
+            var daysInMonth = new Date(2026, month, 0).getDate();
+            var html = '';
+            
+            for (var i = 0; i < firstDay; i++) {
+                html += '<div class="date empty"></div>';
             }
-            c.innerHTML=h;
+            
+            for (var day = 1; day <= daysInMonth; day++) {
+                var key = month + '-' + day;
+                var events = calendarEvents[key];
+                var className = 'date' + (events ? ' has-event' : '');
+                
+                html += '<div class="' + className + '">';
+                html += '<div>' + day + '</div>';
+                
+                if (events && events.length > 0) {
+                    var icons = events[0].i;
+                    if (events.length > 1) {
+                        icons += '+' + (events.length - 1);
+                    }
+                    var tooltipText = events.map(function(e) { return e.t; }).join(', ');
+                    html += '<div class="event-icon">' + icons + '</div>';
+                    html += '<div class="tooltip">' + tooltipText + '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
         }
 
-        // Enter 키
+        // Enter 키 & 캘린더 초기화
         document.addEventListener('DOMContentLoaded', function() {
             const pwdInput = document.getElementById('passwordInput');
             if (pwdInput) {
@@ -1005,8 +1155,9 @@
                     if (e.key === 'Enter') checkPassword();
                 });
             }
-            dc(2,'cf');
-            dc(3,'cm');
+            
+            drawCalendar(2, 'cal-feb');
+            drawCalendar(3, 'cal-mar');
         });
 
         function openMemoryReport() {
