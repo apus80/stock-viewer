@@ -1844,6 +1844,34 @@
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         });
+// ─── [비밀번호 확인 함수] ───
+function checkPassword() {
+    const pwdInput = document.getElementById('passwordInput');
+    const password = pwdInput.value;
+    const errorMsg = document.getElementById('passwordError');
+
+    // 설정하신 비밀번호 '9803' (필요시 수정 가능)
+    if (password === '9803') {
+        // 비밀번호가 맞으면:
+        document.getElementById('passwordOverlay').style.display = 'none'; // 비밀번호창 숨김
+        document.getElementById('mainContent').style.display = 'block';    // 메인화면 표시
+        errorMsg.style.display = 'none';
+        
+        // 초기 데이터 로드 (뉴스 등)
+        refreshNews(); 
+    } else {
+        // 비밀번호가 틀리면:
+        errorMsg.style.display = 'block'; // 에러 메시지 표시
+        pwdInput.value = '';             // 입력창 초기화
+        pwdInput.focus();                // 다시 입력할 수 있게 포커스
+    }
+}
+
+// ─── [로그아웃 함수] ───
+function logout() {
+    location.reload(); // 페이지를 새로고침하여 다시 비밀번호창이 뜨게 함
+}
+
     </script>
 </body>
 </html>
