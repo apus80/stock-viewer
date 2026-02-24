@@ -1127,6 +1127,7 @@ function checkPassword() {
         }
         // 실시간 뉴스 로딩
         async function loadNews() {
+            try{
             const container = document.getElementById('newsContainer');
             container.innerHTML = '<div class="news-item"><div class="news-title">🔄 뉴스 로딩 중...</div><div class="news-meta">잠시만 기다려주세요</div></div>';
             
@@ -1890,6 +1891,7 @@ function logout() {
 </script>
 </body>
 </html>
+
 
 
 
