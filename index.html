@@ -1845,33 +1845,5 @@
             drawCalendar(3, 'cal-mar');
         });
     </script>
-
-<!-- ✅ 비밀번호 로직 추가 시작 -->
-<script>
-function checkPassword() {
-    const input = document.getElementById('passwordInput').value;
-    const overlay = document.getElementById('passwordOverlay');
-    const main = document.getElementById('mainContent');
-    const error = document.getElementById('passwordError');
-
-    const PASSWORD = "9803";
-
-    if (input === PASSWORD) {
-        overlay.style.display = "none";
-        main.style.display = "block";
-        error.style.display = "none";
-    } else {
-        error.style.display = "block";
-    }
-}
-
-function logout() {
-    document.getElementById('passwordOverlay').style.display = "flex";
-    document.getElementById('mainContent').style.display = "none";
-    document.getElementById('passwordInput').value = "";
-}
-</script>
-<!-- ✅ 비밀번호 로직 추가 끝 -->
-
 </body>
 </html>
