@@ -610,10 +610,10 @@
                 onkeypress="if(event.key==='Enter') checkPassword()"
                 style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px;">
 
-            <button id="loginBtn" class="password-btn">확인</button>
+           <button type="button" id="loginBtn" class="password-btn">확인</button>
 
             <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 13px; color: #888;">
-                문의사항: <a href="mailto:aiinvestflow@gmail.com" style="color: #764ba2; text-decoration: none; font-weight: bold;">관리자에게 문의하기</a>
+                문의사항: <a href="/cdn-cgi/l/email-protection#bddcd9d0d4d3fdd8c5dcd0cdd1d893ded2d0" style="color: #764ba2; text-decoration: none; font-weight: bold;">관리자에게 문의하기</a>
             </div>
         </div>
     </div>
@@ -631,7 +631,7 @@
             <div class="tradingview-ticker-container">
                 <div class="tradingview-widget-container">
                     <div class="tradingview-widget-container__widget"></div>
-                    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
                     {
                         "symbols": [
                             {
@@ -1092,24 +1092,14 @@ function checkPassword() {
     }
 }
     
-        function showMainContent() {
-    document.getElementById('passwordOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
 
-    if (typeof loadDateList === 'function') {
-        loadDateList();
-    }
-
-    if (typeof loadNews === 'function') {
-        loadNews();
-    }
-}
         
         function logout() { if (confirm('로그아웃 하시겠습니까?')) { sessionStorage.removeItem(SESSION_KEY); location.reload(); } }
         function loadDateList() {
             Object.keys(categories).forEach(categoryKey => {
                 const category = categories[categoryKey], select = document.getElementById(category.selectId);
                 if (!select) return;
+		select.innerHTML = "";
                 const dates = Object.keys(reportFiles[categoryKey]).sort().reverse();
                 dates.forEach(date => {
                     const option = document.createElement('option'); option.value = date;
@@ -1623,18 +1613,71 @@ async function searchEarningsAPI() {
 
     if (!ticker) {
         resultDiv.innerHTML =
-            '<div class="search-result empty">🔍 티커 입력 (예: NVDA, NKE, AA)</div>';
+            '<div class="search-result empty">🔍 티커 입력 (예: NVDA, AAPL, AMD)</div>';
         return;
     }
 
+    resultDiv.innerHTML = '<div class="search-result">🔄 검색 중... (' + ticker + ')</div>';
+
+    // 1. earningsData에서 먼저 검색
+    if (earningsData[ticker]) {
+        const data = earningsData[ticker];
+        const dateStr = data.date || '미정';
+        const companyName = data.name || ticker;
+        
+        // 날짜 포맷팅
+        const date = new Date(dateStr);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+        const formattedDate = month + '월 ' + day + '일 (' + weekday + ')';
+        
+        // EPS와 매출 포맷팅
+        const eps = data.eps_avg ? '$' + data.eps_avg.toFixed(2) : '정보 없음';
+        const revenue = data.revenue_avg ? 
+            '$' + (data.revenue_avg / 1000000000).toFixed(2) + 'B' : '정보 없음';
+        
+        resultDiv.innerHTML = `
+            <div class="search-result">
+                <div class="result-company">${companyName} (${ticker})</div>
+                <div class="result-date">📅 실적 발표: ${formattedDate}</div>
+                <div class="result-info">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px">
+                        <div style="text-align:center">
+                            <div style="color:#667eea;font-weight:600;margin-bottom:5px">예상 EPS</div>
+                            <div style="font-size:1.2em;font-weight:700">${eps}</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div style="color:#667eea;font-weight:600;margin-bottom:5px">예상 매출</div>
+                            <div style="font-size:1.2em;font-weight:700">${revenue}</div>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;padding-top:15px;border-top:1px solid #e2e8f0">
+                        <a href="https://finance.yahoo.com/quote/${ticker}/analysis" 
+                           target="_blank" 
+                           style="color:#667eea;text-decoration:none;font-weight:600">
+                           📊 자세한 분석 보기 →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        console.log('✅ earningsData에서 검색 완료:', ticker);
+        return;
+    }
+
+    // 2. earningsData에 없으면 Yahoo Finance 링크 제공
     resultDiv.innerHTML = `
         <div class="search-result">
             <div class="result-company">${ticker}</div>
-            <div class="result-info">
-                📅 실적 정보는 Yahoo Finance에서 확인하세요.<br><br>
+            <div class="result-info" style="text-align:center;padding:20px">
+                <div style="margin-bottom:15px">
+                    ⚠️ 등록된 데이터가 없습니다
+                </div>
                 <a href="https://finance.yahoo.com/quote/${ticker}/analysis"
-                   target="_blank">
-                   📊 예상 실적 보기
+                   target="_blank"
+                   style="display:inline-block;padding:10px 20px;background:#667eea;color:white;text-decoration:none;border-radius:5px;font-weight:600">
+                   📊 Yahoo Finance에서 확인하기
                 </a>
             </div>
         </div>
@@ -1671,28 +1714,21 @@ async function searchEarningsAPI() {
             }
             container.innerHTML = html;
         }
-        function openMemoryReport() { window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); }
-                document.addEventListener('DOMContentLoaded', function() {
-            const pwdInput = document.getElementById('passwordInput');
-            if (pwdInput) {
-                pwdInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        console.log('🔹 Enter 키 눌림');
-                        checkPassword();
-                    }
-                });
-                console.log('✅ Enter 키 이벤트 등록 완료');
+document.addEventListener('DOMContentLoaded', function() {
+    const pwdInput = document.getElementById('passwordInput');
+    if (pwdInput) {
+        pwdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                console.log('🔹 Enter 키 눌림');
+                checkPassword();
             }
-            drawCalendar(2, 'cal-feb');
-            drawCalendar(3, 'cal-mar');
-
         });
+    }
+});
 
     </script>
     </div> 
 <script>
-
-const SESSION_KEY = "report_authenticated";
 
 window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginBtn").addEventListener("click", checkPassword);
@@ -1717,39 +1753,51 @@ function checkPassword() {
 }
 
 function showMainContent() {
+    console.log("🔥 showMainContent 실행됨");
+
+    document.getElementById('passwordOverlay').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 
-    if (typeof loadDateLists === 'function') loadDateLists();
+    if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadCalendar === 'function') loadCalendar();
     if (typeof loadNews === 'function') loadNews();
 }
 
 function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
-        sessionStorage.removeItem(SESSION_KEY);
+            sessionStorage.removeItem(SESSION_KEY);
         location.reload();
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // 로그인 버튼
+    const loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) {
+        loginBtn.onclick = checkPassword;
+    }
+
+    // 엔터키
+    const pwdInput = document.getElementById("passwordInput");
+    if (pwdInput) {
+        pwdInput.onkeypress = function(e){
+            if(e.key === "Enter"){
+                checkPassword();
+            }
+        };
+    }
+
+    // 캘린더 강제 실행
+    if (typeof renderCalendar === "function") {
+        renderCalendar();
+        console.log("캘린더 강제 실행");
+    }
+
+});
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
