@@ -516,6 +516,20 @@
                 padding: 12px 24px;
             }
         }
+function checkPassword() {
+    const pwdInput = document.getElementById('passwordInput');
+    const password = pwdInput.value;
+
+    // 설정하고자 하는 비밀번호를 입력하세요 (예: 1234)
+    if (password === '1234') {
+        // 비밀번호가 맞으면 오버레이를 숨김
+        document.getElementById('passwordOverlay').style.display = 'none';
+    } else {
+        alert('비밀번호가 틀렸습니다.');
+        pwdInput.value = '';
+        pwdInput.focus();
+    }
+}
 
         /* 추가 CSS */
         .earnings-search{background:#fff;padding:18px;margin:15px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
