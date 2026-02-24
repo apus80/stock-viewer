@@ -597,38 +597,23 @@
 </head>
 <body>
     <!-- 비밀번호 입력 화면 -->
-    <div id="passwordOverlay" class="password-overlay">
-    <div class="password-box">
-        <h2>🔐 접근 제한</h2>
-        <p>리포트를 보려면 비밀번호를 입력하세요</p>
-        <input 
-            type="password" 
-            id="passwordInput" 
-            class="password-input" 
-            placeholder="비밀번호 입력"
-            onkeypress="if(event.key==='Enter') checkPassword()">
-        <button class="password-btn" onclick="checkPassword()">
-            확인
-        </button>
-    </div>
-</div>
-
+        <div id="passwordOverlay" class="password-overlay">
+        <div class="password-box">
+            <h2>🔐 접근 제한</h2>
+            <p>리포트를 보려면 비밀번호를 입력하세요</p>
+            <input type="password" id="passwordInput" class="password-input" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') checkPassword()">
+            <button class="password-btn" onclick="checkPassword()">확인</button>
             
-            <div id="passwordError" class="password-error">
-                ❌ 비밀번호가 올바르지 않습니다
-            </div>
-
-            <div class="password-hint">
-                💡 힌트: 비밀번호를 잊으셨나요?<br>
-                관리자에게 문의하세요.
-            </div>
-
-            <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #dee2e6; color: #667eea; font-size: 0.95em; font-weight: 600;">
-                📧 문의사항 : <a href="/cdn-cgi/l/email-protection#8eefe7e7e0f8ebfdfae8e2e1f9cee9e3efe7e2a0ede1e3" style="color:#667eea;font-weight:600"><span class="__cf_email__" data-cfemail="bcddd5d5d2cad9cfc8dad0d3cbfcdbd1ddd5d092dfd3d1">[email&#160;protected]</span></a>
-            </div>
+            <p style="margin-top: 15px; font-size: 13px; color: #666;">
+                📧 문의사항: <a href="mailto:admin@example.com" style="color: #764ba2; text-decoration: none;">관리자에게 메일 보내기</a>
+            </p>
         </div>
     </div>
 
+    <div id="mainContent" style="display: none;">
+        <div class="main-content">
+
+
     <!-- 메인 컨텐츠 -->
     <div id="mainContent" class="main-content">
         <div class="container">
@@ -1870,5 +1855,5 @@
             }
         }
     </script>
-</body>
+</div> </body>
 </html>
