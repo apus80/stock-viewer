@@ -1757,12 +1757,14 @@ function showMainContent() {
 
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
-    document.getElementById('passwordOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
 
     if (typeof loadDateList === 'function') loadDateList();
-    if (typeof loadCalendar === 'function') loadCalendar();
     if (typeof loadNews === 'function') loadNews();
+    
+    // 캘린더 그리기
+    drawCalendar(2, 'cal-feb');
+    drawCalendar(3, 'cal-mar');
+    console.log("✅ 캘린더 로딩 완료");
 }
 
 function logout() {
@@ -1790,11 +1792,8 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
-    // 캘린더 강제 실행
-    if (typeof renderCalendar === "function") {
-        renderCalendar();
-        console.log("캘린더 강제 실행");
-    }
+    // 캘린더는 showMainContent에서 실행됨
+    console.log("✅ 페이지 로드 완료");
 
 });
 </script>
