@@ -1,3 +1,4 @@
+            <div class="framework-grid">
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -516,50 +517,77 @@
             }
         }
 
+        /* 추가 CSS */
+        .earnings-search{background:#fff;padding:18px;margin:15px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+        .earnings-search h3{color:#667eea;margin-bottom:10px;font-size:1.15em}
+        .search-box{display:flex;gap:8px;margin-bottom:12px}
+        .search-input{flex:1;padding:9px;border:2px solid #ddd;border-radius:5px;font-size:0.9em}
+        .search-input:focus{outline:none;border-color:#667eea}
+        .search-btn{padding:9px 18px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:5px;font-weight:600;cursor:pointer}
+        .search-result{padding:10px;background:#f8f9fa;border-radius:5px;border-left:3px solid #667eea;font-size:0.88em}
+        .search-result.empty{background:#fff3cd;border-left-color:#ffc107}
+        .result-company{font-weight:700;color:#495057;margin-bottom:5px}
+        .result-date{color:#667eea;font-weight:600;margin-bottom:3px}
+        .result-info{color:#6c757d;font-size:0.85em}
+        .update-note{margin-top:10px;padding:7px;background:#e7f0ff;border-radius:4px;font-size:0.78em}
+        
+        .news-dashboard{background:#fff;padding:18px;margin:15px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+        .news-dashboard h2{color:#667eea;margin-bottom:12px;font-size:1.25em;text-align:center}
+        .news-grid{display:grid;gap:8px;margin-bottom:12px}
+        .news-item{padding:9px;background:#f8f9fa;border-radius:5px;border-left:3px solid #667eea;transition:transform 0.2s}
+        .news-item:hover{transform:translateX(2px)}
+        .news-title{font-weight:600;color:#495057;margin-bottom:3px;font-size:0.85em}
+        .news-meta{font-size:0.72em;color:#6c757d}
+        .news-link{text-decoration:none;color:inherit;display:block}
+        .sector-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:7px;margin-bottom:12px}
+        .sector-item{padding:8px;border-radius:5px;text-align:center;font-size:0.75em;font-weight:600}
+        .sector-up{background:linear-gradient(135deg,#d4edda,#c3e6cb);color:#155724}
+        .sector-down{background:linear-gradient(135deg,#f8d7da,#f5c6cb);color:#721c24}
+        .sector-neutral{background:linear-gradient(135deg,#fff3cd,#ffeaa7);color:#856404}
+        .market-summary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:10px;border-radius:5px;text-align:center}
+        .market-summary h3{margin-bottom:6px;font-size:1em}
+        .market-keywords{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+        .keyword{background:rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font-size:0.75em}
+        
+        .framework-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+        @media (max-width:768px){
+            .framework-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+        }
+        @media (max-width:480px){
+            .framework-grid{grid-template-columns:1fr}
+        }
+
         /* 경제 캘린더 */
-        .economic-calendar{background:#fff;padding:30px;margin:20px 0;border-radius:12px}
-        .economic-calendar h2{text-align:center;color:#667eea;font-size:1.6em;margin-bottom:20px}
-        .calendar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px;max-width:800px;margin-left:auto;margin-right:auto}
-        .month-calendar{background:#f8f9fa;border-radius:10px;padding:15px;box-shadow:0 3px 10px rgba(0,0,0,0.08)}
-        .month-header{text-align:center;font-size:1.1em;font-weight:700;color:#495057;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #667eea}
-        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px;text-align:center;font-weight:600;color:#6c757d;font-size:0.75em}
-        .dates{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-        .date{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;border-radius:6px;background:#fff;cursor:pointer;transition:all 0.3s;position:relative;min-height:45px;font-size:0.8em}
-        .date:hover:not(.empty){transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+        .economic-calendar{background:#fff;padding:20px;margin:15px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+        .economic-calendar h2{text-align:center;color:#667eea;font-size:1.3em;margin-bottom:15px}
+        .calendar-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;max-width:700px;margin:0 auto 20px}
+        .month-calendar{background:#f8f9fa;border-radius:8px;padding:10px;box-shadow:0 2px 4px rgba(0,0,0,0.04)}
+        .month-header{text-align:center;font-size:0.95em;font-weight:700;color:#495057;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #667eea}
+        .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px;text-align:center;font-weight:600;color:#6c757d;font-size:0.7em}
+        .dates{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+        .date{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px;border-radius:5px;background:#fff;cursor:pointer;transition:all 0.2s;position:relative;min-height:35px;font-size:0.75em}
+        .date:hover:not(.empty){transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,0.1)}
         .date.empty{background:transparent;cursor:default}
         .date.has-event{background:linear-gradient(135deg,#fff 0%,#f0f4ff 100%);border:2px solid #667eea;font-weight:600}
-        .event-icon{font-size:0.9em;margin-top:2px}
-        .tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:6px 10px;border-radius:5px;font-size:0.75em;z-index:1000;margin-bottom:5px;max-width:180px;white-space:normal;text-align:center}
+        .event-icon{font-size:0.8em;margin-top:1px}
+        .tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:4px 7px;border-radius:4px;font-size:0.65em;z-index:1000;margin-bottom:3px;white-space:nowrap}
         .date:hover .tooltip{display:block}
-        .event-summary{background:#f8f9fa;border-radius:12px;padding:20px}
-        .event-summary h3{color:#495057;margin-bottom:15px;font-size:1.2em}
-        .category-section{margin-bottom:20px}
-        .category-header-cal{font-weight:700;color:#fff;padding:10px;border-radius:8px;margin-bottom:12px;text-align:center;font-size:0.95em}
-        .event-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-        .event-item-cal{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border-radius:8px;border-left:4px solid #667eea;box-shadow:0 2px 6px rgba(0,0,0,0.05);transition:all 0.3s}
-        .event-item-cal:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
-        .event-icon-large{font-size:1.4em;min-width:30px;text-align:center}
+        .event-summary{background:#f8f9fa;border-radius:8px;padding:15px}
+        .event-summary h3{color:#495057;margin-bottom:10px;font-size:1.05em}
+        .category-section{margin-bottom:12px}
+        .category-header-cal{font-weight:700;color:#fff;padding:9px;border-radius:6px;margin-bottom:8px;text-align:center;font-size:0.88em;cursor:pointer;user-select:none;transition:all 0.2s;position:relative}
+        .category-header-cal:hover{opacity:0.9}
+        .category-header-cal::after{content:'▼';float:right;transition:transform 0.3s;font-size:0.7em}
+        .category-header-cal.collapsed::after{transform:rotate(-90deg)}
+        .accordion-content{max-height:3000px;overflow:hidden;transition:max-height 0.3s ease-out}
+        .accordion-content.collapsed{max-height:0}
+        .event-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+        .event-item-cal{display:flex;align-items:center;gap:8px;padding:8px;background:#fff;border-radius:5px;border-left:3px solid #667eea;box-shadow:0 1px 3px rgba(0,0,0,0.03);transition:all 0.2s;font-size:0.85em}
+        .event-item-cal:hover{transform:translateY(-1px);box-shadow:0 2px 5px rgba(0,0,0,0.06)}
+        .event-icon-large{font-size:1.2em;min-width:25px;text-align:center}
         .event-details-cal{flex:1}
-        .event-date-cal{font-weight:700;color:#495057;font-size:0.9em}
-        .event-title-cal{color:#6c757d;font-size:0.85em;line-height:1.3}
-        .event-time-cal{color:#adb5bd;font-size:0.75em;margin-top:2px}
-        
-        /* 실적발표 검색 */
-        .earnings-search{background:#fff;padding:25px;margin:20px 0;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-        .earnings-search h3{color:#667eea;margin-bottom:15px;font-size:1.3em;display:flex;align-items:center;gap:10px}
-        .search-box{display:flex;gap:10px;margin-bottom:20px}
-        .search-input{flex:1;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:1em;transition:border-color 0.3s}
-        .search-input:focus{outline:none;border-color:#667eea}
-        .search-btn{padding:12px 24px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:transform 0.2s}
-        .search-btn:hover{transform:translateY(-2px)}
-        .search-result{padding:15px;background:#f8f9fa;border-radius:8px;border-left:4px solid #667eea}
-        .search-result.empty{background:#fff3cd;border-left-color:#ffc107}
-        .result-company{font-size:1.1em;font-weight:700;color:#495057;margin-bottom:8px}
-        .result-date{font-size:1em;color:#667eea;font-weight:600;margin-bottom:5px}
-        .result-info{font-size:0.9em;color:#6c757d}
-        .update-note{margin-top:15px;padding:10px;background:#e7f0ff;border-radius:5px;font-size:0.85em;color:#495057}
-        
-        @media (max-width:768px){.calendar-grid{grid-template-columns:1fr}.event-grid{grid-template-columns:1fr}}
+        .event-date-cal{font-weight:700;color:#495057;font-size:0.88em}
+        .event-title-cal{color:#6c757d;font-size:0.82em;line-height:1.2}
 
     </style>
 </head>
@@ -591,7 +619,7 @@
             </div>
 
             <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #dee2e6; color: #667eea; font-size: 0.95em; font-weight: 600;">
-                📧 문의사항 : <a href="mailto:aiinvestflow@gmail.com" style="color:#667eea;font-weight:600;text-decoration:none"  data-cfemail="b0d1d9d9dec6d5c3c4d6dcdfc7f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</a>
+                📧 문의사항 : <a href="mailto:aiinvestflow@gmail.com" style="color:#667eea;font-weight:600">aiinvestflow@gmail.com</a>
             </div>
         </div>
     </div>
@@ -647,54 +675,151 @@
                 </div>
             </div>
 
+
             <!-- 실적발표 검색 -->
             <div class="earnings-search">
                 <h3>📊 실적발표 일정 검색</h3>
                 <div class="search-box">
-                    <input type="text" 
-                           id="earningsSearchInput" 
-                           class="search-input" 
-                           placeholder="티커 입력 (예: NVDA, AAPL, TSLA, COIN 등 - 모든 미국 상장 기업)"
-                           onkeypress="if(event.key==='Enter') searchEarningsAPI()">
+                    <input type="text" id="earningsSearchInput" class="search-input" placeholder="티커 입력 (예: NVDA, AAPL - 모든 미국 상장 기업)" onkeypress="if(event.key==='Enter') searchEarningsAPI()">
                     <button class="search-btn" onclick="searchEarningsAPI()">🔍 검색</button>
                 </div>
                 <div id="earningsResult"></div>
-                <div class="update-note">
-                    ℹ️ <strong>데이터 소스:</strong> Financial Modeling Prep API<br>
-                    💡 <strong>지원 범위:</strong> 모든 미국 상장 기업 (나스닥, NYSE, AMEX)<br>
-                    🔄 <strong>업데이트:</strong> 실시간 자동 업데이트 (API 기반)
+                <div class="update-note">ℹ️ <strong>데이터:</strong> Financial Modeling Prep API | <strong>범위:</strong> 모든 미국 상장 기업 | <strong>업데이트:</strong> 실시간</div>
+            </div>
+            <!-- 뉴스 대쉬보드 -->
+            <div class="news-dashboard">
+                <h2>📰 실시간 시장 뉴스</h2>
+                <div class="news-grid" id="newsContainer">
+                    <div class="news-item">
+                        <div class="news-title">📈 S&P 500, 사상 최고치 경신</div>
+                        <div class="news-meta">Bloomberg · 오늘</div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-title">🔥 AI 반도체 수요 급증, NVDA 주가 강세</div>
+                        <div class="news-meta">CNBC · 오늘</div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-title">💰 연준, 금리 동결 시사</div>
+                        <div class="news-meta">Reuters · 어제</div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-title">⚡ 테크 섹터 강세 지속</div>
+                        <div class="news-meta">WSJ · 어제</div>
+                    </div>
+                    <div class="news-item">
+                        <div class="news-title">🏦 빅테크 실적 시즌 대기</div>
+                        <div class="news-meta">MarketWatch · 어제</div>
+                    </div>
+                </div>
+                <div class="sector-map">
+                    <div class="sector-item sector-up"><div>Technology</div><div style="font-size:0.85em;margin-top:2px">+1.2%</div></div>
+                    <div class="sector-item sector-up"><div>Healthcare</div><div style="font-size:0.85em;margin-top:2px">+0.8%</div></div>
+                    <div class="sector-item sector-down"><div>Financials</div><div style="font-size:0.85em;margin-top:2px">-0.3%</div></div>
+                    <div class="sector-item sector-up"><div>Energy</div><div style="font-size:0.85em;margin-top:2px">+0.5%</div></div>
+                    <div class="sector-item sector-up"><div>Consumer</div><div style="font-size:0.85em;margin-top:2px">+0.2%</div></div>
+                    <div class="sector-item sector-neutral"><div>Industrials</div><div style="font-size:0.85em;margin-top:2px">-0.1%</div></div>
+                </div>
+                <div class="market-summary">
+                    <h3>강세장 지속, AI 반도체 주도</h3>
+                    <div class="market-keywords">
+                        <span class="keyword">AI</span>
+                        <span class="keyword">반도체</span>
+                        <span class="keyword">빅테크</span>
+                        <span class="keyword">실적시즌</span>
+                    </div>
                 </div>
             </div>
 
             <!-- 경제 캘린더 -->
             <div class="economic-calendar">
-                <h2>📆 2026년 2-3월 경제 일정 (53개)</h2>
+                <h2>📆 2026년 2-3월 경제 일정</h2>
                 <div class="calendar-grid">
-                    <div class="month-calendar"><div class="month-header">2월</div><div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div><div class="dates" id="cal-feb"></div></div>
-                    <div class="month-calendar"><div class="month-header">3월</div><div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div><div class="dates" id="cal-mar"></div></div>
+                    <div class="month-calendar">
+                        <div class="month-header">2월</div>
+                        <div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+                        <div class="dates" id="cal-feb"></div>
+                    </div>
+                    <div class="month-calendar">
+                        <div class="month-header">3월</div>
+                        <div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+                        <div class="dates" id="cal-mar"></div>
+                    </div>
                 </div>
                 <div class="event-summary">
                     <h3>📌 전체 53개 이벤트</h3>
-                    <div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px;border-radius:8px;margin-bottom:20px;text-align:center;font-weight:700">2월: 24개 | 3월: 29개</div>
-                    <div class="category-section"><div class="category-header-cal" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)">💎 실적 (3개)</div><div class="event-grid">
-                        <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/3</div><div class="event-title-cal">PLTR</div></div></div>
-                        <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/25</div><div class="event-title-cal">⭐ NVDA</div></div></div>
-                        <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">3/4</div><div class="event-title-cal">AVGO</div></div></div>
-                    </div></div>
-                    <div class="category-section"><div class="category-header-cal" style="background:linear-gradient(135deg,#6f42c1 0%,#8e44ad 100%)">💼 고용 (12개)</div><div class="event-grid">
-                        <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/6, 3/6</div><div class="event-title-cal">⭐ NFP</div></div></div>
-                    </div></div>
-                    <div class="category-section"><div class="category-header-cal" style="background:linear-gradient(135deg,#fd7e14 0%,#e74c3c 100%)">📊 물가 (11개)</div><div class="event-grid">
-                        <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">2/11, 3/11</div><div class="event-title-cal">⭐ CPI</div></div></div>
-                        <div class="event-item-cal"><div class="event-icon-large">🏭</div><div class="event-details-cal"><div class="event-date-cal">2/27, 3/12</div><div class="event-title-cal">⭐ PPI</div></div></div>
-                    </div></div>
-                    <div class="category-section"><div class="category-header-cal" style="background:linear-gradient(135deg,#28a745 0%,#20c997 100%)">💹 GDP (5개)</div><div class="event-grid">
-                        <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/13</div><div class="event-title-cal">⭐ GDP</div></div></div>
-                    </div></div>
-                    <div class="category-section"><div class="category-header-cal" style="background:linear-gradient(135deg,#0056b3 0%,#004085 100%)">🏦 FOMC (2일)</div><div class="event-grid">
-                        <div class="event-item-cal"><div class="event-icon-large">🏦</div><div class="event-details-cal"><div class="event-date-cal">3/18-19</div><div class="event-title-cal">⭐ 금리</div></div></div>
-                    </div></div>
-                    <div style="margin-top:15px;padding:12px;background:#fff3cd;border-left:4px solid #ffc107;border-radius:5px;font-size:0.9em"><strong>⭐ 핵심 지표</strong></div>
+                    <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:9px;border-radius:6px;margin-bottom:12px;text-align:center;font-weight:700;font-size:0.9em">2월: 24개 | 3월: 29개</div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="toggleAccordion(this)">💎 실적 발표 (3개)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/3 (화)</div><div class="event-title-cal">Palantir Q4</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">2/25 (수)</div><div class="event-title-cal">⭐ NVIDIA Q4</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💎</div><div class="event-details-cal"><div class="event-date-cal">3/4 (수)</div><div class="event-title-cal">⭐ Broadcom Q1</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#6f42c1,#8e44ad)" onclick="toggleAccordion(this)">💼 고용 지표 (12개)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/3</div><div class="event-title-cal">JOLTS 12월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/4</div><div class="event-title-cal">Metro 고용</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/6</div><div class="event-title-cal">⭐ NFP 1월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/18</div><div class="event-title-cal">Union</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">⚠️</div><div class="event-details-cal"><div class="event-date-cal">2/19</div><div class="event-title-cal">산재</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/19</div><div class="event-title-cal">State JOLTS</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">2/20</div><div class="event-title-cal">파업</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">2/24</div><div class="event-title-cal">ECEC Q3</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">2/26</div><div class="event-title-cal">BED Q2</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">3/6</div><div class="event-title-cal">⭐ NFP 2월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">3/10</div><div class="event-title-cal">CEWQ Q3</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💼</div><div class="event-details-cal"><div class="event-date-cal">3/28</div><div class="event-title-cal">JOLTS 2월</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#fd7e14,#e74c3c)" onclick="toggleAccordion(this)">📊 물가 지표 (11개)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">2/10</div><div class="event-title-cal">ECI Q4</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">2/10</div><div class="event-title-cal">수입수출 12월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">2/11</div><div class="event-title-cal">⭐ CPI 1월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💵</div><div class="event-details-cal"><div class="event-date-cal">2/11</div><div class="event-title-cal">실질임금 1월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏭</div><div class="event-details-cal"><div class="event-date-cal">2/27</div><div class="event-title-cal">⭐ PPI 1월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">3/5</div><div class="event-title-cal">생산성 Q4</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">3/5</div><div class="event-title-cal">수입수출 1월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📊</div><div class="event-details-cal"><div class="event-date-cal">3/11</div><div class="event-title-cal">⭐ CPI 2월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💵</div><div class="event-details-cal"><div class="event-date-cal">3/11</div><div class="event-title-cal">실질임금 2월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏭</div><div class="event-details-cal"><div class="event-date-cal">3/12</div><div class="event-title-cal">⭐ PPI 2월</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">📈</div><div class="event-details-cal"><div class="event-date-cal">3/24</div><div class="event-title-cal">생산성 개정</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#28a745,#20c997)" onclick="toggleAccordion(this)">💹 GDP/무역 (5개)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/5</div><div class="event-title-cal">무역수지</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/5</div><div class="event-title-cal">야외경제</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/13</div><div class="event-title-cal">⭐ GDP 2차</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💰</div><div class="event-details-cal"><div class="event-date-cal">3/13</div><div class="event-title-cal">개인소득</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">💹</div><div class="event-details-cal"><div class="event-date-cal">3/25</div><div class="event-title-cal">국제거래</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#0056b3,#004085)" onclick="toggleAccordion(this)">🏦 FOMC (2일)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">🏦</div><div class="event-details-cal"><div class="event-date-cal">3/18</div><div class="event-title-cal">FOMC Day 1</div></div></div>
+                            <div class="event-item-cal"><div class="event-icon-large">🏦</div><div class="event-details-cal"><div class="event-date-cal">3/19</div><div class="event-title-cal">⭐ 금리발표</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#e91e63,#c2185b)" onclick="toggleAccordion(this)">🏛️ 공휴일 (1일)</div>
+                        <div class="event-grid accordion-content collapsed">
+                            <div class="event-item-cal"><div class="event-icon-large">🏛️</div><div class="event-details-cal"><div class="event-date-cal">2/16</div><div class="event-title-cal">대통령의 날</div></div></div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:10px;padding:8px;background:#fff3cd;border-left:3px solid #ffc107;border-radius:5px;font-size:0.82em"><strong>⭐ 시장 영향도 높은 핵심 지표</strong></div>
                 </div>
             </div>
 
@@ -870,6 +995,7 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <div class="pdf-viewer">
                 <div id="pdfContent" class="info">
@@ -906,7 +1032,6 @@
     <script>
         const CORRECT_PASSWORD = "9803";
         const SESSION_KEY = "report_authenticated";
-
         const reportFiles = {
             recommendation: {
                 '2026-02-22': { file: 'reports/recommendation/2026-02-22_catalyst.pdf', title: '단기' },
@@ -927,7 +1052,6 @@
             analysis3: { '2026-03-02': 'reports/analysis3/2026-03-02_insider.pdf', '2026-02-10': 'reports/analysis3/2026-02-10_insider.pdf' },
             analysis4: { '2026-03-02': 'reports/analysis4/2026-03-02_analyst.pdf', '2026-02-10': 'reports/analysis4/2026-02-10_analyst.pdf' }
         };
-
         const categories = {
             recommendation: { name: '추천 종목', icon: '🎯', selectId: 'dateRecommendation' },
             shoot: { name: '급등 종목', icon: '🚀', selectId: 'dateShoot' },
@@ -937,296 +1061,74 @@
             analysis3: { name: '내부자', icon: '🔍', selectId: 'dateAnalysis3' },
             analysis4: { name: '애널리스트', icon: '📊', selectId: 'dateAnalysis4' }
         };
-
-        // 실적발표 데이터
-        const earningsData = {
-            // AI 반도체 (사용자 포트폴리오)
-            'NVDA': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
-            'NVIDIA': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
-            '엔비디아': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
-            
-            'AVGO': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
-            'BROADCOM': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
-            '브로드컴': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
-            
-            'MU': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
-            'MICRON': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
-            '마이크론': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
-            
-            'AMD': ['AMD', 'AMD', 'Q4 2025', '2026-02-03', '16:30'],
-            '에이엠디': ['AMD', 'AMD', 'Q4 2025', '2026-02-03', '16:30'],
-            
-            'MRVL': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
-            'MARVELL': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
-            '마벨': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
-            
-            // 소프트웨어/AI (사용자 포트폴리오)
-            'PLTR': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
-            'PALANTIR': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
-            '팔란티어': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
-            
-            'CRWD': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
-            'CROWDSTRIKE': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
-            '크라우드스트라이크': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
-            
-            'MSFT': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
-            'MICROSOFT': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
-            '마이크로소프트': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
-            
-            // 헬스케어 (사용자 포트폴리오)
-            'LLY': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
-            'LILLY': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
-            '일라이릴리': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
-            '릴리': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
-            
-            // 핀테크 (사용자 포트폴리오)
-            'HOOD': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
-            'ROBINHOOD': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
-            '로빈후드': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
-            
-            // 빅테크 (주요 종목)
-            'AAPL': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
-            'APPLE': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
-            '애플': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
-            
-            'GOOGL': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
-            'GOOG': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
-            'GOOGLE': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
-            '구글': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
-            
-            'META': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
-            'FACEBOOK': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
-            '메타': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
-            '페이스북': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
-            
-            'AMZN': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
-            'AMAZON': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
-            '아마존': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
-            
-            'TSLA': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
-            'TESLA': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
-            '테슬라': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
-            
-            // 기타 반도체
-            'INTC': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
-            'INTEL': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
-            '인텔': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
-            
-            'QCOM': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
-            'QUALCOMM': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
-            '퀄컴': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
-            
-            // 소프트웨어
-            'SNOW': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
-            'SNOWFLAKE': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
-            '스노우플레이크': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
-            
-            'CRM': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
-            'SALESFORCE': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
-            '세일즈포스': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
-            
-            // 기타
-            'NFLX': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
-            'NETFLIX': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
-            '넷플릭스': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
-            
-            'COIN': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00'],
-            'COINBASE': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00'],
-            '코인베이스': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00']
-        };
-
-        window.onload = function() {
-            if (sessionStorage.getItem(SESSION_KEY) === "true") { showMainContent(); }
-        };
-
+        window.onload = function() { if (sessionStorage.getItem(SESSION_KEY) === "true") showMainContent(); };
         function checkPassword() {
-            const input = document.getElementById('passwordInput');
-            const error = document.getElementById('passwordError');
-            if (input.value === CORRECT_PASSWORD) {
-                sessionStorage.setItem(SESSION_KEY, "true");
-                showMainContent();
-                error.style.display = 'none';
-            } else {
-                error.style.display = 'block';
-                input.value = '';
-                input.focus();
-            }
+            const input = document.getElementById('passwordInput'), error = document.getElementById('passwordError');
+            if (input.value === CORRECT_PASSWORD) { sessionStorage.setItem(SESSION_KEY, "true"); showMainContent(); error.style.display = 'none'; }
+            else { error.style.display = 'block'; input.value = ''; input.focus(); }
         }
-
         function showMainContent() {
             document.getElementById('passwordOverlay').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             loadDateList();
         }
-
-        function logout() {
-            if (confirm('로그아웃 하시겠습니까?')) {
-                sessionStorage.removeItem(SESSION_KEY);
-                location.reload();
-            }
-        }
-
+        function logout() { if (confirm('로그아웃 하시겠습니까?')) { sessionStorage.removeItem(SESSION_KEY); location.reload(); } }
         function loadDateList() {
             Object.keys(categories).forEach(categoryKey => {
-                const category = categories[categoryKey];
-                const select = document.getElementById(category.selectId);
+                const category = categories[categoryKey], select = document.getElementById(category.selectId);
                 if (!select) return;
                 const dates = Object.keys(reportFiles[categoryKey]).sort().reverse();
                 dates.forEach(date => {
-                    const option = document.createElement('option');
-                    option.value = date;
+                    const option = document.createElement('option'); option.value = date;
                     if (categoryKey === 'news' || categoryKey === 'recommendation' || categoryKey === 'shoot') {
-                        const data = reportFiles[categoryKey][date];
-                        option.textContent = formatDate(date) + ' · ' + data.title;
-                    } else {
-                        option.textContent = formatDate(date);
-                    }
+                        const data = reportFiles[categoryKey][date]; option.textContent = formatDate(date) + ' · ' + data.title;
+                    } else option.textContent = formatDate(date);
                     select.appendChild(option);
                 });
             });
         }
-
         function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
+            const date = new Date(dateStr), month = date.getMonth() + 1, day = date.getDate();
             const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
             return month + '월 ' + day + '일 (' + weekday + ')';
         }
-
         function loadReport(categoryKey) {
-            const category = categories[categoryKey];
-            const select = document.getElementById(category.selectId);
-            const date = select.value;
+            const category = categories[categoryKey], select = document.getElementById(category.selectId), date = select.value;
             if (!date) { alert('날짜를 선택해주세요.'); return; }
-            let pdfFile;
-            const data = reportFiles[categoryKey][date];
-            if (typeof data === 'string') { pdfFile = data; } else { pdfFile = data.file; }
+            let pdfFile; const data = reportFiles[categoryKey][date];
+            if (typeof data === 'string') pdfFile = data; else pdfFile = data.file;
             displayPDF(pdfFile, date, category);
         }
-
         function displayPDF(pdfPath, date, category) {
-            const pdfContent = document.getElementById('pdfContent');
-            pdfContent.innerHTML = '<div class="current-view"><h4>' + category.icon + ' ' + category.name + '</h4><div class="info-grid"><div class="info-item"><div class="label">날짜</div><div class="value">' + formatDate(date) + '</div></div></div></div><div class="pdf-container"><iframe src="' + pdfPath + '" type="application/pdf"></iframe></div><div style="text-align:center;margin-top:20px;color:#6c757d"><p>💡 PDF가 보이지 않으면 <a href="' + pdfPath + '" target="_blank" style="color:#667eea;font-weight:600">여기</a>를 클릭하세요.</p></div>';
+            document.getElementById('pdfContent').innerHTML = '<div class="current-view"><h4>' + category.icon + ' ' + category.name + '</h4><div class="info-grid"><div class="info-item"><div class="label">날짜</div><div class="value">' + formatDate(date) + '</div></div></div></div><div class="pdf-container"><iframe src="' + pdfPath + '" type="application/pdf"></iframe></div>';
         }
-
-        // Financial Modeling Prep API 기반 실적발표 검색
         async function searchEarningsAPI() {
-            const input = document.getElementById('earningsSearchInput');
-            const resultDiv = document.getElementById('earningsResult');
-            const ticker = input.value.trim().toUpperCase();
-            
-            if (!ticker) {
-                resultDiv.innerHTML = '<div class="search-result empty">🔍 티커를 입력해주세요 (예: NVDA, AAPL)</div>';
-                return;
-            }
-            
-            // 로딩 표시
-            resultDiv.innerHTML = '<div class="search-result"><div class="result-info">🔄 검색 중...</div></div>';
-            
+            const input = document.getElementById('earningsSearchInput'), resultDiv = document.getElementById('earningsResult'), ticker = input.value.trim().toUpperCase();
+            if (!ticker) { resultDiv.innerHTML = '<div class="search-result empty">🔍 티커 입력 (예: NVDA)</div>'; return; }
+            resultDiv.innerHTML = '<div class="search-result">🔄 검색 중...</div>';
             try {
-                // FMP API 호출 (무료 플랜 - demo 키 또는 사용자 발급 키)
-                const apiKey = 'LxMzdGGbqSUh4VH9P3DCtRFZG6pW5yL8'; // 무료 플랜 키
-                const today = new Date();
-                const fromDate = today.toISOString().split('T')[0];
-                const toDate = new Date(today.getTime() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 6개월 후
-                
-                const url = `https://financialmodelingprep.com/api/v3/earning_calendar?symbol=${ticker}&from=${fromDate}&to=${toDate}&apikey=${apiKey}`;
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error('API 호출 실패');
-                }
-                
-                const data = await response.json();
-                
-                if (!data || data.length === 0) {
-                    // 로컬 데이터에서 검색 (백업)
-                    searchEarningsLocal(ticker, resultDiv);
-                    return;
-                }
-                
-                // 가장 가까운 실적 발표
-                const nextEarnings = data[0];
-                const earningsDate = new Date(nextEarnings.date);
-                const dateStr = nextEarnings.date;
-                const time = nextEarnings.time || '장마감 후';
-                
-                const dateObj = new Date(dateStr);
-                const isPast = dateObj < today;
-                
-                resultDiv.innerHTML = `
-                    <div class="search-result">
-                        <div class="result-company">
-                            ${ticker}
-                        </div>
-                        <div class="result-date">
-                            📅 다음 실적발표: ${dateStr.replace('-', '년 ').replace('-', '월 ')}일
-                        </div>
-                        <div class="result-info">
-                            ⏰ 예상 시간: ${time}<br>
-                            💰 예상 EPS: ${nextEarnings.eps || 'N/A'}<br>
-                            📊 예상 매출: ${nextEarnings.revenue || 'N/A'}<br>
-                            ${isPast ? '⚠️ 이미 지난 일정입니다.' : '✅ 예정된 일정입니다.'}<br>
-                            <small style="color:#999;margin-top:5px;display:block">출처: Financial Modeling Prep</small>
-                        </div>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('API 오류:', error);
-                // API 실패 시 로컬 데이터로 폴백
-                searchEarningsLocal(ticker, resultDiv);
-            }
-        }
-        
-        // 로컬 데이터 검색 (백업)
-        function searchEarningsLocal(ticker, resultDiv) {
-            const query = ticker.toUpperCase();
-            let found = null;
-            
-            for (const key in earningsData) {
-                if (key.toUpperCase() === query) { 
-                    found = earningsData[key]; 
-                    break; 
-                }
-            }
-            
-            if (found) {
-                const [nameKr, nameEn, quarter, date, time] = found;
-                const dateObj = new Date(date);
-                const today = new Date();
-                const isPast = dateObj < today;
-                
-                resultDiv.innerHTML = `
-                    <div class="search-result">
-                        <div class="result-company">${nameEn} (${nameKr})</div>
-                        <div class="result-date">📅 ${quarter} 실적발표: ${date.replace('2026-', '2026년 ').replace('-', '월 ')}일</div>
-                        <div class="result-info">⏰ 예상 시간: ${time}<br>${isPast ? '⚠️ 이미 지난 일정입니다.' : '✅ 예정된 일정입니다.'}<br><small style="color:#999;margin-top:5px;display:block">출처: 로컬 데이터</small></div>
-                    </div>
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="search-result empty">
-                        ❌ "${ticker}" 검색 결과가 없습니다.<br>
-                        💡 티커를 정확히 입력했는지 확인해주세요.<br>
-                        💡 미국 상장 기업 티커만 지원됩니다 (나스닥, NYSE, AMEX)
-                    </div>
-                `;
-            }
+                const today = new Date(), fromDate = today.toISOString().split('T')[0], toDate = new Date(today.getTime() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                const url = `https://financialmodelingprep.com/api/v3/earning_calendar?from=${fromDate}&to=${toDate}&symbol=${ticker}&apikey=LxMzdGGbqSUh4VH9P3DCtRFZG6pW5yL8`;
+                const response = await fetch(url), data = await response.json();
+                if (!data || data.length === 0) { resultDiv.innerHTML = '<div class="search-result empty">❌ 결과 없음</div>'; return; }
+                const next = data[0], dateStr = next.date;
+                resultDiv.innerHTML = `<div class="search-result"><div class="result-company">${ticker}</div><div class="result-date">📅 ${dateStr.replace('-', '년 ').replace('-', '월 ')}일</div><div class="result-info">⏰ ${next.time || '장마감후'}<br>💰 EPS: ${next.eps || 'N/A'}<br>📊 매출: ${next.revenue || 'N/A'}</div></div>`;
+            } catch (e) { resultDiv.innerHTML = '<div class="search-result empty">❌ 오류</div>'; }
         }
 
-        // 경제 캘린더
+        function toggleAccordion(header) {
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            content.classList.toggle('collapsed');
+        }
         var calendarEvents = {'2-3':[{i:'💼',t:'JOLTS'},{i:'💎',t:'PLTR'}],'2-4':[{i:'💼',t:'Metro'}],'2-6':[{i:'💼',t:'NFP⭐'}],'2-10':[{i:'💰',t:'ECI'},{i:'📈',t:'수입수출'}],'2-11':[{i:'📊',t:'CPI⭐'},{i:'💵',t:'실질임금'}],'2-16':[{i:'🏛️',t:'휴장'}],'2-18':[{i:'💼',t:'Union'}],'2-19':[{i:'⚠️',t:'산재'},{i:'💼',t:'JOLTS'}],'2-20':[{i:'💼',t:'파업'}],'2-24':[{i:'💰',t:'ECEC'}],'2-25':[{i:'💎',t:'NVDA⭐'}],'2-26':[{i:'📊',t:'BED'}],'2-27':[{i:'🏭',t:'PPI⭐'}],'3-4':[{i:'💎',t:'AVGO'}],'3-5':[{i:'💹',t:'무역'},{i:'📈',t:'생산성'}],'3-6':[{i:'💼',t:'NFP⭐'}],'3-10':[{i:'💰',t:'CEWQ'}],'3-11':[{i:'📊',t:'CPI⭐'},{i:'💵',t:'실질임금'}],'3-12':[{i:'🏭',t:'PPI⭐'}],'3-13':[{i:'💹',t:'GDP⭐'},{i:'💰',t:'소득'}],'3-18':[{i:'🏦',t:'FOMC'}],'3-19':[{i:'🏦',t:'금리⭐'}],'3-24':[{i:'📈',t:'생산성R'}],'3-25':[{i:'💹',t:'국제'}],'3-28':[{i:'💼',t:'JOLTS'}]};
-        
         function drawCalendar(month, elementId) {
             var container = document.getElementById(elementId);
             if (!container) return;
             var firstDay = new Date(2026, month - 1, 1).getDay();
             var daysInMonth = new Date(2026, month, 0).getDate();
             var html = '';
-            for (var i = 0; i < firstDay; i++) { html += '<div class="date empty"></div>'; }
+            for (var i = 0; i < firstDay; i++) html += '<div class="date empty"></div>';
             for (var day = 1; day <= daysInMonth; day++) {
                 var key = month + '-' + day;
                 var events = calendarEvents[key];
@@ -1234,7 +1136,7 @@
                 html += '<div class="' + className + '"><div>' + day + '</div>';
                 if (events && events.length > 0) {
                     var icons = events[0].i;
-                    if (events.length > 1) { icons += '+' + (events.length - 1); }
+                    if (events.length > 1) icons += '+' + (events.length - 1);
                     var tooltipText = events.map(function(e) { return e.t; }).join(', ');
                     html += '<div class="event-icon">' + icons + '</div>';
                     html += '<div class="tooltip">' + tooltipText + '</div>';
@@ -1243,7 +1145,7 @@
             }
             container.innerHTML = html;
         }
-
+        function openMemoryReport() { window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); }
         document.addEventListener('DOMContentLoaded', function() {
             const pwdInput = document.getElementById('passwordInput');
             if (pwdInput) {
@@ -1254,10 +1156,6 @@
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         });
-
-        function openMemoryReport() {
-            window.open("https://apus80.github.io/stock/memory_report.html", "_blank");
-        }
     </script>
 </body>
 </html>
