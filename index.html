@@ -598,16 +598,24 @@
 <body>
     <!-- 비밀번호 입력 화면 -->
     <div id="passwordOverlay" class="password-overlay">
-       <div class="password-box">
-    <h2>데이터 보안 인증</h2>
-    <p>리포트 열람을 위해 비밀번호를 입력하세요.</p>
-    <input type="password" id="passwordInput" class="password-input" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') checkPassword()">
-    <button class="password-btn" onclick="checkPassword()">인증 및 입장</button>
-    <div id="passwordError" class="error-msg" style="display:none; color:#ff4d4d; margin-top:10px;">
-        비밀번호가 올바르지 않습니다.
-    </div>
-</div>
-
+        <div class="password-box">
+            <h2>🔐 접근 제한</h2>
+            <p>리포트를 보려면 비밀번호를 입력하세요</p>
+            
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="비밀번호 입력"
+                onkeypress="if(event.key==='Enter') checkPassword()">
+            
+            <button class="password-btn" onclick="checkPassword()">
+                확인
+            </button>
+            
+            <div id="passwordError" class="password-error">
+                ❌ 비밀번호가 올바르지 않습니다
+            </div>
 
             <div class="password-hint">
                 💡 힌트: 비밀번호를 잊으셨나요?<br>
@@ -1822,49 +1830,20 @@
             container.innerHTML = html;
         }
         function openMemoryReport() { window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); }
-                        // 메모리 리포트 열기
-        function openMemoryReport() { 
-            window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); 
-        }
-
-        // ─── [비밀번호 확인 함수] ───
-        function checkPassword() {
-            const pwdInput = document.getElementById('passwordInput');
-            const password = pwdInput.value;
-            const errorMsg = document.getElementById('passwordError');
-            const overlay = document.getElementById('passwordOverlay');
-            const mainContent = document.getElementById('mainContent');
-
-            if (password === '9803') {
-                if(overlay) overlay.style.display = 'none';
-                if(mainContent) mainContent.style.display = 'block';
-                if(errorMsg) errorMsg.style.display = 'none';
-                console.log("로그인 성공");
-            } else {
-                alert('비밀번호가 틀렸습니다.');
-                pwdInput.value = '';
-                pwdInput.focus();
-            }
-        }
-
-        // 초기화 및 이벤트 등록
-        document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function() {
             const pwdInput = document.getElementById('passwordInput');
             if (pwdInput) {
                 pwdInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
+                        console.log('🔹 Enter 키 눌림');
                         checkPassword();
                     }
                 });
+                console.log('✅ Enter 키 이벤트 등록 완료');
             }
-            // 달력 그리기
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         });
-
-        function logout() {
-            location.reload();
-        }
     </script>
 </body>
 </html>
