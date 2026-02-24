@@ -1176,15 +1176,480 @@
         function displayPDF(pdfPath, date, category) {
             document.getElementById('pdfContent').innerHTML = '<div class="current-view"><h4>' + category.icon + ' ' + category.name + '</h4><div class="info-grid"><div class="info-item"><div class="label">날짜</div><div class="value">' + formatDate(date) + '</div></div></div></div><div class="pdf-container"><iframe src="' + pdfPath + '" type="application/pdf"></iframe></div>';
         }
-        async function searchEarningsAPI() {
+        // 실적 데이터 (Yahoo Finance 기반)
+        const earningsData = {
+            "NVDA": {
+                        "name": "NVIDIA Corporation",
+                        "date": "2026-02-25",
+                        "eps_avg": 1.53669,
+                        "revenue_avg": 66124358429
+            },
+            "AMD": {
+                        "name": "Advanced Micro Devices, Inc.",
+                        "date": "2026-05-05",
+                        "eps_avg": 1.2683,
+                        "revenue_avg": 9852755290
+            },
+            "AVGO": {
+                        "name": "Broadcom Inc.",
+                        "date": "2026-03-04",
+                        "eps_avg": 2.02026,
+                        "revenue_avg": 19105028740
+            },
+            "QCOM": {
+                        "name": "QUALCOMM Incorporated",
+                        "date": "2026-04-29",
+                        "eps_avg": 2.57534,
+                        "revenue_avg": 10567846810
+            },
+            "INTC": {
+                        "name": "Intel Corporation",
+                        "date": "2026-04-23",
+                        "eps_avg": 0.002,
+                        "revenue_avg": 12313072310
+            },
+            "MU": {
+                        "name": "Micron Technology, Inc.",
+                        "date": "2026-03-18",
+                        "eps_avg": 8.50416,
+                        "revenue_avg": 18895169750
+            },
+            "TSM": {
+                        "name": "Taiwan Semiconductor Manufacturing Company Limited",
+                        "date": "2026-04-16",
+                        "eps_avg": 3.28131,
+                        "revenue_avg": 1115423921810
+            },
+            "ASML": {
+                        "name": "ASML Holding N.V.",
+                        "date": "2026-04-15",
+                        "eps_avg": 6.64707,
+                        "revenue_avg": 8605432520
+            },
+            "AAPL": {
+                        "name": "Apple Inc.",
+                        "date": "2026-04-30",
+                        "eps_avg": 1.95403,
+                        "revenue_avg": 109083851330
+            },
+            "MSFT": {
+                        "name": "Microsoft Corporation",
+                        "date": "2026-04-29",
+                        "eps_avg": 4.06091,
+                        "revenue_avg": 81380910850
+            },
+            "GOOGL": {
+                        "name": "Alphabet Inc.",
+                        "date": "2026-04-23",
+                        "eps_avg": 2.61405,
+                        "revenue_avg": 106659407030
+            },
+            "AMZN": {
+                        "name": "Amazon.com, Inc.",
+                        "date": "2026-04-30",
+                        "eps_avg": 1.63706,
+                        "revenue_avg": 176962316420
+            },
+            "META": {
+                        "name": "Meta Platforms, Inc.",
+                        "date": "2026-04-29",
+                        "eps_avg": 6.73273,
+                        "revenue_avg": 55441680360
+            },
+            "TSLA": {
+                        "name": "Tesla, Inc.",
+                        "date": "2026-04-21",
+                        "eps_avg": 0.41048,
+                        "revenue_avg": 23195230200
+            },
+            "NFLX": {
+                        "name": "Netflix, Inc.",
+                        "date": "2026-04-16",
+                        "eps_avg": 0.76279,
+                        "revenue_avg": 12170332990
+            },
+            "JPM": {
+                        "name": "JPMorgan Chase & Co.",
+                        "date": "2026-04-14",
+                        "eps_avg": 5.32738,
+                        "revenue_avg": 47960373930
+            },
+            "BAC": {
+                        "name": "Bank of America Corporation",
+                        "date": "2026-04-15",
+                        "eps_avg": 0.99683,
+                        "revenue_avg": 29810633100
+            },
+            "WFC": {
+                        "name": "Wells Fargo & Company",
+                        "date": "2026-04-14",
+                        "eps_avg": 1.58092,
+                        "revenue_avg": 21845400000
+            },
+            "GS": {
+                        "name": "The Goldman Sachs Group, Inc.",
+                        "date": "2026-04-13",
+                        "eps_avg": 15.61964,
+                        "revenue_avg": 16657353620
+            },
+            "MS": {
+                        "name": "Morgan Stanley",
+                        "date": "2026-04-15",
+                        "eps_avg": 2.92227,
+                        "revenue_avg": 19233819950
+            },
+            "C": {
+                        "name": "Citigroup Inc.",
+                        "date": "2026-04-14",
+                        "eps_avg": 2.58724,
+                        "revenue_avg": 22941302430
+            },
+            "NKE": {
+                        "name": "NIKE, Inc.",
+                        "date": "2026-03-19",
+                        "eps_avg": 0.2859,
+                        "revenue_avg": 11225616780
+            },
+            "SBUX": {
+                        "name": "Starbucks Corporation",
+                        "date": "2026-04-28",
+                        "eps_avg": 0.40434,
+                        "revenue_avg": 9075520370
+            },
+            "MCD": {
+                        "name": "McDonald's Corporation",
+                        "date": "2026-04-30",
+                        "eps_avg": 2.76154,
+                        "revenue_avg": 6496857200
+            },
+            "HD": {
+                        "name": "The Home Depot, Inc.",
+                        "date": "2026-02-24",
+                        "eps_avg": 2.5232,
+                        "revenue_avg": 38102927610
+            },
+            "LOW": {
+                        "name": "Lowe's Companies, Inc.",
+                        "date": "2026-02-25",
+                        "eps_avg": 1.9426,
+                        "revenue_avg": 20336473910
+            },
+            "TGT": {
+                        "name": "Target Corporation",
+                        "date": "2026-03-03",
+                        "eps_avg": 2.15566,
+                        "revenue_avg": 30494139680
+            },
+            "WMT": {
+                        "name": "Walmart Inc.",
+                        "date": "2026-05-14",
+                        "eps_avg": 0.66132,
+                        "revenue_avg": 172219029380
+            },
+            "COST": {
+                        "name": "Costco Wholesale Corporation",
+                        "date": "2026-03-05",
+                        "eps_avg": 4.53101,
+                        "revenue_avg": 69265262480
+            },
+            "JNJ": {
+                        "name": "Johnson & Johnson",
+                        "date": "2026-04-14",
+                        "eps_avg": 2.68547,
+                        "revenue_avg": 23600479740
+            },
+            "UNH": {
+                        "name": "UnitedHealth Group Incorporated",
+                        "date": "2026-04-16",
+                        "eps_avg": 6.87616,
+                        "revenue_avg": 109833320850
+            },
+            "PFE": {
+                        "name": "Pfizer Inc.",
+                        "date": "2026-04-28",
+                        "eps_avg": 0.72643,
+                        "revenue_avg": 13900287780
+            },
+            "ABBV": {
+                        "name": "AbbVie Inc.",
+                        "date": "2026-05-01",
+                        "eps_avg": 3.00872,
+                        "revenue_avg": 14715000780
+            },
+            "LLY": {
+                        "name": "Eli Lilly and Company",
+                        "date": "2026-04-30",
+                        "eps_avg": 7.23315,
+                        "revenue_avg": 17456361190
+            },
+            "TMO": {
+                        "name": "Thermo Fisher Scientific Inc.",
+                        "date": "2026-04-22",
+                        "eps_avg": 5.29081,
+                        "revenue_avg": 10874613920
+            },
+            "BA": {
+                        "name": "The Boeing Company",
+                        "date": "2026-04-22",
+                        "eps_avg": -0.34644,
+                        "revenue_avg": 22252591180
+            },
+            "CAT": {
+                        "name": "Caterpillar Inc.",
+                        "date": "2026-04-30",
+                        "eps_avg": 4.52299,
+                        "revenue_avg": 16195040460
+            },
+            "GE": {
+                        "name": "GE Aerospace",
+                        "date": "2026-04-21",
+                        "eps_avg": 1.58739,
+                        "revenue_avg": 10619465140
+            },
+            "HON": {
+                        "name": "Honeywell International Inc.",
+                        "date": "2026-04-28",
+                        "eps_avg": 2.32493,
+                        "revenue_avg": 9270212740
+            },
+            "UPS": {
+                        "name": "United Parcel Service, Inc.",
+                        "date": "2026-04-28",
+                        "eps_avg": 1.14325,
+                        "revenue_avg": 21085993190
+            },
+            "FDX": {
+                        "name": "FedEx Corporation",
+                        "date": "2026-03-19",
+                        "eps_avg": 4.04897,
+                        "revenue_avg": 23443613160
+            },
+            "XOM": {
+                        "name": "Exxon Mobil Corporation",
+                        "date": "2026-05-01",
+                        "eps_avg": 1.51002,
+                        "revenue_avg": 79217960170
+            },
+            "CVX": {
+                        "name": "Chevron Corporation",
+                        "date": "2026-05-01",
+                        "eps_avg": 1.5006,
+                        "revenue_avg": 46696217960
+            },
+            "COP": {
+                        "name": "ConocoPhillips",
+                        "date": "2026-05-07",
+                        "eps_avg": 1.11209,
+                        "revenue_avg": 13535126140
+            },
+            "SLB": {
+                        "name": "SLB N.V.",
+                        "date": "2026-05-01",
+                        "eps_avg": 0.6061,
+                        "revenue_avg": 8884411650
+            },
+            "AA": {
+                        "name": "Alcoa Corporation",
+                        "date": "2026-04-15",
+                        "eps_avg": 1.18124,
+                        "revenue_avg": 3296144100
+            },
+            "FCX": {
+                        "name": "Freeport-McMoRan Inc.",
+                        "date": "2026-04-23",
+                        "eps_avg": 0.45274,
+                        "revenue_avg": 5579707240
+            },
+            "DIS": {
+                        "name": "The Walt Disney Company",
+                        "date": "2026-05-06",
+                        "eps_avg": 1.49737,
+                        "revenue_avg": 24909719370
+            },
+            "V": {
+                        "name": "Visa Inc.",
+                        "date": "2026-04-28",
+                        "eps_avg": 3.09224,
+                        "revenue_avg": 10729545630
+            },
+            "MA": {
+                        "name": "Mastercard Incorporated",
+                        "date": "2026-04-30",
+                        "eps_avg": 4.40606,
+                        "revenue_avg": 8260552120
+            },
+            "PYPL": {
+                        "name": "PayPal Holdings, Inc.",
+                        "date": "2026-05-05",
+                        "eps_avg": 1.27784,
+                        "revenue_avg": 8069200290
+            },
+            "CRM": {
+                        "name": "Salesforce, Inc.",
+                        "date": "2026-02-25",
+                        "eps_avg": 3.05025,
+                        "revenue_avg": 11188164760
+            },
+            "ORCL": {
+                        "name": "Oracle Corporation",
+                        "date": "2026-03-09",
+                        "eps_avg": 1.70661,
+                        "revenue_avg": 16902193840
+            },
+            "IBM": {
+                        "name": "International Business Machines Corporation",
+                        "date": "2026-04-22",
+                        "eps_avg": 1.80925,
+                        "revenue_avg": 15628294330
+            },
+            "PLTR": {
+                        "name": "Palantir Technologies Inc.",
+                        "date": "2026-05-04",
+                        "eps_avg": 0.27927,
+                        "revenue_avg": 1538548150
+            },
+            "CRWD": {
+                        "name": "CrowdStrike Holdings, Inc.",
+                        "date": "2026-03-03",
+                        "eps_avg": 1.10262,
+                        "revenue_avg": 1297442450
+            },
+            "SNOW": {
+                        "name": "Snowflake Inc.",
+                        "date": "2026-02-25",
+                        "eps_avg": 0.27176,
+                        "revenue_avg": 1254964190
+            },
+            "HOOD": {
+                        "name": "Robinhood Markets, Inc.",
+                        "date": "2026-04-29",
+                        "eps_avg": 0.545,
+                        "revenue_avg": 1265007100
+            },
+            "COIN": {
+                        "name": "Coinbase Global, Inc.",
+                        "date": "2026-05-07",
+                        "eps_avg": 0.38164,
+                        "revenue_avg": 1587193310
+            },
+            "SHOP": {
+                        "name": "Shopify Inc.",
+                        "date": "2026-05-07",
+                        "eps_avg": 0.33011,
+                        "revenue_avg": 3086287180
+            },
+            "VRNS": {
+                        "name": "Varonis Systems, Inc.",
+                        "date": "2026-05-05",
+                        "eps_avg": -0.05503,
+                        "revenue_avg": 165511190
+            },
+            "KKR": {
+                        "name": "KKR & Co. Inc.",
+                        "date": "2026-04-30",
+                        "eps_avg": 1.43316,
+                        "revenue_avg": 2275882440
+            },
+            "QDEL": {
+                        "name": "QuidelOrtho Corporation",
+                        "date": "2026-05-06",
+                        "eps_avg": 0.47054,
+                        "revenue_avg": 682809560
+            },
+            "RAL": {
+                        "name": "Ralliant Corporation",
+                        "date": "2026-04-27",
+                        "eps_avg": 0.48804,
+                        "revenue_avg": 515108280
+            },
+            "MRVL": {
+                        "name": "Marvell Technology, Inc.",
+                        "date": "2026-03-05",
+                        "eps_avg": 0.79217,
+                        "revenue_avg": 2206965170
+            }
+};
+        
+        function searchEarningsAPI() {
             const input = document.getElementById('earningsSearchInput');
             const resultDiv = document.getElementById('earningsResult');
             let ticker = input.value.trim().toUpperCase();
             
             if (!ticker) { 
-                resultDiv.innerHTML = '<div class="search-result empty">🔍 티커 입력 (예: NVDA, NKE)</div>'; 
+                resultDiv.innerHTML = '<div class="search-result empty">🔍 티커 입력 (예: NVDA, NKE, AA)</div>'; 
                 return; 
             }
+            
+            // 이름을 티커로 변환
+            const nameToTicker = {
+                'NIKE': 'NKE', '나이키': 'NKE',
+                'ALCOA': 'AA',
+                'VERONIS': 'VRNS',
+                '엔비디아': 'NVDA', 'NVIDIA': 'NVDA',
+                '애플': 'AAPL', 'APPLE': 'AAPL',
+                '테슬라': 'TSLA', 'TESLA': 'TSLA',
+                '마이크로소프트': 'MSFT', 'MICROSOFT': 'MSFT',
+                'AMD': 'AMD', 'BROADCOM': 'AVGO',
+                'META': 'META', 'AMAZON': 'AMZN'
+            };
+            ticker = nameToTicker[ticker] || ticker;
+            
+            resultDiv.innerHTML = '<div class="search-result">🔄 검색 중... (' + ticker + ')</div>';
+            
+            // 로컬 데이터에서 검색
+            if (earningsData[ticker]) {
+                const data = earningsData[ticker];
+                const dateStr = data.date || '미정';
+                const companyName = data.name || ticker;
+                
+                // 날짜 포맷팅
+                let formattedDate = dateStr;
+                if (dateStr !== '미정') {
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        formattedDate = parts[0] + '년 ' + parseInt(parts[1]) + '월 ' + parseInt(parts[2]) + '일';
+                    }
+                }
+                
+                // EPS와 매출 포맷팅
+                const epsText = data.eps_avg ? '$' + data.eps_avg.toFixed(2) : 'N/A';
+                const revenueText = data.revenue_avg 
+                    ? '$' + (data.revenue_avg / 1000000000).toFixed(2) + 'B' 
+                    : 'N/A';
+                
+                resultDiv.innerHTML = `
+                    <div class="search-result">
+                        <div class="result-company">${ticker} - ${companyName}</div>
+                        <div class="result-date">📅 다음 실적: ${formattedDate}</div>
+                        <div class="result-info">
+                            💰 예상 EPS: ${epsText}<br>
+                            📊 예상 매출: ${revenueText}<br>
+                            <small style="color:#999;margin-top:5px;display:block">
+                            출처: Yahoo Finance<br>
+                            💡 <a href="https://finance.yahoo.com/quote/${ticker}/analysis" target="_blank" style="color:#667eea">상세 분석 보기</a>
+                            </small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 데이터 없음
+                resultDiv.innerHTML = `
+                    <div class="search-result empty">
+                        ❌ "${ticker}" 실적 일정을 찾을 수 없습니다.<br>
+                        <small style="margin-top:8px;display:block;line-height:1.4">
+                        💡 <strong>확인사항:</strong><br>
+                        • 티커가 정확한지 확인 (예: NIKE → NKE)<br>
+                        • 미국 상장 기업인지 확인<br>
+                        <br>
+                        <strong>주요 티커 참고:</strong><br>
+                        NIKE=NKE, ALCOA=AA, VERONIS=VRNS<br>
+                        <br>
+                        💡 <a href="https://finance.yahoo.com/quote/${ticker}" target="_blank" style="color:#667eea">Yahoo Finance에서 직접 확인</a>
+                        </small>
+                    </div>
+                `;
+            }
+        }
             
             // 일반 이름을 티커로 변환
             const nameToTicker = {
