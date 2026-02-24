@@ -517,7 +517,21 @@
             }
         }
 
-        /* 추가 CSS */
+   function checkPassword() {
+    const pwdInput = document.getElementById('passwordInput');
+    const password = pwdInput.value;
+
+    // 설정하고자 하는 비밀번호를 입력하세요 (예: 1234)
+    if (password === '9803') {
+        // 비밀번호가 맞으면 오버레이를 숨김
+        document.getElementById('passwordOverlay').style.display = 'none';
+    } else {
+        alert('비밀번호가 틀렸습니다.');
+        pwdInput.value = '';
+        pwdInput.focus();
+    }
+}
+     /* 추가 CSS */
         .earnings-search{background:#fff;padding:18px;margin:15px 0;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
         .earnings-search h3{color:#667eea;margin-bottom:10px;font-size:1.15em}
         .search-box{display:flex;gap:8px;margin-bottom:12px}
@@ -623,6 +637,13 @@
             </div>
         </div>
     </div>
+<div id="passwordOverlay" class="password-overlay">
+    <div class="password-box">
+        <h2>데이터 보안 인증</h2>
+        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요">
+        <button onclick="checkPassword()">확인</button>
+    </div>
+</div>
 
     <!-- 메인 컨텐츠 -->
     <div id="mainContent" class="main-content">
