@@ -598,20 +598,21 @@
 <body>
     <!-- 비밀번호 입력 화면 -->
     <div id="passwordOverlay" class="password-overlay">
-        <div class="password-box">
-            <h2>🔐 접근 제한</h2>
-            <p>리포트를 보려면 비밀번호를 입력하세요</p>
-            
-            <input 
-                type="password" 
-                id="passwordInput" 
-                class="password-input" 
-                placeholder="비밀번호 입력"
-                onkeypress="if(event.key==='Enter') checkPassword()">
-            
-            <button class="password-btn" onclick="checkPassword()">
-                확인
-            </button>
+    <div class="password-box">
+        <h2>🔐 접근 제한</h2>
+        <p>리포트를 보려면 비밀번호를 입력하세요</p>
+        <input 
+            type="password" 
+            id="passwordInput" 
+            class="password-input" 
+            placeholder="비밀번호 입력"
+            onkeypress="if(event.key==='Enter') checkPassword()">
+        <button class="password-btn" onclick="checkPassword()">
+            확인
+        </button>
+    </div>
+</div>
+
             
             <div id="passwordError" class="password-error">
                 ❌ 비밀번호가 올바르지 않습니다
@@ -1851,6 +1852,29 @@
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         });
+            // ... 기존의 drawCalendar(3, 'cal-mar'); 코드 바로 아래 ...
+        });
+
+        // 여기에 아래 코드를 붙여넣으세요!
+        function checkPassword() {
+            const pwdInput = document.getElementById('passwordInput');
+            const overlay = document.getElementById('passwordOverlay');
+            const mainContent = document.getElementById('mainContent');
+
+            if (pwdInput.value === '9803') {
+                overlay.style.display = 'none';    // 비밀번호창 숨김
+                mainContent.style.display = 'block'; // 메인화면 나타남
+                console.log("인증 성공!");
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+                pwdInput.value = '';
+                pwdInput.focus();
+            }
+        }
+    </script>
+</body>
+</html>
+
     </script>
 </body>
 </html>
