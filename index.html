@@ -1849,6 +1849,8 @@
 
         });
 <script type="module">
+document.addEventListener("DOMContentLoaded", () => {
+
   const CORRECT_PASSWORD = "9803";
 
   function checkPassword() {
@@ -1869,11 +1871,13 @@
     }
   }
 
-  // 🔑 이게 핵심
-  document
-    .getElementById("loginBtn")
-    .addEventListener("click", checkPassword);
+  const btn = document.getElementById("loginBtn");
+  console.log("버튼 객체:", btn);
+
+  btn.addEventListener("click", checkPassword);
+});
     </script>
     </div> 
 </body>
 </html>
+
