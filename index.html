@@ -1045,10 +1045,22 @@
                 '2026-02-16': { file: 'reports/news/memory_supercycle.pdf', title: '메모리 사업의 전망' },
                 '2026-02-15': { file: 'reports/news/2026-02-15_news.pdf', title: '주간 시장 동향' }
             },
-            analysis1: { '2026-03-02': 'reports/analysis1/2026-03-02_liquidity.pdf', '2026-02-10': 'reports/analysis1/2026-02-10_liquidity.pdf' },
-            analysis2: { '2026-03-02': 'reports/analysis2/2026-03-02_etf.pdf', '2026-02-10': 'reports/analysis2/2026-02-10_etf.pdf' },
-            analysis3: { '2026-03-02': 'reports/analysis3/2026-03-02_insider.pdf', '2026-02-10': 'reports/analysis3/2026-02-10_insider.pdf' },
-            analysis4: { '2026-03-02': 'reports/analysis4/2026-03-02_analyst.pdf', '2026-02-10': 'reports/analysis4/2026-02-10_analyst.pdf' }
+analysis1: {
+    '2026-03-02': { file: 'reports/analysis1/2026-03-02_liquidity.pdf', title: '유동성 리포트' },
+    '2026-02-10': { file: 'reports/analysis1/2026-02-10_liquidity.pdf', title: '유동성 리포트' }
+},
+analysis2: {
+    '2026-03-02': { file: 'reports/analysis2/2026-03-02_etf.pdf', title: 'ETF 리포트' },
+    '2026-02-10': { file: 'reports/analysis2/2026-02-10_etf.pdf', title: 'ETF 리포트' }
+},
+analysis3: {
+    '2026-03-02': { file: 'reports/analysis3/2026-03-02_insider.pdf', title: '내부자 분석' },
+    '2026-02-10': { file: 'reports/analysis3/2026-02-10_insider.pdf', title: '내부자 분석' }
+},
+analysis4: {
+    '2026-03-02': { file: 'reports/analysis4/2026-03-02_analyst.pdf', title: '애널리스트 분석' },
+    '2026-02-10': { file: 'reports/analysis4/2026-02-10_analyst.pdf', title: '애널리스트 분석' }
+}
         };
         const categories = {
             recommendation: { name: '추천 종목', icon: '🎯', selectId: 'dateRecommendation' },
@@ -1877,6 +1889,7 @@ function logout() {
 </script>
 </body>
 </html>
+
 
 
 
