@@ -1627,63 +1627,15 @@ async function searchEarningsAPI() {
         return;
     }
 
-    // 이름 → 티커 변환
-    const nameToTicker = {
-        'NIKE': 'NKE',
-        '나이키': 'NKE',
-        'ALCOA': 'AA',
-        'VERONIS': 'VRNS',
-        '엔비디아': 'NVDA',
-        'NVIDIA': 'NVDA',
-        '애플': 'AAPL',
-        'APPLE': 'AAPL',
-        '테슬라': 'TSLA',
-        'TESLA': 'TSLA',
-        '마이크로소프트': 'MSFT',
-        'MICROSOFT': 'MSFT',
-        'AMD': 'AMD',
-        'BROADCOM': 'AVGO',
-        'META': 'META',
-        'AMAZON': 'AMZN'
-    };
-
-    ticker = nameToTicker[ticker] || ticker;
-
     resultDiv.innerHTML = `
         <div class="search-result">
             <div class="result-company">${ticker}</div>
             <div class="result-info">
-                📅 실적 일정 및 예상치는 Yahoo Finance에서 확인하세요.<br><br>
-                
-                <a href="https://finance.yahoo.com/quote/${ticker}/analysis" 
-                   target="_blank"
-                   style="display:inline-block;
-                          padding:8px 14px;
-                          background:#667eea;
-                          color:#fff;
-                          border-radius:6px;
-                          text-decoration:none;
-                          font-size:14px;">
-                    📊 예상 EPS / 매출 보기
+                📅 실적 정보는 Yahoo Finance에서 확인하세요.<br><br>
+                <a href="https://finance.yahoo.com/quote/${ticker}/analysis"
+                   target="_blank">
+                   📊 예상 실적 보기
                 </a>
-                
-                <br><br>
-                
-                <a href="https://finance.yahoo.com/quote/${ticker}" 
-                   target="_blank"
-                   style="display:inline-block;
-                          padding:8px 14px;
-                          background:#444;
-                          color:#fff;
-                          border-radius:6px;
-                          text-decoration:none;
-                          font-size:14px;">
-                    📈 기본 정보 보기
-                </a>
-
-                <small style="color:#999;margin-top:12px;display:block">
-                출처: Yahoo Finance
-                </small>
             </div>
         </div>
     `;
@@ -1813,6 +1765,7 @@ function logout() {
 </script>
 </body>
 </html>
+
 
 
 
