@@ -1830,52 +1830,49 @@
             container.innerHTML = html;
         }
         function openMemoryReport() { window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); }
-                document.addEventListener('DOMContentLoaded', function() {
+                        // 메모리 리포트 열기
+        function openMemoryReport() { 
+            window.open("https://apus80.github.io/stock/memory_report.html", "_blank"); 
+        }
+
+        // ─── [비밀번호 확인 함수] ───
+        function checkPassword() {
+            const pwdInput = document.getElementById('passwordInput');
+            const password = pwdInput.value;
+            const errorMsg = document.getElementById('passwordError');
+            const overlay = document.getElementById('passwordOverlay');
+            const mainContent = document.getElementById('mainContent');
+
+            if (password === '9803') {
+                if(overlay) overlay.style.display = 'none';
+                if(mainContent) mainContent.style.display = 'block';
+                if(errorMsg) errorMsg.style.display = 'none';
+                console.log("로그인 성공");
+            } else {
+                alert('비밀번호가 틀렸습니다.');
+                pwdInput.value = '';
+                pwdInput.focus();
+            }
+        }
+
+        // 초기화 및 이벤트 등록
+        document.addEventListener('DOMContentLoaded', function() {
             const pwdInput = document.getElementById('passwordInput');
             if (pwdInput) {
                 pwdInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
-                        console.log('🔹 Enter 키 눌림');
                         checkPassword();
                     }
                 });
-                console.log('✅ Enter 키 이벤트 등록 완료');
             }
+            // 달력 그리기
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         });
-// ─── [비밀번호 확인 함수] 수정 버전 ───
-function checkPassword() {
-    const pwdInput = document.getElementById('passwordInput');
-    const password = pwdInput.value;
-    const errorMsg = document.getElementById('passwordError');
-    const overlay = document.getElementById('passwordOverlay');
-    const mainContent = document.getElementById('mainContent');
 
-    console.log("입력 시도:", password); // 작동 확인용 로그
-
-    if (password === '9803') {
-        // 1. 오버레이 숨기고 메인 화면 보이기
-        if(overlay) overlay.style.display = 'none';
-        if(mainContent) mainContent.style.display = 'block';
-        
-        // 2. 에러 메시지 숨기기
-        if(errorMsg) errorMsg.style.display = 'none';
-        
-        // 3. 주의: refreshNews(); 줄을 삭제하거나 주석 처리했습니다. (함수가 없어서 에러 발생 방지)
-        console.log("로그인 성공");
-    } else {
-        alert('비밀번호가 틀렸습니다.');
-        pwdInput.value = '';
-        pwdInput.focus();
-    }
-}
-
-// 로그아웃 함수
-function logout() {
-    location.reload();
-}
-
+        function logout() {
+            location.reload();
+        }
     </script>
 </body>
 </html>
