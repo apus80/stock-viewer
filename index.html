@@ -654,14 +654,15 @@
                     <input type="text" 
                            id="earningsSearchInput" 
                            class="search-input" 
-                           placeholder="티커 또는 기업명 입력 (예: NVDA, 엔비디아, AAPL, 애플)"
-                           onkeypress="if(event.key==='Enter') searchEarnings()">
-                    <button class="search-btn" onclick="searchEarnings()">🔍 검색</button>
+                           placeholder="티커 입력 (예: NVDA, AAPL, TSLA, COIN 등 - 모든 미국 상장 기업)"
+                           onkeypress="if(event.key==='Enter') searchEarningsAPI()">
+                    <button class="search-btn" onclick="searchEarningsAPI()">🔍 검색</button>
                 </div>
                 <div id="earningsResult"></div>
                 <div class="update-note">
-                    ℹ️ <strong>업데이트 방식:</strong> 수동 업데이트 (분기별 1회)<br>
-                    💡 현재 2026년 Q1 데이터 기준 | 다음 업데이트: 2026년 4월 초
+                    ℹ️ <strong>데이터 소스:</strong> Financial Modeling Prep API<br>
+                    💡 <strong>지원 범위:</strong> 모든 미국 상장 기업 (나스닥, NYSE, AMEX)<br>
+                    🔄 <strong>업데이트:</strong> 실시간 자동 업데이트 (API 기반)
                 </div>
             </div>
 
@@ -939,27 +940,99 @@
 
         // 실적발표 데이터
         const earningsData = {
+            // AI 반도체 (사용자 포트폴리오)
             'NVDA': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
             'NVIDIA': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
             '엔비디아': ['엔비디아', 'NVIDIA', 'Q4 2025', '2026-02-25', '16:30'],
+            
             'AVGO': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
             'BROADCOM': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
             '브로드컴': ['브로드컴', 'Broadcom', 'Q1 2026', '2026-03-04', '장마감 후'],
+            
+            'MU': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
+            'MICRON': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
+            '마이크론': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
+            
+            'AMD': ['AMD', 'AMD', 'Q4 2025', '2026-02-03', '16:30'],
+            '에이엠디': ['AMD', 'AMD', 'Q4 2025', '2026-02-03', '16:30'],
+            
+            'MRVL': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
+            'MARVELL': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
+            '마벨': ['마벨', 'Marvell', 'Q4 2025', '2026-03-05', '16:30'],
+            
+            // 소프트웨어/AI (사용자 포트폴리오)
             'PLTR': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
             'PALANTIR': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
             '팔란티어': ['팔란티어', 'Palantir', 'Q4 2025', '2026-02-03', '장마감 후'],
-            'AAPL': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
-            'APPLE': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
-            '애플': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
+            
+            'CRWD': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
+            'CROWDSTRIKE': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
+            '크라우드스트라이크': ['크라우드스트라이크', 'CrowdStrike', 'Q4 2025', '2026-03-11', '16:00'],
+            
             'MSFT': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
             'MICROSOFT': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
             '마이크로소프트': ['마이크로소프트', 'Microsoft', 'Q2 2025', '2026-01-28', '16:30'],
+            
+            // 헬스케어 (사용자 포트폴리오)
+            'LLY': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
+            'LILLY': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
+            '일라이릴리': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
+            '릴리': ['일라이릴리', 'Eli Lilly', 'Q4 2025', '2026-02-06', '08:00'],
+            
+            // 핀테크 (사용자 포트폴리오)
+            'HOOD': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
+            'ROBINHOOD': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
+            '로빈후드': ['로빈후드', 'Robinhood', 'Q4 2025', '2026-02-12', '16:00'],
+            
+            // 빅테크 (주요 종목)
+            'AAPL': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
+            'APPLE': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
+            '애플': ['애플', 'Apple', 'Q1 2026', '2026-01-29', '16:30'],
+            
+            'GOOGL': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
+            'GOOG': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
+            'GOOGLE': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
+            '구글': ['구글', 'Google (Alphabet)', 'Q4 2025', '2026-02-04', '16:00'],
+            
+            'META': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
+            'FACEBOOK': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
+            '메타': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
+            '페이스북': ['메타', 'Meta (Facebook)', 'Q4 2025', '2026-02-05', '16:00'],
+            
+            'AMZN': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
+            'AMAZON': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
+            '아마존': ['아마존', 'Amazon', 'Q4 2025', '2026-02-06', '16:00'],
+            
             'TSLA': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
             'TESLA': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
             '테슬라': ['테슬라', 'Tesla', 'Q4 2025', '2026-01-28', '16:30'],
-            'MU': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
-            'MICRON': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00'],
-            '마이크론': ['마이크론', 'Micron', 'Q2 2025', '2026-03-19', '16:00']
+            
+            // 기타 반도체
+            'INTC': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
+            'INTEL': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
+            '인텔': ['인텔', 'Intel', 'Q4 2025', '2026-01-23', '16:00'],
+            
+            'QCOM': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
+            'QUALCOMM': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
+            '퀄컴': ['퀄컴', 'Qualcomm', 'Q1 2026', '2026-02-04', '16:00'],
+            
+            // 소프트웨어
+            'SNOW': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
+            'SNOWFLAKE': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
+            '스노우플레이크': ['스노우플레이크', 'Snowflake', 'Q4 2025', '2026-02-26', '16:00'],
+            
+            'CRM': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
+            'SALESFORCE': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
+            '세일즈포스': ['세일즈포스', 'Salesforce', 'Q4 2025', '2026-02-27', '16:00'],
+            
+            // 기타
+            'NFLX': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
+            'NETFLIX': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
+            '넷플릭스': ['넷플릭스', 'Netflix', 'Q4 2025', '2026-01-21', '16:00'],
+            
+            'COIN': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00'],
+            'COINBASE': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00'],
+            '코인베이스': ['코인베이스', 'Coinbase', 'Q4 2025', '2026-02-13', '16:00']
         };
 
         window.onload = function() {
@@ -1037,27 +1110,110 @@
             pdfContent.innerHTML = '<div class="current-view"><h4>' + category.icon + ' ' + category.name + '</h4><div class="info-grid"><div class="info-item"><div class="label">날짜</div><div class="value">' + formatDate(date) + '</div></div></div></div><div class="pdf-container"><iframe src="' + pdfPath + '" type="application/pdf"></iframe></div><div style="text-align:center;margin-top:20px;color:#6c757d"><p>💡 PDF가 보이지 않으면 <a href="' + pdfPath + '" target="_blank" style="color:#667eea;font-weight:600">여기</a>를 클릭하세요.</p></div>';
         }
 
-        // 실적발표 검색
-        function searchEarnings() {
+        // Financial Modeling Prep API 기반 실적발표 검색
+        async function searchEarningsAPI() {
             const input = document.getElementById('earningsSearchInput');
             const resultDiv = document.getElementById('earningsResult');
-            const query = input.value.trim().toUpperCase();
-            if (!query) {
-                resultDiv.innerHTML = '<div class="search-result empty">🔍 검색어를 입력해주세요.</div>';
+            const ticker = input.value.trim().toUpperCase();
+            
+            if (!ticker) {
+                resultDiv.innerHTML = '<div class="search-result empty">🔍 티커를 입력해주세요 (예: NVDA, AAPL)</div>';
                 return;
             }
-            let found = null;
-            for (const key in earningsData) {
-                if (key.toUpperCase() === query) { found = earningsData[key]; break; }
+            
+            // 로딩 표시
+            resultDiv.innerHTML = '<div class="search-result"><div class="result-info">🔄 검색 중...</div></div>';
+            
+            try {
+                // FMP API 호출 (무료 플랜 - demo 키 또는 사용자 발급 키)
+                const apiKey = 'LxMzdGGbqSUh4VH9P3DCtRFZG6pW5yL8'; // 무료 플랜 키
+                const today = new Date();
+                const fromDate = today.toISOString().split('T')[0];
+                const toDate = new Date(today.getTime() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 6개월 후
+                
+                const url = `https://financialmodelingprep.com/api/v3/earning_calendar?symbol=${ticker}&from=${fromDate}&to=${toDate}&apikey=${apiKey}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('API 호출 실패');
+                }
+                
+                const data = await response.json();
+                
+                if (!data || data.length === 0) {
+                    // 로컬 데이터에서 검색 (백업)
+                    searchEarningsLocal(ticker, resultDiv);
+                    return;
+                }
+                
+                // 가장 가까운 실적 발표
+                const nextEarnings = data[0];
+                const earningsDate = new Date(nextEarnings.date);
+                const dateStr = nextEarnings.date;
+                const time = nextEarnings.time || '장마감 후';
+                
+                const dateObj = new Date(dateStr);
+                const isPast = dateObj < today;
+                
+                resultDiv.innerHTML = `
+                    <div class="search-result">
+                        <div class="result-company">
+                            ${ticker}
+                        </div>
+                        <div class="result-date">
+                            📅 다음 실적발표: ${dateStr.replace('-', '년 ').replace('-', '월 ')}일
+                        </div>
+                        <div class="result-info">
+                            ⏰ 예상 시간: ${time}<br>
+                            💰 예상 EPS: ${nextEarnings.eps || 'N/A'}<br>
+                            📊 예상 매출: ${nextEarnings.revenue || 'N/A'}<br>
+                            ${isPast ? '⚠️ 이미 지난 일정입니다.' : '✅ 예정된 일정입니다.'}<br>
+                            <small style="color:#999;margin-top:5px;display:block">출처: Financial Modeling Prep</small>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('API 오류:', error);
+                // API 실패 시 로컬 데이터로 폴백
+                searchEarningsLocal(ticker, resultDiv);
             }
+        }
+        
+        // 로컬 데이터 검색 (백업)
+        function searchEarningsLocal(ticker, resultDiv) {
+            const query = ticker.toUpperCase();
+            let found = null;
+            
+            for (const key in earningsData) {
+                if (key.toUpperCase() === query) { 
+                    found = earningsData[key]; 
+                    break; 
+                }
+            }
+            
             if (found) {
                 const [nameKr, nameEn, quarter, date, time] = found;
                 const dateObj = new Date(date);
                 const today = new Date();
                 const isPast = dateObj < today;
-                resultDiv.innerHTML = '<div class="search-result"><div class="result-company">' + nameEn + ' (' + nameKr + ')</div><div class="result-date">📅 ' + quarter + ' 실적발표: ' + date.replace('2026-', '2026년 ').replace('-', '월 ') + '일</div><div class="result-info">⏰ 예상 시간: ' + time + '<br>' + (isPast ? '⚠️ 이미 지난 일정입니다.' : '✅ 예정된 일정입니다.') + '</div></div>';
+                
+                resultDiv.innerHTML = `
+                    <div class="search-result">
+                        <div class="result-company">${nameEn} (${nameKr})</div>
+                        <div class="result-date">📅 ${quarter} 실적발표: ${date.replace('2026-', '2026년 ').replace('-', '월 ')}일</div>
+                        <div class="result-info">⏰ 예상 시간: ${time}<br>${isPast ? '⚠️ 이미 지난 일정입니다.' : '✅ 예정된 일정입니다.'}<br><small style="color:#999;margin-top:5px;display:block">출처: 로컬 데이터</small></div>
+                    </div>
+                `;
             } else {
-                resultDiv.innerHTML = '<div class="search-result empty">❌ "' + input.value + '" 검색 결과가 없습니다.<br>💡 현재 주요 종목(NVDA, AVGO, PLTR, AAPL, MSFT 등)만 지원됩니다.</div>';
+                resultDiv.innerHTML = `
+                    <div class="search-result empty">
+                        ❌ "${ticker}" 검색 결과가 없습니다.<br>
+                        💡 티커를 정확히 입력했는지 확인해주세요.<br>
+                        💡 미국 상장 기업 티커만 지원됩니다 (나스닥, NYSE, AMEX)
+                    </div>
+                `;
             }
         }
 
