@@ -686,12 +686,14 @@
             </div>
 
 <div class="macro-tradingview" style="margin-bottom: 20px;">
-    <div class="card" style="margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 10px; border-left: 5px solid #667eea; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-        <h3 style="font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold;">📊 주요 지수 및 시장 심리 인사이트</h3>
+    <div class="card" style="margin-bottom: 20px; padding: 20px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h3 style="font-size: 15px; color: #333; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+            📊 시장 핵심 지표 및 실시간 심리
+        </h3>
         
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
             
-            <div style="flex: 1; min-width: 300px;">
+            <div style="flex: 1.2; min-width: 350px;">
                 <div class="tradingview-widget-container">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
@@ -701,17 +703,18 @@
                       "showChart": true,
                       "locale": "ko",
                       "width": "100%",
-                      "height": 400,
+                      "height": 450,
                       "largeChartUrl": "",
                       "isTransparent": false,
                       "showSymbolLogo": true,
                       "tabs": [
                         {
-                          "name": "주요 지수",
+                          "name": "글로벌 지수",
                           "symbols": [
+                            { "s": "NASDAQ:QQQ", "d": "나스닥 100" },
                             { "s": "AMEX:SPY", "d": "S&P 500" },
-                            { "s": "NASDAQ:QQQ", "d": "Nasdaq 100" },
-                            { "s": "TVC:VIX", "d": "변동성 (VIX)" }
+                            { "s": "KRX:KOSPI", "d": "코스피" },
+                            { "s": "KRX:KOSDAQ", "d": "코스닥" }
                           ]
                         }
                       ]
@@ -720,35 +723,38 @@
                 </div>
             </div>
 
-            <div style="flex: 0.4; min-width: 250px; display: flex; flex-direction: column; gap: 15px;">
+            <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
                 
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #eee;">
-                    <p style="font-size: 12px; color: #888; margin-bottom: 8px; font-weight: bold;">🌐 매크로 핵심 수치</p>
+                <div style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">🌐 실시간 환율 및 금리</p>
                     <div class="tradingview-widget-container">
-                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-financials.js" async>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
                         {
-                          "isTransparent": true,
-                          "displayMode": "regular",
                           "width": "100%",
-                          "height": 130,
+                          "height": 160,
+                          "symbols": [
+                            { "symbol": "FX_IDC:USDKRW", "displayName": "원/달러 환율" },
+                            { "symbol": "TVC:US10Y", "displayName": "미 국채 10년 금리" },
+                            { "symbol": "TVC:KR10Y", "displayName": "한국 국채 10년 금리" }
+                          ],
+                          "showSymbolLogo": true,
                           "colorTheme": "light",
-                          "symbol": "FX_IDC:USDKRW",
                           "locale": "ko"
                         }
                         </script>
                     </div>
                 </div>
 
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #eee;">
-                    <p style="font-size: 12px; color: #888; margin-bottom: 8px; font-weight: bold;">📈 시장 기술적 분석 (S&P500 기준)</p>
+                <div style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">📈 시장 매수/매도 강도 (나스닥 기준)</p>
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
                         {
                           "interval": "1D",
                           "width": "100%",
                           "isTransparent": true,
-                          "height": 220,
-                          "symbol": "AMEX:SPY",
+                          "height": 200,
+                          "symbol": "NASDAQ:QQQ",
                           "showIntervalTabs": false,
                           "locale": "ko",
                           "colorTheme": "light"
@@ -760,7 +766,8 @@
             </div>
         </div>
     </div>
-    ```
+</div>
+
 
     <div class="card" style="padding: 15px; background: #fff; border-radius: 10px; border-left: 5px solid #764ba2; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
         <h3 style="font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold;">🚀 실시간 섹터 주도주 (US)</h3>
