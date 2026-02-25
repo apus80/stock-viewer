@@ -684,16 +684,16 @@
                 <div id="earningsResult"></div>
                 <div class="update-note">ℹ️ <strong>데이터:</strong> Financial Modeling Prep API | <strong>범위:</strong> 모든 미국 상장 기업 | <strong>업데이트:</strong> 실시간</div>
             </div>
-<div class="macro-dashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
-    <div class="card" style="padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-        <h3 style="font-size: 14px; color: #666; margin-bottom: 10px;">📉 주요 시장 금리 (10Y)</h3>
-        <div id="macroRate" style="font-size: 24px; font-weight: bold; color: #333;">로딩 중...</div>
-        <div id="macroDiff" style="font-size: 12px; margin-top: 5px;">-</div>
+
+<div class="macro-dashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-bottom: 10px;">
+    <div class="card" style="padding: 12px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #667eea; min-height: auto !important;">
+        <h3 style="font-size: 13px; color: #666; margin-bottom: 5px;">📉 US Treasury 10Y</h3>
+        <div id="macroRate" style="font-size: 20px; font-weight: bold; color: #333;">연동 중...</div>
     </div>
-    <div class="card" style="padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-        <h3 style="font-size: 14px; color: #666; margin-bottom: 10px;">🚀 주도 섹터 (Top Performance)</h3>
-        <div id="topSector" style="font-size: 18px; font-weight: bold; color: #764ba2;">데이터 분석 중...</div>
-        <div id="sectorList" style="font-size: 11px; color: #888; margin-top: 5px;">Alpha Vantage 연동 중</div>
+    
+    <div class="card" style="padding: 12px; background: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #764ba2; min-height: auto !important;">
+        <h3 style="font-size: 13px; color: #666; margin-bottom: 5px;">🚀 실시간 주도 섹터</h3>
+        <div id="topSector" style="font-size: 16px; font-weight: bold; color: #764ba2;">연동 중...</div>
     </div>
 </div>
 
@@ -1815,35 +1815,37 @@ async function loadMacroDashboard() {
     const sectorEl = document.getElementById('topSector');
     const apiKey = 'NP58RFOBOUKNIOLV'; 
 
+    // 금리 데이터 호출
     try {
-        // 1. 미국 10년물 국채 금리
         const rateUrl = `https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=daily&maturity=10year&apikey=${apiKey}`;
-        const rateRes = await fetch(rateUrl);
-        const rateData = await rateRes.json();
+        const res = await fetch(rateUrl);
+        const data = await res.json();
         
-        if (rateData.data && rateData.data.length > 0) {
-            const latestRate = rateData.data[0].value;
-            rateEl.innerHTML = `${latestRate}%`;
-            rateEl.style.color = '#ff4b2b';
+        if (data.data && data.data[0]) {
+            rateEl.innerHTML = `${data.data[0].value}%`;
+            rateEl.style.color = "#e74c3c";
+        } else if (data.Note) {
+            rateEl.innerHTML = "조회한도 초과(1분후 자동시도)";
+            setTimeout(loadMacroDashboard, 60000); // 1분 뒤 재시도
         }
+    } catch (e) { rateEl.innerHTML = "연결 오류"; }
 
-        // 2. 섹터별 수익률
-        const sectorUrl = `https://www.alphavantage.co/query?function=SECTOR&apikey=${apiKey}`;
-        const sectorRes = await fetch(sectorUrl);
-        const sectorData = await sectorRes.json();
-        
-        if (sectorData["Rank A: Real-Time Performance"]) {
-            const sectors = sectorData["Rank A: Real-Time Performance"];
-            const topSectorName = Object.keys(sectors)[0];
-            const topSectorValue = sectors[topSectorName];
-            sectorEl.innerHTML = `🥇 ${topSectorName} (${topSectorValue})`;
-        } else {
-            sectorEl.innerHTML = "데이터 대기 중";
-        }
-    } catch (error) {
-        console.error("Dashboard 로드 실패:", error);
-        if(rateEl) rateEl.innerHTML = "연결 오류";
-    }
+    // 섹터 데이터 호출 (금리 호출과 1초 간격을 둠)
+    setTimeout(async () => {
+        try {
+            const sectorUrl = `https://www.alphavantage.co/query?function=SECTOR&apikey=${apiKey}`;
+            const res = await fetch(sectorUrl);
+            const data = await res.json();
+            
+            if (data["Rank A: Real-Time Performance"]) {
+                const sectors = data["Rank A: Real-Time Performance"];
+                const first = Object.keys(sectors)[0];
+                sectorEl.innerHTML = `🥇 ${first} (${sectors[first]})`;
+            } else {
+                sectorEl.innerHTML = "데이터 대기 중";
+            }
+        } catch (e) { sectorEl.innerHTML = "점검 중"; }
+    }, 1500); 
 }
 
 // 페이지 로드 시 초기화
