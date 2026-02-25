@@ -687,46 +687,42 @@
 
 <div class="macro-tradingview" style="margin-bottom: 20px;">
     <div class="card" style="margin-bottom: 20px; padding: 20px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <h3 style="font-size: 15px; color: #333; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-            📊 시장 실시간 지표 및 매크로 인사이트
-        </h3>
+        <h3 style="font-size: 15px; color: #333; margin-bottom: 15px; font-weight: bold;">📊 글로벌 시장 핵심 지표 및 심리 현황</h3>
         
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
             
             <div style="flex: 1.2; min-width: 350px;">
                 <div class="tradingview-widget-container">
                     <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
                     {
-                      "symbols": [
-                        [ "KOSPI", "KRX:KOSPI|1D" ],
-                        [ "KOSDAQ", "KRX:KOSDAQ|1D" ],
-                        [ "S&P 500", "AMEX:SPY|1D" ],
-                        [ "나스닥 100", "NASDAQ:QQQ|1D" ]
-                      ],
-                      "chartOnly": false,
+                      "colorTheme": "light",
+                      "dateRange": "12M",
+                      "showChart": true,
+                      "locale": "ko",
                       "width": "100%",
                       "height": 450,
-                      "locale": "ko",
-                      "colorTheme": "light",
-                      "autosize": false,
-                      "showVolume": false,
-                      "showMA": false,
-                      "hideDateRanges": false,
-                      "hideMarketStatus": false,
-                      "hideSymbolLogo": false,
-                      "scalePosition": "right",
-                      "scaleMode": "Normal",
-                      "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                      "fontSize": "10",
-                      "noTimeScale": false,
-                      "valuesTracking": "1",
-                      "changeMode": "price-and-percent",
-                      "chartType": "area",
-                      "lineColor": "#2962FF",
-                      "bottomColor": "rgba(41, 98, 255, 0)",
-                      "topColor": "rgba(41, 98, 255, 0.3)",
-                      "container_id": "tradingview_index"
+                      "largeChartUrl": "",
+                      "isTransparent": false,
+                      "showSymbolLogo": true,
+                      "tabs": [
+                        {
+                          "name": "미국 지수",
+                          "symbols": [
+                            { "s": "NASDAQ:QQQ", "d": "나스닥 100" },
+                            { "s": "AMEX:SPY", "d": "S&P 500" },
+                            { "s": "NYSE:DIA", "d": "다우 존스" }
+                          ]
+                        },
+                        {
+                          "name": "글로벌/선물",
+                          "symbols": [
+                            { "s": "CME_MINI:NQ1!", "d": "나스닥 선물" },
+                            { "s": "BINANCE:BTCUSDT", "d": "비트코인" },
+                            { "s": "OANDA:XAUUSD", "d": "금 (골드)" }
+                          ]
+                        }
+                      ]
                     }
                     </script>
                 </div>
@@ -737,7 +733,6 @@
                 <div style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
                     <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">🇰🇷 실시간 원/달러 환율</p>
                     <div class="tradingview-widget-container">
-                        <div class="tradingview-widget-container__widget"></div>
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
                         {
                           "symbol": "FX_IDC:USDKRW",
@@ -748,32 +743,31 @@
                         }
                         </script>
                     </div>
-                    <div class="tradingview-widget-container" style="margin-top: 5px;">
-                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-                        {
-                          "symbol": "TVC:US10Y",
-                          "width": "100%",
-                          "colorTheme": "light",
-                          "isTransparent": true,
-                          "locale": "ko"
-                        }
-                        </script>
-                    </div>
                 </div>
 
                 <div style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
-                    <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">📈 시장 매수/매도 강도 (KOSPI)</p>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">📈 실시간 시장 심리 (기술적 분석)</p>
                     <div class="tradingview-widget-container">
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
                         {
                           "interval": "1D",
                           "width": "100%",
                           "isTransparent": true,
-                          "height": 200,
-                          "symbol": "KRX:KOSPI",
-                          "showIntervalTabs": false,
+                          "height": 280,
+                          "symbol": "NASDAQ:QQQ",
+                          "showIntervalTabs": true,
+                          "displayMode": "multiple",
                           "locale": "ko",
-                          "colorTheme": "light"
+                          "colorTheme": "light",
+                          "symbols": {
+                            "tabs": [
+                              { "name": "코스피", "symbols": [{"s": "KRX:KOSPI"}] },
+                              { "name": "코스닥", "symbols": [{"s": "KRX:KOSDAQ"}] },
+                              { "name": "나스닥", "symbols": [{"s": "NASDAQ:QQQ"}] },
+                              { "name": "S&P500", "symbols": [{"s": "AMEX:SPY"}] },
+                              { "name": "암호화폐", "symbols": [{"s": "BINANCE:BTCUSDT"}] }
+                            ]
+                          }
                         }
                         </script>
                     </div>
