@@ -1116,58 +1116,79 @@ function checkPassword() {
             return month + '월 ' + day + '일 (' + weekday + ')';
         }
         // 실시간 뉴스 로딩
-        async function loadNews() {
-            const container = document.getElementById('newsContainer');
-            container.innerHTML = '<div class="news-item"><div class="news-title">🔄 뉴스 로딩 중...</div><div class="news-meta">잠시만 기다려주세요</div></div>';
-            
-            try {
-                // MarketAux API - 실시간 금융 뉴스
-                const apiKey = 'BKfVtXqVFB1n2n9lYKPPdCj2Z78lKS8NQTQ5eUxS';
-                const url = `https://api.marketaux.com/v1/news/all?filter_entities=true&limit=8&language=en&api_token=${apiKey}`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (data && data.data && data.data.length > 0) {
-                    // 최신 5개 뉴스만 표시
-                    const newsHTML = data.data.slice(0, 5).map(news => {
-                        const title = news.title.length > 80 ? news.title.substring(0, 80) + '...' : news.title;
-                        const source = news.source || 'Financial News';
-                        const publishedDate = new Date(news.published_at);
-                        const now = new Date();
-                        const diffHours = Math.floor((now - publishedDate) / (1000 * 60 * 60));
-                        
-                        let timeText;
-                        if (diffHours < 1) {
-                            const diffMinutes = Math.floor((now - publishedDate) / (1000 * 60));
-                            timeText = diffMinutes + '분 전';
-                        } else if (diffHours < 24) {
-                            timeText = diffHours + '시간 전';
-                        } else {
-                            const diffDays = Math.floor(diffHours / 24);
-                            timeText = diffDays + '일 전';
-                        }
-                        
-                        return `
-                            <a href="${news.url}" target="_blank" rel="noopener" class="news-link">
-                                <div class="news-item">
-                                    <div class="news-title">${title}</div>
-                                    <div class="news-meta">출처: ${source} · ${timeText}</div>
-                                </div>
-                            </a>
-                        `;
-                    }).join('');
-                    
-                    container.innerHTML = newsHTML;
-                    console.log('✅ 실시간 뉴스 로딩 완료');
-                } else {
-                    loadLocalNews();
-                }
-            } catch (error) {
-                console.error('뉴스 로딩 실패:', error);
-                loadLocalNews();
-            }
+    // 이 줄부터 아래 마지막 } 까지 전부 지우고 새 코드를 넣으세요
+async function loadNews() {
+    const container = document.getElementById('newsContainer');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="news-item">🔄 최신 시장 뉴스를 분석 중입니다...</div>';
+
+    // --- 1단계: MarketAux (주식 뉴스) ---
+    try {
+        const apiKey = 'BKfVtXqVFB1n2n9lYKPPdCj2Z78lKS8NQTQ5eUxS';
+        const url = `https://api.marketaux.com/v1/news/all?language=en&limit=5&api_token=${apiKey}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+            renderNews(json.data, 'MarketAux');
+            return;
         }
+    } catch (e) { console.log("MarketAux 실패"); }
+
+    // --- 2단계: Alpha Vantage (금융 뉴스) ---
+    try {
+        const apiKey = 'NP58RFOBOUKNIOLV';
+        const url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&limit=5&apikey=${apiKey}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json.feed && json.feed.length > 0) {
+            const formattedData = json.feed.slice(0, 5).map(item => ({
+                title: item.title,
+                url: item.url,
+                source: item.source,
+                published_at: item.time_published
+            }));
+            renderNews(formattedData, 'Alpha Vantage');
+            return;
+        }
+    } catch (e) { console.log("Alpha Vantage 실패"); }
+
+    // --- 3단계: CryptoCompare (암호화폐 뉴스) ---
+    try {
+        const res = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN');
+        const json = await res.json();
+        if (json.Data && json.Data.length > 0) {
+            const formattedData = json.Data.slice(0, 5).map(item => ({
+                title: item.title,
+                url: item.url,
+                source: item.source,
+                published_at: item.published_on * 1000
+            }));
+            renderNews(formattedData, 'CryptoCompare');
+            return;
+        }
+    } catch (e) { console.log("CryptoCompare 실패"); }
+
+    // --- 4단계: 로컬 뉴스 (최종 백업) ---
+    loadLocalNews();
+}
+
+// 이 함수도 세트로 같이 붙여넣어 주세요 (뉴스 그리기를 담당합니다)
+function renderNews(newsData, apiSource) {
+    const container = document.getElementById('newsContainer');
+    container.innerHTML = '';
+    newsData.forEach(news => {
+        const html = `
+            <div class="news-item">
+                <a href="${news.url}" target="_blank" class="news-link">
+                    <div class="news-title">📢 ${news.title}</div>
+                    <div class="news-meta">${apiSource} | ${new Date(news.published_at).toLocaleString()}</div>
+                </a>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    });
+}
+
         
         // 로컬 백업 뉴스 (API 실패 시)
         function loadLocalNews() {
