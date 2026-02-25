@@ -684,6 +684,22 @@
                 <div id="earningsResult"></div>
                 <div class="update-note">ℹ️ <strong>데이터:</strong> Financial Modeling Prep API | <strong>범위:</strong> 모든 미국 상장 기업 | <strong>업데이트:</strong> 실시간</div>
             </div>
+<div class="macro-dashboard" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+    <div class="card" style="padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="font-size: 14px; color: #666; margin-bottom: 10px;">📉 주요 시장 금리 (10Y)</h3>
+        <div id="macroRate" style="font-size: 24px; font-weight: bold; color: #333;">로딩 중...</div>
+        <div id="macroDiff" style="font-size: 12px; margin-top: 5px;">-</div>
+    </div>
+    <div class="card" style="padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="font-size: 14px; color: #666; margin-bottom: 10px;">🚀 주도 섹터 (Top Performance)</h3>
+        <div id="topSector" style="font-size: 18px; font-weight: bold; color: #764ba2;">데이터 분석 중...</div>
+        <div id="sectorList" style="font-size: 11px; color: #888; margin-top: 5px;">Alpha Vantage 연동 중</div>
+    </div>
+</div>
+
+<div class="news-dashboard">
+    ...
+
             <!-- 뉴스 대쉬보드 -->
             <div class="news-dashboard">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
@@ -1767,14 +1783,23 @@ function showMainContent() {
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 
+    // 데이터 로드 함수들
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
-    
-    // 캘린더 그리기
-    drawCalendar(2, 'cal-feb');
-    drawCalendar(3, 'cal-mar');
-    console.log("✅ 캘린더 로딩 완료");
+
+    // 1 & 2번 매크로/섹터 대시보드 호출 (새로 만든 함수)
+    if (typeof loadMacroDashboard === 'function') {
+        loadMacroDashboard(); 
+    }
+
+    // 캘린더 그리기 (중복 제거됨)
+    if (typeof drawCalendar === 'function') {
+        drawCalendar(2, 'cal-feb');
+        drawCalendar(3, 'cal-mar');
+        console.log("✅ 캘린더 및 대시보드 로딩 완료");
+    }
 }
+
 
 function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
@@ -1814,6 +1839,46 @@ document.addEventListener("DOMContentLoaded", function () {
             layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
     }
+
+async function loadMacroDashboard() {
+    const rateEl = document.getElementById('macroRate');
+    const sectorEl = document.getElementById('topSector');
+    const apiKey = 'NP58RFOBOUKNIOLV'; // 사용자의 Alpha Vantage API Key
+
+    try {
+        // 1. 미국 10년물 국채 금리 가져오기 (FRED 데이터 연동)
+        const rateUrl = `https://www.alphavantage.co/query?function=TREASURY_YIELD&interval=daily&maturity=10year&apikey=${apiKey}`;
+        const rateRes = await fetch(rateUrl);
+        const rateData = await rateRes.json();
+        
+        if (rateData.data && rateData.data.length > 0) {
+            const latestRate = rateData.data[0].value;
+            rateEl.innerHTML = `${latestRate}%`;
+            rateEl.style.color = '#ff4b2b';
+        }
+
+        // 2. 섹터별 수익률 가져오기
+        const sectorUrl = `https://www.alphavantage.co/query?function=SECTOR&apikey=${apiKey}`;
+        const sectorRes = await fetch(sectorUrl);
+        const sectorData = await sectorRes.json();
+        
+        // Alpha Vantage 섹터 데이터는 가끔 제한이 있으므로 성공 시에만 출력
+        if (sectorData["Rank A: Real-Time Performance"]) {
+            const sectors = sectorData["Rank A: Real-Time Performance"];
+            const topSectorName = Object.keys(sectors)[0];
+            const topSectorValue = sectors[topSectorName];
+            sectorEl.innerHTML = `🥇 ${topSectorName} (${topSectorValue})`;
+        } else {
+            sectorEl.innerHTML = "시장 데이터 대기 중";
+        }
+
+    } catch (error) {
+        console.error("Dashboard 로드 실패:", error);
+        rateEl.innerHTML = "연결 오류";
+        sectorEl.innerHTML = "점검 중";
+    }
+}
+
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
