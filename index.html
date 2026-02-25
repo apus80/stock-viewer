@@ -717,54 +717,70 @@
                 </a>
             </div>
 
-            <div class="card" style="margin-bottom: 30px; padding: 0 !important; overflow: hidden; border: 2px solid #e1e4e8; background: #fff; position: relative; z-index: 10;">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fff; border-bottom: 1px solid #eee;">
-                    <h2 class="card-title" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; color: #333;">
-                        📊 Heat Map 
-                        <a href="https://finviz.com/map.ashx" target="_blank" style="font-size: 0.7em; color: #667eea; text-decoration: none; margin-left: 10px; font-weight: normal;">
-                            (finviz.com ↗)
-                        </a>
-                    </h2>
-                    
-                    <select id="mapSelector" onchange="updateHeatMap()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff;">
-                        <option value="sp500">S&P 500</option>
-                        <option value="nasdaq100">Nasdaq 100</option>
-                        <option value="all">Full (US Market)</option>
-                        <option value="etf">Exchange Traded Funds (ETF)</option>
-                        <option value="world">World (Ex-US)</option>
-                    </select>
-                </div>
-                
-                <div style="width: 100%; height: 600px; background: #fff;">
-                    <iframe id="heatmapIframe" 
-                            src="https://finviz.com/map.ashx?t=sec&st=d1" 
-                            width="100%" 
-                            height="100%" 
-                            frameborder="0" 
-                            scrolling="no" 
-                            style="border: none; display: block; min-height: 600px;">
-                    </iframe>
-                </div>
-            </div>
+ <div class="card" style="margin-bottom: 30px; padding: 0 !important; overflow: hidden; border: 2px solid #e1e4e8; background: #fff;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #fff; border-bottom: 1px solid #eee;">
+        <h2 class="card-title" style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; color: #333;">
+            📊 Market Heat Map 
+            <a href="https://finviz.com/map.ashx" target="_blank" style="font-size: 0.7em; color: #667eea; text-decoration: none; margin-left: 10px; font-weight: normal;">
+                (finviz.com 원본보기 ↗)
+            </a>
+        </h2>
+        
+        <select id="mapSelector" onchange="updateHeatMap()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff;">
+            <option value="sp500">S&P 500</option>
+            <option value="nasdaq100">Nasdaq 100</option>
+            <option value="all">Full Market (US)</option>
+            <option value="etf">Exchange Traded Funds (ETF)</option>
+        </select>
+    </div>
+    
+    <div id="mapWrapper" style="width: 100%; height: 620px; background: #f8f9fa; position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div id="mapLoader" style="position: absolute; text-align: center; z-index: 1;">
+            <p style="color: #666; margin-bottom: 15px;">지도를 불러오는 중이거나 보안 정책으로 차단되었습니다.</p>
+            <button onclick="forceLoadMap()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                실시간 지도 로드하기
+            </button>
+        </div>
+        
+        <iframe id="heatmapIframe" 
+                src="https://finviz.com/map.ashx?t=sec&st=d1" 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                scrolling="no" 
+                style="border: none; display: block; position: relative; z-index: 2; background: white;">
+        </iframe>
+    </div>
+</div>
 
-            <script>
-            function updateHeatMap() {
-                const selector = document.getElementById('mapSelector');
-                const iframe = document.getElementById('heatmapIframe');
-                if(!iframe) return;
-                
-                let baseUrl = "https://finviz.com/map.ashx?st=d1";
-                
-                switch(selector.value) {
-                    case 'sp500': iframe.src = baseUrl + "&t=sec"; break;
-                    case 'nasdaq100': iframe.src = baseUrl + "&t=sec&f=ind_nasdaq100"; break;
-                    case 'all': iframe.src = baseUrl + "&t=all"; break;
-                    case 'etf': iframe.src = baseUrl + "&t=etf"; break;
-                    case 'world': iframe.src = baseUrl + "&t=geo"; break;
-                }
-            }
-            </script>
-            ```
+<script>
+function updateHeatMap() {
+    const selector = document.getElementById('mapSelector');
+    const iframe = document.getElementById('heatmapIframe');
+    let baseUrl = "https://finviz.com/map.ashx?st=d1";
+    
+    // 로딩 문구 다시 보여주기
+    document.getElementById('mapLoader').style.opacity = "1";
+
+    switch(selector.value) {
+        case 'sp500': iframe.src = baseUrl + "&t=sec"; break;
+        case 'nasdaq100': iframe.src = baseUrl + "&t=sec&f=ind_nasdaq100"; break;
+        case 'all': iframe.src = baseUrl + "&t=all"; break;
+        case 'etf': iframe.src = baseUrl + "&t=etf"; break;
+    }
+}
+
+function forceLoadMap() {
+    const iframe = document.getElementById('heatmapIframe');
+    const currentSrc = iframe.src;
+    iframe.src = ''; // 리셋
+    setTimeout(() => {
+        iframe.src = currentSrc; // 재로드
+        document.getElementById('mapLoader').style.opacity = "0"; // 안내문구 숨김
+    }, 100);
+}
+</script>
+
 
             <!-- 경제 캘린더 -->
             <div class="economic-calendar">
