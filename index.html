@@ -296,20 +296,41 @@
 
         /* PDF 및 검색 섹션 */
         .pdf-viewer {
-            padding: 30px;
-            min-height: 600px;
-            background: white;
+            padding: 20px;
+            min-height: 800px;
+            background: #f8fafc;
             border-top: 1px solid #edf2f7;
         }
 
         .pdf-container {
             width: 100%;
-            height: 1200px;
+            height: 1800px;
             border: 2px solid #e2e8f0;
             border-radius: var(--radius-small);
             overflow: hidden;
             background: #f8f9fa;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 뉴스 & 섹터 병렬 레이아웃 */
+        .news-sector-row {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .news-sector-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         .earnings-search {
@@ -1017,10 +1038,10 @@
                                     "width": "100%", "height": 550, "symbolsGroups": [
                                         {
                                             "name": "거시 경제 핵심", "symbols": [
-                                                { "name": "CAPITALCOM:US10Y", "displayName": "미 국채 10년 금리" },
-                                                { "name": "CBOE:VIX", "displayName": "VIX (공포지수)" },
-                                                { "name": "CAPITALCOM:DXY", "displayName": "달러 인덱스" },
-                                                { "name": "CAPITALCOM:US02Y", "displayName": "미 국채 2년 금리" },
+                                                { "name": "TVC:US10Y", "displayName": "미 국채 10년 금리" },
+                                                { "name": "TVC:VIX", "displayName": "VIX (공포지수)" },
+                                                { "name": "TVC:DXY", "displayName": "달러 인덱스" },
+                                                { "name": "TVC:US02Y", "displayName": "미 국채 2년 금리" },
                                                 { "name": "OANDA:XAUUSD", "displayName": "금 (Gold)" },
                                                 { "name": "TVC:USOIL", "displayName": "WTI 유가" }
                                             ]
@@ -1031,55 +1052,56 @@
                     </div>
                 </div>
 
-                <!-- 실시간 섹터 주도주 (Full Width Span + 가독성 최적화) -->
-                <div class="card sector-card" style="grid-column: 1 / -1;">
-                    <h3 class="section-title">🚀 실시간 섹터 주도주 (US)</h3>
-                    <div style="max-width: 800px; margin: 0 auto;">
-                        <div class="tradingview-widget-container" style="height: 400px; width: 100%;">
-                            <div class="tradingview-widget-container__widget"></div>
-                            <script type="text/javascript"
-                                src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
-                                    {
-                                        "width": "100%", "height": 400, "symbolsGroups": [
-                                            {
-                                                "name": "주요 섹터", "symbols": [
-                                                    { "name": "AMEX:XLK", "displayName": "기술 (Tech)" }, { "name": "AMEX:XLV", "displayName": "헬스 (Health)" },
-                                                    { "name": "AMEX:XLF", "displayName": "금융 (Finance)" }, { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
-                                                    { "name": "AMEX:XLY", "displayName": "소비재 (Cons)" }, { "name": "AMEX:XLI", "displayName": "산업재 (Indus)" },
-                                                    { "name": "AMEX:XLC", "displayName": "통신 (Comm)" }, { "name": "AMEX:XLB", "displayName": "소재 (Materials)" },
-                                                    { "name": "AMEX:XLU", "displayName": "유틸리티 (Utils)" }, { "name": "AMEX:XLRE", "displayName": "리츠 (REITs)" }
-                                                ]
-                                            }
-                                        ], "showSymbolLogo": true, "colorTheme": "light", "isTransparent": false, "locale": "ko"
-                                    }
-                                </script>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- 뉴스 대시보드 (Full Width) -->
-            <div class="card news-dashboard" style="margin: 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
-                    <button onclick="refreshNews()" class="btn-load" style="padding:6px 15px; font-size:12px;">🔄
-                        새로고침</button>
+            <!-- 뉴스 & 섹터 주도주 병렬 배치 영역 -->
+            <div class="news-sector-row">
+                <!-- 실시간 섹터 주도주 -->
+                <div class="card sector-card" style="margin-bottom: 0;">
+                    <h3 class="section-title">🚀 실시간 섹터 주도주 (US)</h3>
+                    <div class="tradingview-widget-container" style="height: 400px; width: 100%;">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript"
+                            src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+                                {
+                                    "width": "100%", "height": 400, "symbolsGroups": [
+                                        {
+                                            "name": "주요 섹터", "symbols": [
+                                                { "name": "AMEX:XLK", "displayName": "기술 (Tech)" }, { "name": "AMEX:XLV", "displayName": "헬스 (Health)" },
+                                                { "name": "AMEX:XLF", "displayName": "금융 (Finance)" }, { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
+                                                { "name": "AMEX:XLY", "displayName": "소비재 (Cons)" }, { "name": "AMEX:XLI", "displayName": "산업재 (Indus)" },
+                                                { "name": "AMEX:XLC", "displayName": "통신 (Comm)" }, { "name": "AMEX:XLB", "displayName": "소재 (Materials)" },
+                                                { "name": "AMEX:XLU", "displayName": "유틸리티 (Utils)" }, { "name": "AMEX:XLRE", "displayName": "리츠 (REITs)" }
+                                            ]
+                                        }
+                                    ], "showSymbolLogo": true, "colorTheme": "light", "isTransparent": false, "locale": "ko"
+                                }
+                            </script>
+                    </div>
                 </div>
-                <div class="news-grid" id="newsContainer"></div>
 
-                <!-- SAVE 뉴스링크 복구 -->
-                <div
-                    style="margin-top: 25px; text-align: center; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px dashed #667eea;">
-                    <p style="font-size: 0.9em; color: #4a5568; margin-bottom: 15px; font-weight: 600;">
-                        🔎 더 많은 실시간 뉴스와 정밀 티커 분석이 필요하다면?
-                    </p>
-                    <a href="https://saveticker.com/" target="_blank" rel="noopener noreferrer"
-                        style="display:inline-block; padding:12px 35px; background:var(--bg-gradient); color:#fff; text-decoration:none; border-radius:30px; font-weight:700; font-size:1em; transition:all 0.3s; box-shadow:var(--shadow-main);"
-                        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='var(--shadow-float)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-main)';"
-                        id="save-link-btn">
-                        🚀 SaveTicker 방문하기
-                    </a>
+                <!-- 뉴스 대시보드 -->
+                <div class="card news-dashboard" style="margin-bottom: 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
+                        <button onclick="refreshNews()" class="btn-load" style="padding:4px 12px; font-size:11px;">🔄
+                            새로고침</button>
+                    </div>
+                    <div class="news-grid" id="newsContainer"></div>
+
+                    <!-- SAVE 뉴스링크 복구 -->
+                    <div
+                        style="margin-top: 15px; text-align: center; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px dashed #667eea;">
+                        <p style="font-size: 0.85em; color: #4a5568; margin-bottom: 10px; font-weight: 600;">
+                            🔎 정밀 티커 분석이 필요하다면?
+                        </p>
+                        <a href="https://saveticker.com/" target="_blank" rel="noopener noreferrer"
+                            style="display:inline-block; padding:8px 25px; background:var(--bg-gradient); color:#fff; text-decoration:none; border-radius:20px; font-weight:700; font-size:0.9em; transition:all 0.3s; box-shadow:var(--shadow-main);"
+                            onmouseover="this.style.transform='translateY(-2px)';"
+                            onmouseout="this.style.transform='translateY(0)';" id="save-link-btn">
+                            🚀 SaveTicker 방문
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -1381,7 +1403,7 @@
                     "locale": "ko",
                     "symbolUrl": "",
                     "colorTheme": "light",
-                    "hasTopBar": false,
+                    "hasTopBar": true,
                     "isTransparent": false,
                     "hasSymbolTooltip": true,
                     "width": "100%",
