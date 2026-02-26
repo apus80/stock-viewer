@@ -700,24 +700,24 @@
 </style>
 
 <div class="macro-tradingview" style="margin-top: -10px; margin-bottom: 20px;">
-    <div class="card" style="padding: 15px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 글로벌 시장 핵심 지표 및 실시간 심리</h3>
+    <div class="card" style="padding: 15px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;">
+        <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 실시간 글로벌 지표 및 시장 심리</h3>
         
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
             
-            <div style="flex: 1.2; min-width: 320px;">
-                <div class="tradingview-widget-container">
+            <div style="flex: 1.2; min-width: 320px; height: 400px;">
+                <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
                     {
                       "colorTheme": "light", "dateRange": "12M", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
-                      "largeChartUrl": "", "isTransparent": false, "showSymbolLogo": true,
+                      "showSymbolLogo": true,
                       "tabs": [
                         { "name": "지수/선물", "symbols": [ 
-                            { "s": "NASDAQ:QQQ", "d": "나스닥 100" }, 
-                            { "s": "AMEX:SPY", "d": "S&P 500" }, 
-                            { "s": "CME:NQ1!", "d": "나스닥 선물" },
-                            { "s": "FOREXCOM:DJI", "d": "다우 존스" } 
+                            { "s": "NASDAQ:QQQ", "d": "나스닥100" }, 
+                            { "s": "CME:NQ1!", "d": "나스닥선물" }, 
+                            { "s": "AMEX:SPY", "d": "S&P500" }, 
+                            { "s": "FOREXCOM:DJI", "d": "다우존스" } 
                         ] }
                       ]
                     }
@@ -729,24 +729,25 @@
                 
                 <div style="background: #fcfcfc; padding: 10px 15px; border-radius: 10px; border: 1px solid #eee;">
                     <p style="font-size: 11px; color: #666; margin-bottom: 5px; font-weight: bold;">🇰🇷 원/달러 환율</p>
-                    <div class="tradingview-widget-container">
-                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-                        { "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" }
-                        </script>
+                    <div style="height: 60px;">
+                        <div class="tradingview-widget-container">
+                            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+                            { "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" }
+                            </script>
+                        </div>
                     </div>
                 </div>
 
-                <div style="background: #fcfcfc; padding: 12px 15px; border-radius: 10px; border: 1px solid #eee; min-height: 280px;">
+                <div style="background: #fcfcfc; padding: 12px 15px; border-radius: 10px; border: 1px solid #eee; height: 320px;">
                     <p style="font-size: 11px; color: #666; margin-bottom: 8px; font-weight: bold;">📈 실시간 시장 심리</p>
                     
                     <div style="display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <button class="sent-btn" onclick="renderSentimentWidget('NASDAQ:QQQ', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#eee; font-weight:bold;">나스닥</button>
-                        <button class="sent-btn" onclick="renderSentimentWidget('KRX:KOSPI', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코스피</button>
-                        <button class="sent-btn" onclick="renderSentimentWidget('KRX:KOSDAQ', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코스닥</button>
-                        <button class="sent-btn" onclick="renderSentimentWidget('BINANCE:BTCUSDT', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">비트코인</button>
+                        <button class="sent-btn" onclick="loadSenti('NASDAQ:QQQ', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#eee; font-weight:bold;">나스닥</button>
+                        <button class="sent-btn" onclick="loadSenti('KRX:KOSPI', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코스피</button>
+                        <button class="sent-btn" onclick="loadSenti('BINANCE:BTCUSDT', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코인</button>
                     </div>
 
-                    <div id="sentiment-render-area" style="height: 220px; width: 100%;">
+                    <div id="gauge-box" style="height: 230px; width: 100%;">
                         </div>
                 </div>
             </div>
@@ -756,59 +757,44 @@
 
 <script>
 /**
- * 트레이딩뷰 심리 게이지 강제 로드 함수
+ * 위젯 강제 생성 함수 (오류 방지용)
  */
-function renderSentimentWidget(symbol, btn) {
-    const area = document.getElementById('sentiment-render-area');
-    if (!area) {
-        console.error("오류: sentiment-render-area 요소를 찾을 수 없습니다.");
-        return;
-    }
+function loadSenti(symbol, btn) {
+    const box = document.getElementById('gauge-box');
+    if (!box) return;
 
-    // 1. 기존 위젯 지우기
-    area.innerHTML = "";
-
-    // 2. 새 위젯 생성
-    const widgetScript = document.createElement('script');
-    widgetScript.type = 'text/javascript';
-    widgetScript.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
-    widgetScript.async = true;
-    widgetScript.innerHTML = JSON.stringify({
+    box.innerHTML = ""; // 초기화
+    
+    const sc = document.createElement('script');
+    sc.type = 'text/javascript';
+    sc.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+    sc.async = true;
+    sc.innerHTML = JSON.stringify({
         "interval": "1H",
         "width": "100%",
+        "height": 230,
         "isTransparent": true,
-        "height": 220,
         "symbol": symbol,
         "showIntervalTabs": false,
         "locale": "ko",
         "colorTheme": "light"
     });
+    box.appendChild(sc);
 
-    area.appendChild(widgetScript);
-
-    // 3. 버튼 디자인 업데이트
-    document.querySelectorAll('.sent-btn').forEach(b => {
-        b.style.background = '#fff';
-        b.style.borderColor = '#ddd';
-    });
-    if (btn) {
-        btn.style.background = '#eee';
-        btn.style.borderColor = '#667eea';
-    }
+    // 버튼 색상 변경
+    document.querySelectorAll('.sent-btn').forEach(b => b.style.background = '#fff');
+    if(btn) btn.style.background = '#eee';
 }
 
-// 페이지 로드 후 실행 (1초 지연으로 안정성 확보)
-window.onload = function() {
-    setTimeout(function() {
-        const defaultBtn = document.querySelector('.sent-btn');
-        renderSentimentWidget('NASDAQ:QQQ', defaultBtn);
-    }, 1000);
-};
+// 1. 페이지 로드 즉시 실행
+window.addEventListener('load', function() {
+    loadSenti('NASDAQ:QQQ', document.querySelector('.sent-btn'));
+});
 
-// 5분마다 강제 갱신 로직
+// 2. 5분마다 자동 갱신
 setInterval(function() {
-    const currentActive = Array.from(document.querySelectorAll('.sent-btn')).find(b => b.style.background === 'rgb(238, 238, 238)');
-    if (currentActive) currentActive.click();
+    const active = Array.from(document.querySelectorAll('.sent-btn')).find(b => b.style.background === 'rgb(238, 238, 238)');
+    if (active) active.click();
 }, 300000);
 </script>
 
