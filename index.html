@@ -1884,76 +1884,69 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <script>
-// 1. 설정 (여기에 실제 비밀번호를 꼭 입력하세요!)
+// 1. 설정 (사용자님이 이미 수정하신 그 비밀번호가 이 자리에 들어갑니다)
 const PASSWORD = "9803"; 
 const SESSION_KEY = "isLoggedIn";
 
-/**
- * 2. 비밀번호 확인 함수 (누락되었던 핵심 기능)
- */
+// 2. 비밀번호 확인 함수
 function checkPassword() {
     const pwdInput = document.getElementById("passwordInput");
     const enteredPassword = pwdInput.value;
     
-    console.log("🔒 비밀번호 확인 시도...");
+    console.log("🔒 로그인 시도 중..."); // 브라우저 개발자 도구(F12)에서 확인 가능
 
     if (enteredPassword === PASSWORD) {
         sessionStorage.setItem(SESSION_KEY, "true");
         showMainContent();
     } else {
-        alert("비밀번호가 올바르지 않습니다.");
+        alert("비밀번호가 틀렸습니다.");
         pwdInput.value = "";
         pwdInput.focus();
     }
 }
 
-/**
- * 3. 메인 화면 표시 및 위젯 로딩
- */
+// 3. 메인 화면 표시 및 위젯 로딩 함수
 function showMainContent() {
-    console.log("🔥 메인 화면 전환 및 위젯 로딩");
+    console.log("🔥 메인 화면 전환 및 위젯 로딩 시작");
 
-    // 화면 전환
-    document.getElementById('passwordOverlay').style.display = 'none';
-    const mainContent = document.getElementById('mainContent');
-    mainContent.style.display = 'block';
+    // 화면 레이아웃 전환
+    const overlay = document.getElementById('passwordOverlay');
+    const main = document.getElementById('mainContent');
+    
+    if(overlay) overlay.style.display = 'none';
+    if(main) main.style.display = 'block';
 
-    // 위젯 레이아웃 강제 주입 (ID 충돌 방지)
+    // 위젯이 들어갈 HTML 구조를 강제로 다시 꽂아넣음 (박스가 없어서 안 뜨는 문제 방지)
     const chartSection = document.querySelector('.macro-tradingview');
     if (chartSection) {
         chartSection.innerHTML = `
-            <div class="card" style="padding: 15px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 실시간 글로벌 지표 및 시장 심리</h3>
+            <div class="card" style="padding: 15px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 5px solid #667eea;">
+                <h3 style="font-size: 14px; margin-bottom: 12px; font-weight: bold;">📊 실시간 시장 지표 및 분석 심리</h3>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <div style="flex: 1.2; min-width: 320px; height: 400px;" id="main-chart-wrapper"></div>
                     <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 10px;">
-                        <div style="background: #fcfcfc; padding: 10px 15px; border-radius: 10px; border: 1px solid #eee; height: 100px;">
-                            <p style="font-size: 11px; color: #666; margin-bottom: 5px; font-weight: bold;">🇰🇷 원/달러 환율</p>
-                            <div id="exchange-rate-wrapper"></div>
-                        </div>
-                        <div style="background: #fcfcfc; padding: 12px 15px; border-radius: 10px; border: 1px solid #eee; height: 290px;">
-                            <p style="font-size: 11px; color: #666; margin-bottom: 8px; font-weight: bold;">📈 실시간 시장 심리</p>
-                            <div id="gauge-render-area" style="height: 200px;"></div>
-                        </div>
+                        <div id="exchange-rate-wrapper" style="height: 100px; background: #fcfcfc; border-radius: 10px; border: 1px solid #eee;"></div>
+                        <div id="gauge-render-area" style="height: 290px; background: #fcfcfc; border-radius: 10px; border: 1px solid #eee;"></div>
                     </div>
                 </div>
             </div>`;
     }
 
-    // 0.5초 뒤 위젯 실행
+    // 화면이 나타난 직후(0.5초 뒤) 위젯 실행
     setTimeout(startTradingViewWidgets, 500);
 
+    // 기존 데이터 로딩 함수들 호출
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
 }
 
-/**
- * 4. 트레이딩뷰 위젯 생성
- */
+// 4. 트레이딩뷰 위젯 생성 함수
 function startTradingViewWidgets() {
+    console.log("🚀 트레이딩뷰 위젯 렌더링...");
+    
+    // 메인 차트 (QQQ 등)
     const mc = document.getElementById('main-chart-wrapper');
     if(mc) {
-        mc.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
         s.async = true;
@@ -1961,51 +1954,41 @@ function startTradingViewWidgets() {
             "colorTheme": "light", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
             "tabs": [{"name": "지수", "symbols": [{"s": "NASDAQ:QQQ", "d": "나스닥100"}, {"s": "CME:NQ1!", "d": "나스닥선물"}]}]
         });
-        mc.querySelector('.tradingview-widget-container').appendChild(s);
+        mc.appendChild(s);
     }
 
+    // 환율 위젯
     const ex = document.getElementById('exchange-rate-wrapper');
     if(ex) {
-        ex.innerHTML = '<div class="tradingview-widget-container"></div>';
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
         s.async = true;
         s.innerHTML = JSON.stringify({ "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "locale": "ko" });
-        ex.querySelector('.tradingview-widget-container').appendChild(s);
+        ex.appendChild(s);
     }
 
+    // 기술적 분석 게이지
     const area = document.getElementById('gauge-render-area');
     if(area) {
-        area.innerHTML = "";
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
         s.async = true;
-        s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 200, "symbol": "NASDAQ:QQQ", "locale": "ko", "colorTheme": "light" });
+        s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 280, "symbol": "NASDAQ:QQQ", "locale": "ko", "colorTheme": "light" });
         area.appendChild(s);
     }
 }
 
-function logout() {
-    if (confirm("로그아웃 하시겠습니까?")) {
-        sessionStorage.removeItem(SESSION_KEY);
-        location.reload();
-    }
-}
-
-/**
- * 5. 초기 이벤트 리스너 연결 (반드시 필요)
- */
+// 5. 초기 로드 및 이벤트 바인딩
 document.addEventListener("DOMContentLoaded", function () {
     const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) {
-        loginBtn.onclick = checkPassword; 
-    }
+    if (loginBtn) loginBtn.onclick = checkPassword;
 
     const pwdInput = document.getElementById("passwordInput");
     if (pwdInput) {
         pwdInput.onkeypress = function(e){ if(e.key === "Enter") checkPassword(); };
     }
 
+    // 이미 로그인된 상태라면 바로 메인 표시
     if (sessionStorage.getItem(SESSION_KEY) === "true") {
         showMainContent();
     }
