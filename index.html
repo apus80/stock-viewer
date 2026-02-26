@@ -1908,33 +1908,57 @@ function checkPassword() {
 }
 
 // 메인 화면 표시 함수
-// 메인 화면 표시 함수 (최종 통합본)
+// [최종 통합본] 메인 화면 표시 및 위젯 강제 로딩 함수
 function showMainContent() {
-    console.log("🔥 showMainContent 실행됨");
+    console.log("🔥 메인 화면 전환 및 위젯 로딩 시작");
 
-    // 1. 화면 전환
+    // 1. 화면 먼저 표시
     document.getElementById('passwordOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
+    const mainContent = document.getElementById('mainContent');
+    mainContent.style.display = 'block';
 
-    // 2. 위젯 실행 (화면이 보인 후 0.3초 뒤에 실행하여 안정성 확보)
+    // 2. 위젯이 들어갈 HTML 자리가 없다면 강제로 생성 (ID 일치 확인)
+    const chartSection = document.querySelector('.macro-tradingview');
+    if (chartSection) {
+        chartSection.innerHTML = `
+            <div class="card" style="padding: 15px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 실시간 글로벌 지표 및 시장 심리</h3>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1.2; min-width: 320px; height: 400px;" id="main-chart-wrapper"></div>
+                    <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="background: #fcfcfc; padding: 10px 15px; border-radius: 10px; border: 1px solid #eee; height: 100px;">
+                            <p style="font-size: 11px; color: #666; margin-bottom: 5px; font-weight: bold;">🇰🇷 원/달러 환율</p>
+                            <div id="exchange-rate-wrapper"></div>
+                        </div>
+                        <div style="background: #fcfcfc; padding: 12px 15px; border-radius: 10px; border: 1px solid #eee; height: 290px;">
+                            <p style="font-size: 11px; color: #666; margin-bottom: 8px; font-weight: bold;">📈 실시간 시장 심리</p>
+                            <div style="display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap;">
+                                <button class="sent-btn" onclick="initSenti('NASDAQ:QQQ', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#eee; font-weight:bold;">나스닥</button>
+                                <button class="sent-btn" onclick="initSenti('KRX:KOSPI', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코스피</button>
+                                <button class="sent-btn" onclick="initSenti('BINANCE:BTCUSDT', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코인</button>
+                            </div>
+                            <div id="gauge-render-area" style="height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // 3. 0.5초 지연 후 위젯 렌더링 (박스가 생성된 후 실행)
     setTimeout(function() {
         if (typeof startTradingViewWidgets === 'function') {
             startTradingViewWidgets();
         }
-    }, 300);
+    }, 500);
 
-    // 3. 기타 데이터 로드
+    // 4. 나머지 데이터 로드
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
     if (typeof drawCalendar === 'function') {
         drawCalendar(2, 'cal-feb');
         drawCalendar(3, 'cal-mar');
     }
-    
-    console.log("✅ 모든 레이아웃 및 위젯 로딩 명령 완료");
 }
-
-
 
 function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
