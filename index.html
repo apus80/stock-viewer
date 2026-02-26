@@ -1882,16 +1882,16 @@ document.addEventListener('DOMContentLoaded', function() {
     </div> 
 /////////
 <script>
-// 1. 설정값 (실제 비밀번호를 "보안" 대신 입력하세요)
+// 1. 설정 (실제 비밀번호를 "보안" 자리에 입력하세요)
 const PASSWORD = "보안"; 
 const SESSION_KEY = "isLoggedIn";
 
-/**
- * 2. 비밀번호 확인 함수 (이게 없어서 반응이 없었던 것입니다)
- */
+// 2. 비밀번호 확인 함수
 function checkPassword() {
     const pwdInput = document.getElementById("passwordInput");
     const enteredPassword = pwdInput.value;
+    
+    console.log("비밀번호 확인 시도..."); // 작동 확인용 로그
 
     if (enteredPassword === PASSWORD) {
         sessionStorage.setItem(SESSION_KEY, "true");
@@ -1903,18 +1903,16 @@ function checkPassword() {
     }
 }
 
-/**
- * 3. 메인 화면 표시 및 위젯 강제 실행
- */
+// 3. 메인 화면 표시 및 위젯 강제 실행
 function showMainContent() {
-    console.log("🔥 메인 화면 전환 및 위젯 로딩 시작");
+    console.log("🔥 메인 화면 전환 및 위젯 로딩");
 
     // 화면 전환
     document.getElementById('passwordOverlay').style.display = 'none';
     const mainContent = document.getElementById('mainContent');
     mainContent.style.display = 'block';
 
-    // 위젯 박스 강제 생성 (HTML 구조 보장)
+    // 위젯 박스 생성 (기존 자리가 깨졌을 경우 대비)
     const chartSection = document.querySelector('.macro-tradingview');
     if (chartSection) {
         chartSection.innerHTML = `
@@ -1929,11 +1927,6 @@ function showMainContent() {
                         </div>
                         <div style="background: #fcfcfc; padding: 12px 15px; border-radius: 10px; border: 1px solid #eee; height: 290px;">
                             <p style="font-size: 11px; color: #666; margin-bottom: 8px; font-weight: bold;">📈 실시간 시장 심리</p>
-                            <div style="display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap;">
-                                <button class="sent-btn" onclick="initSenti('NASDAQ:QQQ', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#eee; font-weight:bold;">나스닥</button>
-                                <button class="sent-btn" onclick="initSenti('KRX:KOSPI', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코스피</button>
-                                <button class="sent-btn" onclick="initSenti('BINANCE:BTCUSDT', this)" style="cursor:pointer; font-size:10px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff; font-weight:bold;">코인</button>
-                            </div>
                             <div id="gauge-render-area" style="height: 200px;"></div>
                         </div>
                     </div>
@@ -1941,10 +1934,9 @@ function showMainContent() {
             </div>`;
     }
 
-    // 0.5초 뒤 위젯 렌더링
+    // 0.5초 뒤 위젯 실행
     setTimeout(startTradingViewWidgets, 500);
 
-    // 기타 데이터 로딩 (기존 함수들)
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
     if (typeof drawCalendar === 'function') {
@@ -1953,13 +1945,8 @@ function showMainContent() {
     }
 }
 
-/**
- * 4. 트레이딩뷰 위젯 생성 로직
- */
+// 4. 위젯 렌더링 함수
 function startTradingViewWidgets() {
-    console.log("🚀 위젯 렌더링 시작");
-    
-    // 지수 차트
     const mc = document.getElementById('main-chart-wrapper');
     if(mc) {
         mc.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
@@ -1968,12 +1955,11 @@ function startTradingViewWidgets() {
         s.async = true;
         s.innerHTML = JSON.stringify({
             "colorTheme": "light", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
-            "tabs": [{"name": "지수", "symbols": [{"s": "NASDAQ:QQQ", "d": "나스닥100"}, {"s": "CME:NQ1!", "d": "나스닥선물"}, {"s": "AMEX:SPY", "d": "S&P500"}]}]
+            "tabs": [{"name": "지수", "symbols": [{"s": "NASDAQ:QQQ", "d": "나스닥100"}, {"s": "CME:NQ1!", "d": "나스닥선물"}]}]
         });
         mc.querySelector('.tradingview-widget-container').appendChild(s);
     }
 
-    // 환율
     const ex = document.getElementById('exchange-rate-wrapper');
     if(ex) {
         ex.innerHTML = '<div class="tradingview-widget-container"></div>';
@@ -1984,20 +1970,15 @@ function startTradingViewWidgets() {
         ex.querySelector('.tradingview-widget-container').appendChild(s);
     }
 
-    initSenti('NASDAQ:QQQ', document.querySelector('.sent-btn'));
-}
-
-function initSenti(symbol, btn) {
+    // 심리 게이지
     const area = document.getElementById('gauge-render-area');
-    if(!area) return;
-    area.innerHTML = "";
-    const s = document.createElement('script');
-    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-    s.async = true;
-    s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 200, "isTransparent": true, "symbol": symbol, "showIntervalTabs": false, "locale": "ko", "colorTheme": "light" });
-    area.appendChild(s);
-    document.querySelectorAll('.sent-btn').forEach(b => b.style.background = '#fff');
-    if(btn) btn.style.background = '#eee';
+    if(area) {
+        const s = document.createElement('script');
+        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+        s.async = true;
+        s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 200, "symbol": "NASDAQ:QQQ", "locale": "ko", "colorTheme": "light" });
+        area.appendChild(s);
+    }
 }
 
 function logout() {
@@ -2007,22 +1988,26 @@ function logout() {
     }
 }
 
-// 5. 페이지 초기화 및 이벤트 리스너
+// 5. 초기 이벤트 연결 (이 부분이 가장 중요합니다)
 document.addEventListener("DOMContentLoaded", function () {
+    // 로그인 버튼에 함수 연결
     const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) loginBtn.onclick = checkPassword;
+    if (loginBtn) {
+        loginBtn.onclick = checkPassword; 
+    }
 
+    // 엔터키 지원
     const pwdInput = document.getElementById("passwordInput");
     if (pwdInput) {
         pwdInput.onkeypress = function(e){ if(e.key === "Enter") checkPassword(); };
     }
 
+    // 이미 로그인된 상태라면 바로 메인 표시
     if (sessionStorage.getItem(SESSION_KEY) === "true") {
         showMainContent();
     }
 });
 
-// 구글 번역
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'ko,en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
 }
