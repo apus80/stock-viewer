@@ -1029,6 +1029,162 @@
                 </div>
             </div>
 
+            <div class="controls">
+                <!-- 추천 종목 리포트 (기존) -->
+                <div class="category-section featured">
+                    <div class="category-header">
+                        <span class="category-icon">🎯</span>
+                        <div class="category-title featured">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <h3>
+                                    단기/중기 종목 리포트
+                                    <span class="badge">MAIN</span>
+                                </h3>
+                                <a href="methodology.html" target="_blank" rel="noopener noreferrer" class="btn-load"
+                                    style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
+                                    📝 분석 방법론 보기
+                                </a>
+                            </div>
+                            <p>투자 추천 종목 및 매매 전략</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateRecommendation">📅 날짜:</label>
+                        <select id="dateRecommendation">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('recommendation')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 급등 종목 리포트 -->
+                <div class="category-section featured">
+                    <div class="category-header">
+                        <span class="category-icon">🚀</span>
+                        <div class="category-title featured">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <h3>
+                                    급등 종목 리포트
+                                    <span class="badge">ALERT</span>
+                                </h3>
+                                <a href="7Factor.html" target="_blank" rel="noopener noreferrer" class="btn-load"
+                                    style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
+                                    📝 분석 방법론 보기
+                                </a>
+                            </div>
+                            <p>급등 종목 탐지 및 7가지 요소 분석</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateShoot">📅 날짜:</label>
+                        <select id="dateShoot">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('shoot')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 종목 뉴스 & 보고서 -->
+                <div class="category-section news">
+                    <div class="category-header">
+                        <span class="category-icon">📰</span>
+                        <div class="category-title news">
+                            <h3>
+                                시황 & 보고서
+                                <span class="badge news">NEW</span>
+                            </h3>
+                            <p>주요 종목 뉴스 및 시장 동향</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateNews">📅 날짜:</label>
+                        <select id="dateNews">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('news')">불러오기</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- 분석 1: 미국 시장 유동성 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">💰</span>
+                        <div class="category-title">
+                            <h3>[분석1] 미국 시장 유동성 메커니즘</h3>
+                            <p>연준 정책, 넷 리퀴디티, 금융 여건 분석</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis1">📅 날짜:</label>
+                        <select id="dateAnalysis1">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis1')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 2: ETF 자금 흐름 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">📈</span>
+                        <div class="category-title">
+                            <h3>[분석2] ETF 자금 흐름 분석</h3>
+                            <p>스마트 머니 추적 및 섹터 로테이션 (월간)</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis2">📅 날짜:</label>
+                        <select id="dateAnalysis2">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis2')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 3: 내부자 매수 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">👔</span>
+                        <div class="category-title">
+                            <h3>[분석3] 내부자 매수 분석</h3>
+                            <p>경영진 고확신 매수 시그널 추적</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis3">📅 날짜:</label>
+                        <select id="dateAnalysis3">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis3')">불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 분석 4: 애널리스트 목표가 -->
+                <div class="category-section">
+                    <div class="category-header">
+                        <span class="category-icon">🎯</span>
+                        <div class="category-title">
+                            <h3>[분석4] 애널리스트 목표가 분석</h3>
+                            <p>월스트리트 고확신 목표가 상향 추적</p>
+                        </div>
+                    </div>
+                    <div class="selector-row">
+                        <label for="dateAnalysis4">📅 날짜:</label>
+                        <select id="dateAnalysis4">
+                            <option value="">날짜를 선택하세요...</option>
+                        </select>
+                        <button class="btn-load" onclick="loadReport('analysis4')">불러오기</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- 실적발표 검색 -->
             <div class="earnings-search">
@@ -1044,16 +1200,12 @@
                     미국 상장 기업 | <strong>업데이트:</strong> 실시간</div>
             </div>
 
-
-
             <div class="macro-tradingview" style="margin-bottom: 20px;">
                 <div class="card"
                     style="margin-bottom: 20px; padding: 20px; background: #fff; border-radius: 12px; border-left: 5px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                     <h3 style="font-size: 15px; color: #333; margin-bottom: 15px; font-weight: bold;">📊 글로벌 시장 핵심 지표 및
                         심리 현황</h3>
-
                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-
                         <div style="flex: 1.2; min-width: 350px;">
                             <div class="tradingview-widget-container">
                                 <div class="tradingview-widget-container__widget"></div>
@@ -1061,40 +1213,17 @@
                                     src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js"
                                     async>
                                         {
-                                            "colorTheme": "light",
-                                                "dateRange": "12M",
-                                                    "showChart": true,
-                                                        "locale": "ko",
-                                                            "width": "100%",
-                                                                "height": 450,
-                                                                    "largeChartUrl": "",
-                                                                        "isTransparent": false,
-                                                                            "showSymbolLogo": true,
-                                                                                "tabs": [
-                                                                                    {
-                                                                                        "name": "미국 지수",
-                                                                                        "symbols": [
-                                                                                            { "s": "NASDAQ:QQQ", "d": "나스닥 100" },
-                                                                                            { "s": "AMEX:SPY", "d": "S&P 500" },
-                                                                                            { "s": "FOREXCOM:DJI", "d": "다우 존스" }
-                                                                                        ]
-                                                                                    },
-                                                                                    {
-                                                                                        "name": "글로벌/선물",
-                                                                                        "symbols": [
-                                                                                            { "s": "CME_MINI:NQ1!", "d": "나스닥 선물" },
-                                                                                            { "s": "BINANCE:BTCUSDT", "d": "비트코인" },
-                                                                                            { "s": "OANDA:XAUUSD", "d": "금 (골드)" }
-                                                                                        ]
-                                                                                    }
-                                                                                ]
+                                            "colorTheme": "light", "dateRange": "12M", "showChart": true, "locale": "ko", "width": "100%", "height": 450,
+                                                "largeChartUrl": "", "isTransparent": false, "showSymbolLogo": true,
+                                                    "tabs": [
+                                                        { "name": "미국 지수", "symbols": [{ "s": "NASDAQ:QQQ", "d": "나스닥 100" }, { "s": "AMEX:SPY", "d": "S&P 500" }, { "s": "FOREXCOM:DJI", "d": "다우 존스" }] },
+                                                        { "name": "글로벌/선물", "symbols": [{ "s": "CME_MINI:NQ1!", "d": "나스닥 선물" }, { "s": "BINANCE:BTCUSDT", "d": "비트코인" }, { "s": "OANDA:XAUUSD", "d": "금 (골드)" }] }
+                                                    ]
                                         }
                                     </script>
                             </div>
                         </div>
-
                         <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
-
                             <div
                                 style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
                                 <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">🇰🇷
@@ -1103,22 +1232,14 @@
                                     <script type="text/javascript"
                                         src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js"
                                         async>
-                                            {
-                                                "symbol": "FX_IDC:USDKRW",
-                                                    "width": "100%",
-                                                        "colorTheme": "light",
-                                                            "isTransparent": true,
-                                                                "locale": "ko"
-                                            }
+                                            { "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" }
                                         </script>
                                 </div>
                             </div>
-
                             <div
                                 style="background: #fcfcfc; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
                                 <p style="font-size: 12px; color: #666; margin-bottom: 10px; font-weight: bold;">📈 실시간
                                     시장 심리</p>
-
                                 <div style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;">
                                     <button onclick="changeSentiment('KRX:KOSPI')"
                                         style="cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff;">국피</button>
@@ -1131,49 +1252,15 @@
                                     <button onclick="changeSentiment('BINANCE:BTCUSDT')"
                                         style="cursor:pointer; font-size:11px; padding:4px 8px; border-radius:4px; border:1px solid #ddd; background:#fff;">코인</button>
                                 </div>
-
-                                <div id="sentiment-widget-container" style="height: 240px;">
-                                </div>
+                                <div id="sentiment-widget-container" style="height: 240px;"></div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
 
-            <script>
-                // 시장심리 위젯 교체 함수
-                function changeSentiment(symbol) {
-                    const container = document.getElementById('sentiment-widget-container');
-                    container.innerHTML = ''; // 기존 위젯 삭제
-
-                    const script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
-                    script.async = true;
-                    script.innerHTML = JSON.stringify({
-                        "interval": "1D",
-                        "width": "100%",
-                        "isTransparent": true,
-                        "height": 240,
-                        "symbol": symbol,
-                        "showIntervalTabs": false,
-                        "locale": "ko",
-                        "colorTheme": "light"
-                    });
-                    container.appendChild(script);
-                }
-
-                // 초기 로딩 시 나스닥 심리 표시
-                document.addEventListener('DOMContentLoaded', function () {
-                    changeSentiment('NASDAQ:QQQ');
-                });
-            </script>
-
-
-
             <div class="card"
-                style="padding: 15px; background: #fff; border-radius: 10px; border-left: 5px solid #764ba2; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                style="padding: 15px; background: #fff; border-radius: 10px; border-left: 5px solid #764ba2; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
                 <h3 style="font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold;">🚀 실시간 섹터 주도주 (US)
                 </h3>
                 <div class="tradingview-widget-container">
@@ -1181,627 +1268,458 @@
                     <script type="text/javascript"
                         src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
                             {
-                                "width": "100%",
-                                    "height": 350,
-                                        "symbolsGroups": [
-                                            {
-                                                "name": "주요 섹터",
-                                                "originalName": "Sectors",
-                                                "symbols": [
-                                                    { "name": "AMEX:XLK", "displayName": "기술 (Technology)" },
-                                                    { "name": "AMEX:XLV", "displayName": "헬스케어 (Healthcare)" },
-                                                    { "name": "AMEX:XLF", "displayName": "금융 (Financials)" },
-                                                    { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
-                                                    { "name": "AMEX:XLY", "displayName": "소비재 (Consumer)" },
-                                                    { "name": "AMEX:XLI", "displayName": "산업재 (Industrials)" }
-                                                ]
-                                            }
-                                        ],
-                                            "showSymbolLogo": true,
-                                                "colorTheme": "light",
-                                                    "isTransparent": false,
-                                                        "locale": "ko"
+                                "width": "100%", "height": 350, "symbolsGroups": [
+                                    {
+                                        "name": "주요 섹터", "originalName": "Sectors", "symbols": [
+                                            { "name": "AMEX:XLK", "displayName": "기술 (Technology)" }, { "name": "AMEX:XLV", "displayName": "헬스케어 (Healthcare)" },
+                                            { "name": "AMEX:XLF", "displayName": "금융 (Financials)" }, { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
+                                            { "name": "AMEX:XLY", "displayName": "소비재 (Consumer)" }, { "name": "AMEX:XLI", "displayName": "산업재 (Industrials)" }
+                                        ]
+                                    }
+                                ], "showSymbolLogo": true, "colorTheme": "light", "isTransparent": false, "locale": "ko"
                             }
                         </script>
                 </div>
             </div>
-        </div>
 
-
-        <div class="news-dashboard" style="margin-top: 0px !important; padding: 15px !important; border-top: none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h2 style="margin:0; font-size: 1.1em; color: #444;">📰 실시간 시장 뉴스</h2>
-                <button onclick="refreshNews()"
-                    style="padding:5px 10px; font-size: 12px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; border-radius:4px; cursor:pointer;">🔄
-                    새로고침</button>
+            <div class="news-dashboard"
+                style="margin-top: 20px; padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h2 style="margin:0; font-size: 1.1em; color: #444;">📰 실시간 시장 뉴스</h2>
+                    <button onclick="refreshNews()"
+                        style="padding:5px 10px; font-size: 12px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; border-radius:4px; cursor:pointer;">🔄
+                        새로고침</button>
+                </div>
+                <div class="news-grid" id="newsContainer"></div>
             </div>
-            <div class="news-grid" id="newsContainer">
 
+
+
+
+        </div>
+
+        <!-- SaveTicker 추천 -->
+        <div
+            style="background:#fff;padding:20px;margin:20px 0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);text-align:center;border:2px solid #667eea">
+            <p style="margin:0 0 12px 0;color:#2d3748;font-size:1em;font-weight:600">
+                📰 <strong>뉴스정보 추천사이트</strong> (오선님 홧팅!)
+            </p>
+            <a href="https://saveticker.com/" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block;padding:12px 30px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:0.95em;transition:all 0.3s;box-shadow:0 4px 6px rgba(102,126,234,0.3)"
+                onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 12px rgba(102,126,234,0.4)'"
+                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 6px rgba(102,126,234,0.3)'">
+                🔗 SaveTicker 방문하기
+            </a>
+        </div>
+
+        <div class="card"
+            style="margin-bottom: 30px; padding: 0 !important; overflow: hidden; border: 2px solid #e1e4e8; background: #fff;">
+            <div class="card-header"
+                style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #eee;">
+                <h2 class="card-title"
+                    style="margin:0; font-size:1.25rem; display:flex; align-items:center; color:#333;">
+                    📊 Market Heat Map
+                    <a id="tvLink" href="https://www.tradingview.com/heatmap/stock/" target="_blank"
+                        style="font-size:0.7em; color:#667eea; text-decoration:none; margin-left:10px; font-weight:normal;">
+                        (원본보기 ↗)
+                    </a>
+                </h2>
+
+                <select id="mapSelector" onchange="updateTradingViewMap()"
+                    style="padding:6px 12px; border-radius:6px; border:1px solid #ddd; font-size:14px; cursor:pointer; background:#fff;">
+                    <option value="sp500">S&P 500</option>
+                    <option value="nasdaq100">Nasdaq 100</option>
+                </select>
+            </div>
+
+            <div id="tradingview_widget_container" style="width:100%; height:600px;">
             </div>
         </div>
 
-    </div>
+        <script>
+            // 페이지가 처음 열릴 때 자동으로 실행
+            document.addEventListener("DOMContentLoaded", function () {
+                updateTradingViewMap();
+            });
 
-    <!-- SaveTicker 추천 -->
-    <div
-        style="background:#fff;padding:20px;margin:20px 0;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);text-align:center;border:2px solid #667eea">
-        <p style="margin:0 0 12px 0;color:#2d3748;font-size:1em;font-weight:600">
-            📰 <strong>뉴스정보 추천사이트</strong> (오선님 홧팅!)
-        </p>
-        <a href="https://saveticker.com/" target="_blank" rel="noopener noreferrer"
-            style="display:inline-block;padding:12px 30px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:0.95em;transition:all 0.3s;box-shadow:0 4px 6px rgba(102,126,234,0.3)"
-            onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 12px rgba(102,126,234,0.4)'"
-            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 6px rgba(102,126,234,0.3)'">
-            🔗 SaveTicker 방문하기
-        </a>
-    </div>
+            function updateTradingViewMap() {
+                const selector = document.getElementById('mapSelector');
+                const container = document.getElementById('tradingview_widget_container');
+                const tvLink = document.getElementById('tvLink');
 
-    <div class="card"
-        style="margin-bottom: 30px; padding: 0 !important; overflow: hidden; border: 2px solid #e1e4e8; background: #fff;">
-        <div class="card-header"
-            style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:#fff; border-bottom:1px solid #eee;">
-            <h2 class="card-title" style="margin:0; font-size:1.25rem; display:flex; align-items:center; color:#333;">
-                📊 Market Heat Map
-                <a id="tvLink" href="https://www.tradingview.com/heatmap/stock/" target="_blank"
-                    style="font-size:0.7em; color:#667eea; text-decoration:none; margin-left:10px; font-weight:normal;">
-                    (원본보기 ↗)
-                </a>
-            </h2>
+                // 1. 기존 위젯 비우기
+                container.innerHTML = '';
 
-            <select id="mapSelector" onchange="updateTradingViewMap()"
-                style="padding:6px 12px; border-radius:6px; border:1px solid #ddd; font-size:14px; cursor:pointer; background:#fff;">
-                <option value="sp500">S&P 500</option>
-                <option value="nasdaq100">Nasdaq 100</option>
-            </select>
-        </div>
+                // 2. 선택된 맵에 따라 링크 주소 설정
+                let symbolSource = "";
+                if (selector.value === 'sp500') {
+                    symbolSource = "SPX";
+                    tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22S%26P500%22%7D";
+                } else {
+                    symbolSource = "NDX";
+                    tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22NASDAQ100%22%7D";
+                }
 
-        <div id="tradingview_widget_container" style="width:100%; height:600px;">
-        </div>
-    </div>
+                // 3. 위젯 스크립트 생성 및 설정
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
+                script.async = true;
 
-    <script>
-        // 페이지가 처음 열릴 때 자동으로 실행
-        document.addEventListener("DOMContentLoaded", function () {
-            updateTradingViewMap();
-        });
+                const config = {
+                    "symbolGroups": [
+                        {
+                            "name": selector.value === 'sp500' ? "S&P 500" : "Nasdaq 100",
+                            "symbols": [{ "name": symbolSource }]
+                        }
+                    ],
+                    "colorTheme": "light",
+                    "isTransparent": false,
+                    "hasSymbolTooltip": true,
+                    "width": "100%",
+                    "height": "100%",
+                    "blockCompositeStructures": false,
+                    "locale": "ko"
+                };
 
-        function updateTradingViewMap() {
-            const selector = document.getElementById('mapSelector');
-            const container = document.getElementById('tradingview_widget_container');
-            const tvLink = document.getElementById('tvLink');
-
-            // 1. 기존 위젯 비우기
-            container.innerHTML = '';
-
-            // 2. 선택된 맵에 따라 링크 주소 설정
-            let symbolSource = "";
-            if (selector.value === 'sp500') {
-                symbolSource = "SPX";
-                tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22S%26P500%22%7D";
-            } else {
-                symbolSource = "NDX";
-                tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22NASDAQ100%22%7D";
+                script.text = JSON.stringify(config);
+                container.appendChild(script);
             }
-
-            // 3. 위젯 스크립트 생성 및 설정
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
-            script.async = true;
-
-            const config = {
-                "symbolGroups": [
-                    {
-                        "name": selector.value === 'sp500' ? "S&P 500" : "Nasdaq 100",
-                        "symbols": [{ "name": symbolSource }]
-                    }
-                ],
-                "colorTheme": "light",
-                "isTransparent": false,
-                "hasSymbolTooltip": true,
-                "width": "100%",
-                "height": "100%",
-                "blockCompositeStructures": false,
-                "locale": "ko"
-            };
-
-            script.text = JSON.stringify(config);
-            container.appendChild(script);
-        }
-    </script>
+        </script>
 
 
 
 
-    <!-- 경제 캘린더 -->
-    <div class="economic-calendar">
-        <h2>📆 2026년 2-3월 경제 일정</h2>
-        <div class="calendar-grid">
-            <div class="month-calendar">
-                <div class="month-header">2월</div>
-                <div class="weekdays">
-                    <div>일</div>
-                    <div>월</div>
-                    <div>화</div>
-                    <div>수</div>
-                    <div>목</div>
-                    <div>금</div>
-                    <div>토</div>
-                </div>
-                <div class="dates" id="cal-feb"></div>
-            </div>
-            <div class="month-calendar">
-                <div class="month-header">3월</div>
-                <div class="weekdays">
-                    <div>일</div>
-                    <div>월</div>
-                    <div>화</div>
-                    <div>수</div>
-                    <div>목</div>
-                    <div>금</div>
-                    <div>토</div>
-                </div>
-                <div class="dates" id="cal-mar"></div>
-            </div>
-        </div>
-        <div class="event-summary">
-            <h3>📌 전체 53개 이벤트</h3>
-            <div
-                style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:9px;border-radius:6px;margin-bottom:12px;text-align:center;font-weight:700;font-size:0.9em">
-                2월: 24개 | 3월: 29개</div>
-
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#667eea,#764ba2)"
-                    onclick="toggleAccordion(this)">💎 실적 발표 (3개)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💎</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/3 (화)</div>
-                            <div class="event-title-cal">Palantir Q4</div>
-                        </div>
+        <!-- 경제 캘린더 -->
+        <div class="economic-calendar">
+            <h2>📆 2026년 2-3월 경제 일정</h2>
+            <div class="calendar-grid">
+                <div class="month-calendar">
+                    <div class="month-header">2월</div>
+                    <div class="weekdays">
+                        <div>일</div>
+                        <div>월</div>
+                        <div>화</div>
+                        <div>수</div>
+                        <div>목</div>
+                        <div>금</div>
+                        <div>토</div>
                     </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💎</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/25 (수)</div>
-                            <div class="event-title-cal">⭐ NVIDIA Q4</div>
-                        </div>
+                    <div class="dates" id="cal-feb"></div>
+                </div>
+                <div class="month-calendar">
+                    <div class="month-header">3월</div>
+                    <div class="weekdays">
+                        <div>일</div>
+                        <div>월</div>
+                        <div>화</div>
+                        <div>수</div>
+                        <div>목</div>
+                        <div>금</div>
+                        <div>토</div>
                     </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💎</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/4 (수)</div>
-                            <div class="event-title-cal">⭐ Broadcom Q1</div>
+                    <div class="dates" id="cal-mar"></div>
+                </div>
+            </div>
+            <div class="event-summary">
+                <h3>📌 전체 53개 이벤트</h3>
+                <div
+                    style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:9px;border-radius:6px;margin-bottom:12px;text-align:center;font-weight:700;font-size:0.9em">
+                    2월: 24개 | 3월: 29개</div>
+
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="toggleAccordion(this)">💎 실적
+                        발표 (3개)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💎</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/3 (화)</div>
+                                <div class="event-title-cal">Palantir Q4</div>
+                            </div>
+                        </div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💎</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/25 (수)</div>
+                                <div class="event-title-cal">⭐ NVIDIA Q4</div>
+                            </div>
+                        </div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💎</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/4 (수)</div>
+                                <div class="event-title-cal">⭐ Broadcom Q1</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#6f42c1,#8e44ad)"
-                    onclick="toggleAccordion(this)">💼 고용 지표 (12개)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/3</div>
-                            <div class="event-title-cal">JOLTS 12월</div>
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#6f42c1,#8e44ad)" onclick="toggleAccordion(this)">💼 고용
+                        지표 (12개)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/3</div>
+                                <div class="event-title-cal">JOLTS 12월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/4</div>
-                            <div class="event-title-cal">Metro 고용</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/4</div>
+                                <div class="event-title-cal">Metro 고용</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/6</div>
-                            <div class="event-title-cal">⭐ NFP 1월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/6</div>
+                                <div class="event-title-cal">⭐ NFP 1월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/18</div>
-                            <div class="event-title-cal">Union</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/18</div>
+                                <div class="event-title-cal">Union</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">⚠️</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/19</div>
-                            <div class="event-title-cal">산재</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">⚠️</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/19</div>
+                                <div class="event-title-cal">산재</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/19</div>
-                            <div class="event-title-cal">State JOLTS</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/19</div>
+                                <div class="event-title-cal">State JOLTS</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/20</div>
-                            <div class="event-title-cal">파업</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/20</div>
+                                <div class="event-title-cal">파업</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💰</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/24</div>
-                            <div class="event-title-cal">ECEC Q3</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💰</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/24</div>
+                                <div class="event-title-cal">ECEC Q3</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📊</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/26</div>
-                            <div class="event-title-cal">BED Q2</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📊</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/26</div>
+                                <div class="event-title-cal">BED Q2</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/6</div>
-                            <div class="event-title-cal">⭐ NFP 2월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/6</div>
+                                <div class="event-title-cal">⭐ NFP 2월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💰</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/10</div>
-                            <div class="event-title-cal">CEWQ Q3</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💰</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/10</div>
+                                <div class="event-title-cal">CEWQ Q3</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💼</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/28</div>
-                            <div class="event-title-cal">JOLTS 2월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💼</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/28</div>
+                                <div class="event-title-cal">JOLTS 2월</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#fd7e14,#e74c3c)"
-                    onclick="toggleAccordion(this)">📊 물가 지표 (11개)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💰</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/10</div>
-                            <div class="event-title-cal">ECI Q4</div>
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#fd7e14,#e74c3c)" onclick="toggleAccordion(this)">📊 물가
+                        지표 (11개)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💰</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/10</div>
+                                <div class="event-title-cal">ECI Q4</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📈</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/10</div>
-                            <div class="event-title-cal">수입수출 12월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📈</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/10</div>
+                                <div class="event-title-cal">수입수출 12월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📊</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/11</div>
-                            <div class="event-title-cal">⭐ CPI 1월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📊</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/11</div>
+                                <div class="event-title-cal">⭐ CPI 1월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💵</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/11</div>
-                            <div class="event-title-cal">실질임금 1월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💵</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/11</div>
+                                <div class="event-title-cal">실질임금 1월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">🏭</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/27</div>
-                            <div class="event-title-cal">⭐ PPI 1월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">🏭</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/27</div>
+                                <div class="event-title-cal">⭐ PPI 1월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📈</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/5</div>
-                            <div class="event-title-cal">생산성 Q4</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📈</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/5</div>
+                                <div class="event-title-cal">생산성 Q4</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📊</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/5</div>
-                            <div class="event-title-cal">수입수출 1월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📊</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/5</div>
+                                <div class="event-title-cal">수입수출 1월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📊</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/11</div>
-                            <div class="event-title-cal">⭐ CPI 2월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📊</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/11</div>
+                                <div class="event-title-cal">⭐ CPI 2월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💵</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/11</div>
-                            <div class="event-title-cal">실질임금 2월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💵</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/11</div>
+                                <div class="event-title-cal">실질임금 2월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">🏭</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/12</div>
-                            <div class="event-title-cal">⭐ PPI 2월</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">🏭</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/12</div>
+                                <div class="event-title-cal">⭐ PPI 2월</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">📈</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/24</div>
-                            <div class="event-title-cal">생산성 개정</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">📈</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/24</div>
+                                <div class="event-title-cal">생산성 개정</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#28a745,#20c997)"
-                    onclick="toggleAccordion(this)">💹 GDP/무역 (5개)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💹</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/5</div>
-                            <div class="event-title-cal">무역수지</div>
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#28a745,#20c997)" onclick="toggleAccordion(this)">💹
+                        GDP/무역 (5개)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💹</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/5</div>
+                                <div class="event-title-cal">무역수지</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💹</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/5</div>
-                            <div class="event-title-cal">야외경제</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💹</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/5</div>
+                                <div class="event-title-cal">야외경제</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💹</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/13</div>
-                            <div class="event-title-cal">⭐ GDP 2차</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💹</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/13</div>
+                                <div class="event-title-cal">⭐ GDP 2차</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💰</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/13</div>
-                            <div class="event-title-cal">개인소득</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💰</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/13</div>
+                                <div class="event-title-cal">개인소득</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">💹</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/25</div>
-                            <div class="event-title-cal">국제거래</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">💹</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/25</div>
+                                <div class="event-title-cal">국제거래</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#0056b3,#004085)"
-                    onclick="toggleAccordion(this)">🏦 FOMC (2일)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">🏦</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/18</div>
-                            <div class="event-title-cal">FOMC Day 1</div>
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#0056b3,#004085)" onclick="toggleAccordion(this)">🏦
+                        FOMC (2일)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">🏦</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/18</div>
+                                <div class="event-title-cal">FOMC Day 1</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">🏦</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">3/19</div>
-                            <div class="event-title-cal">⭐ 금리발표</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="category-section">
-                <div class="category-header-cal collapsed" style="background:linear-gradient(135deg,#e91e63,#c2185b)"
-                    onclick="toggleAccordion(this)">🏛️ 공휴일 (1일)</div>
-                <div class="event-grid accordion-content collapsed">
-                    <div class="event-item-cal">
-                        <div class="event-icon-large">🏛️</div>
-                        <div class="event-details-cal">
-                            <div class="event-date-cal">2/16</div>
-                            <div class="event-title-cal">대통령의 날</div>
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">🏦</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">3/19</div>
+                                <div class="event-title-cal">⭐ 금리발표</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div
-                style="margin-top:10px;padding:8px;background:#fff3cd;border-left:3px solid #ffc107;border-radius:5px;font-size:0.82em">
-                <strong>⭐ 시장 영향도 높은 핵심 지표</strong></div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <!-- 추천 종목 리포트 (기존) -->
-        <div class="category-section featured">
-            <div class="category-header">
-                <span class="category-icon">🎯</span>
-                <div class="category-title featured">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <h3>
-                            단기/중기 종목 리포트
-                            <span class="badge">MAIN</span>
-                        </h3>
-                        <a href="methodology.html" target="_blank" rel="noopener noreferrer" class="btn-load"
-                            style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
-                            📝 분석 방법론 보기
-                        </a>
+                <div class="category-section">
+                    <div class="category-header-cal collapsed"
+                        style="background:linear-gradient(135deg,#e91e63,#c2185b)" onclick="toggleAccordion(this)">🏛️
+                        공휴일 (1일)</div>
+                    <div class="event-grid accordion-content collapsed">
+                        <div class="event-item-cal">
+                            <div class="event-icon-large">🏛️</div>
+                            <div class="event-details-cal">
+                                <div class="event-date-cal">2/16</div>
+                                <div class="event-title-cal">대통령의 날</div>
+                            </div>
+                        </div>
                     </div>
-                    <p>투자 추천 종목 및 매매 전략</p>
                 </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateRecommendation">📅 날짜:</label>
-                <select id="dateRecommendation">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('recommendation')">불러오기</button>
+
+                <div
+                    style="margin-top:10px;padding:8px;background:#fff3cd;border-left:3px solid #ffc107;border-radius:5px;font-size:0.82em">
+                    <strong>⭐ 시장 영향도 높은 핵심 지표</strong>
+                </div>
             </div>
         </div>
 
-        <div class="divider"></div>
-
-        <!-- 급등 종목 리포트 -->
-        <div class="category-section featured">
-            <div class="category-header">
-                <span class="category-icon">🚀</span>
-                <div class="category-title featured">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <h3>
-                            급등 종목 리포트
-                            <span class="badge">ALERT</span>
-                        </h3>
-                        <a href="7Factor.html" target="_blank" rel="noopener noreferrer" class="btn-load"
-                            style="text-decoration: none; font-size: 0.8em; padding: 8px 15px; background: #5a67d8;">
-                            📝 분석 방법론 보기
-                        </a>
-                    </div>
-                    <p>급등 종목 탐지 및 7가지 요소 분석</p>
-                </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateShoot">📅 날짜:</label>
-                <select id="dateShoot">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('shoot')">불러오기</button>
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- 종목 뉴스 & 보고서 -->
-        <div class="category-section news">
-            <div class="category-header">
-                <span class="category-icon">📰</span>
-                <div class="category-title news">
-                    <h3>
-                        시황 & 보고서
-                        <span class="badge news">NEW</span>
-                    </h3>
-                    <p>주요 종목 뉴스 및 시장 동향</p>
-                </div>
-            </div>
-            <li class="dropdown-header">주요 보고서</li>
-
-            <li style="list-style:none;">
-                -
-                <a href="#" onclick="openMemoryReport(); return false;">
-                    메모리 사업의 전망
-                    <span style="color:#888; font-size:12px;">
-                        (상세한 내용은 하단 2월 16일 보고서(pdf) 참조 )
-                    </span>
-                </a>
-            </li>
-
-            <div class="selector-row">
-                <label for="dateNews">📅 날짜:</label>
-                <select id="dateNews">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('news')">불러오기</button>
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- 분석 1: 미국 시장 유동성 -->
-        <div class="category-section">
-            <div class="category-header">
-                <span class="category-icon">💰</span>
-                <div class="category-title">
-                    <h3>[분석1] 미국 시장 유동성 메커니즘</h3>
-                    <p>연준 정책, 넷 리퀴디티, 금융 여건 분석</p>
-                </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateAnalysis1">📅 날짜:</label>
-                <select id="dateAnalysis1">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('analysis1')">불러오기</button>
-            </div>
-        </div>
-
-        <!-- 분석 2: ETF 자금 흐름 -->
-        <div class="category-section">
-            <div class="category-header">
-                <span class="category-icon">📈</span>
-                <div class="category-title">
-                    <h3>[분석2] ETF 자금 흐름 분석</h3>
-                    <p>스마트 머니 추적 및 섹터 로테이션 (월간)</p>
-                </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateAnalysis2">📅 날짜:</label>
-                <select id="dateAnalysis2">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('analysis2')">불러오기</button>
-            </div>
-        </div>
-
-        <!-- 분석 3: 내부자 매수 -->
-        <div class="category-section">
-            <div class="category-header">
-                <span class="category-icon">👔</span>
-                <div class="category-title">
-                    <h3>[분석3] 내부자 매수 분석</h3>
-                    <p>경영진 고확신 매수 시그널 추적</p>
-                </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateAnalysis3">📅 날짜:</label>
-                <select id="dateAnalysis3">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('analysis3')">불러오기</button>
-            </div>
-        </div>
-
-        <!-- 분석 4: 애널리스트 목표가 -->
-        <div class="category-section">
-            <div class="category-header">
-                <span class="category-icon">🎯</span>
-                <div class="category-title">
-                    <h3>[분석4] 애널리스트 목표가 분석</h3>
-                    <p>월스트리트 고확신 목표가 상향 추적</p>
-                </div>
-            </div>
-            <div class="selector-row">
-                <label for="dateAnalysis4">📅 날짜:</label>
-                <select id="dateAnalysis4">
-                    <option value="">날짜를 선택하세요...</option>
-                </select>
-                <button class="btn-load" onclick="loadReport('analysis4')">불러오기</button>
-            </div>
-        </div>
-    </div>
     </div>
 
     <div class="pdf-viewer">
@@ -2537,6 +2455,12 @@
         // 메인 화면 표시 및 데이터 로딩 함수
         function showMainContent() {
             console.log("🔥 애플리케이션 초기화 및 데이터 로딩 시작");
+
+            // 메인 컨텐츠 표시
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
 
             // 1. 리포트 선택기 및 뉴스 로드
             if (typeof loadDateList === 'function') loadDateList();
