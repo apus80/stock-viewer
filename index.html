@@ -1132,11 +1132,26 @@
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #edf2f7;">
                     <h3 class="section-title" style="border:none; padding:0; margin:0;">📊 Market Heat Map</h3>
-                    <select id="mapSelector" onchange="updateTradingViewMap()" class="search-input"
-                        style="width: auto; padding: 6px 12px;">
-                        <option value="sp500">S&P 500</option>
-                        <option value="nasdaq100">Nasdaq 100</option>
-                    </select>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <!-- 외부 링크 배지 -->
+                        <div style="display:flex; gap:8px;">
+                            <a href="https://www.tradingview.com/heatmap/stock/" target="_blank"
+                                rel="noopener noreferrer" class="btn-sm"
+                                style="background:#f1f5f9; text-decoration:none; display:flex; align-items:center; gap:4px;">
+                                📈 TradingView
+                            </a>
+                            <a href="https://finviz.com/map.ashx" target="_blank" rel="noopener noreferrer"
+                                class="btn-sm"
+                                style="background:#f1f5f9; text-decoration:none; display:flex; align-items:center; gap:4px;">
+                                🗺️ Finviz
+                            </a>
+                        </div>
+                        <select id="mapSelector" onchange="updateTradingViewMap()" class="search-input"
+                            style="width: auto; padding: 6px 12px; margin: 0;">
+                            <option value="S&P 500">S&P 500</option>
+                            <option value="Nasdaq 100">Nasdaq 100</option>
+                        </select>
+                    </div>
                 </div>
                 <!-- ID가 중복되지 않도록 확인 및 고정 높이 부여 -->
                 <div id="tradingview_heatmap_container" style="width:100%; height:600px;"></div>
@@ -1406,15 +1421,16 @@
                 const container = document.getElementById('tradingview_heatmap_container');
 
                 // 1. 기존 위젯 비우기
-                container.innerHTML = '';
+                container.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:#64748b;">🔄 실시간 맵 로딩 중...</div>';
 
                 // 2. 선택된 맵에 따라 데이터 소스 설정
-                let dataSource = selector.value === 'sp500' ? "SPX500" : "NAS100";
+                let dataSource = selector.value; // "S&P 500" 또는 "Nasdaq 100" 직접 사용
 
                 // 3. 위젯 스크립트 생성 및 설정
                 const script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
+                // 타임스탬프를 추가하여 캐시를 방지하고 실시간성 확보
+                script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js?v=' + Date.now();
                 script.async = true;
 
                 const config = {
@@ -1433,7 +1449,12 @@
                 };
 
                 script.text = JSON.stringify(config);
-                container.appendChild(script);
+
+                // 로딩 메시지 제거 후 추가
+                setTimeout(() => {
+                    container.innerHTML = '';
+                    container.appendChild(script);
+                }, 100);
             }
         </script>
 
