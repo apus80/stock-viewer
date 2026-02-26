@@ -1881,114 +1881,57 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
     </div> 
 
-
-
 <script>
-// 1. 설정 (사용자님이 이미 수정하신 그 비밀번호가 이 자리에 들어갑니다)
+// 1. 설정 (비밀번호를 여기서 직접 수정하세요)
 const PASSWORD = "9803"; 
 const SESSION_KEY = "isLoggedIn";
 
-// 2. 비밀번호 확인 함수
+// 2. 비밀번호 확인 및 로그인 로직
 function checkPassword() {
     const pwdInput = document.getElementById("passwordInput");
     const enteredPassword = pwdInput.value;
     
-    console.log("🔒 로그인 시도 중..."); // 브라우저 개발자 도구(F12)에서 확인 가능
+    console.log("🔒 로그인 시도 중...");
 
     if (enteredPassword === PASSWORD) {
         sessionStorage.setItem(SESSION_KEY, "true");
-        showMainContent();
+        showMainContent(); // 단순히 display만 바꾸는 게 아니라 전체 화면을 그리는 함수를 실행합니다.
     } else {
-        alert("비밀번호가 틀렸습니다.");
+        alert("비밀번호가 올바르지 않습니다.");
         pwdInput.value = "";
         pwdInput.focus();
     }
 }
 
-// 3. 메인 화면 표시 및 위젯 로딩 함수
-
+// 3. 메인 화면 활성화 및 모든 데이터 로딩
 function showMainContent() {
-    console.log("🔥 메인 화면 강제 활성화 시작");
+    console.log("🔥 메인 화면 및 위젯 로딩 시작");
 
-    // 1. 레이아웃 강제 노출
     const overlay = document.getElementById('passwordOverlay');
     const mainContent = document.getElementById('mainContent');
     
-    if (overlay) overlay.style.setAttribute('style', 'display: none !important');
+    if (overlay) overlay.style.display = 'none';
     if (mainContent) {
-        mainContent.style.setAttribute('style', 'display: block !important');
+        mainContent.style.display = 'block';
         mainContent.style.visibility = 'visible';
-        mainContent.style.opacity = '1';
     }
 
-    // 2. 위젯 섹션 강제 생성 (기존 내용이 비어있을 경우 대비)
-    const chartSection = document.querySelector('.macro-tradingview');
-    if (chartSection) {
-        chartSection.innerHTML = `
-            <div class="card" style="padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px;">
-                <h3 style="font-size: 16px; margin-bottom: 15px; font-weight: bold; color: #333;">📊 실시간 시장 지표 및 분석</h3>
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div id="main-chart-wrapper" style="flex: 1.5; min-width: 320px; height: 450px; background: #f8f9fa; border-radius: 8px;"></div>
-                    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
-                        <div id="exchange-rate-wrapper" style="height: 120px; background: #f8f9fa; border-radius: 8px;"></div>
-                        <div id="gauge-render-area" style="height: 315px; background: #f8f9fa; border-radius: 8px;"></div>
-                    </div>
-                </div>
-            </div>`;
-    }
-
-    // 3. 0.3초 뒤 위젯 및 데이터 로딩 시작
+    // 위젯과 데이터 로딩을 순차적으로 실행
     setTimeout(() => {
-        startTradingViewWidgets();
+        // 트레이딩뷰 위젯 실행
+        if (typeof startTradingViewWidgets === 'function') startTradingViewWidgets();
+        
+        // 뉴스 및 데이터 로딩 (파일 위쪽에 정의된 함수들)
         if (typeof loadDateList === 'function') loadDateList();
         if (typeof loadNews === 'function') loadNews();
         if (typeof drawCalendar === 'function') {
             drawCalendar(2, 'cal-feb');
             drawCalendar(3, 'cal-mar');
         }
-    }, 300);
+    }, 200);
 }
 
-
-// 4. 트레이딩뷰 위젯 생성 함수
-function startTradingViewWidgets() {
-    console.log("🚀 트레이딩뷰 위젯 렌더링...");
-    
-    // 메인 차트 (QQQ 등)
-    const mc = document.getElementById('main-chart-wrapper');
-    if(mc) {
-        const s = document.createElement('script');
-        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
-        s.async = true;
-        s.innerHTML = JSON.stringify({
-            "colorTheme": "light", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
-            "tabs": [{"name": "지수", "symbols": [{"s": "NASDAQ:QQQ", "d": "나스닥100"}, {"s": "CME:NQ1!", "d": "나스닥선물"}]}]
-        });
-        mc.appendChild(s);
-    }
-
-    // 환율 위젯
-    const ex = document.getElementById('exchange-rate-wrapper');
-    if(ex) {
-        const s = document.createElement('script');
-        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
-        s.async = true;
-        s.innerHTML = JSON.stringify({ "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "locale": "ko" });
-        ex.appendChild(s);
-    }
-
-    // 기술적 분석 게이지
-    const area = document.getElementById('gauge-render-area');
-    if(area) {
-        const s = document.createElement('script');
-        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-        s.async = true;
-        s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 280, "symbol": "NASDAQ:QQQ", "locale": "ko", "colorTheme": "light" });
-        area.appendChild(s);
-    }
-}
-
-// 5. 초기 로드 및 이벤트 바인딩
+// 4. 초기 이벤트 연결 및 자동 로그인 체크
 document.addEventListener("DOMContentLoaded", function () {
     const loginBtn = document.getElementById("loginBtn");
     if (loginBtn) loginBtn.onclick = checkPassword;
@@ -1998,17 +1941,23 @@ document.addEventListener("DOMContentLoaded", function () {
         pwdInput.onkeypress = function(e){ if(e.key === "Enter") checkPassword(); };
     }
 
-    // 이미 로그인된 상태라면 바로 메인 표시
+    // 이미 로그인된 세션이 있다면 바로 화면 표시
     if (sessionStorage.getItem(SESSION_KEY) === "true") {
         showMainContent();
     }
 });
 
+// 구글 번역 초기화
 function googleTranslateElementInit() {
-    new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'ko,en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    new google.translate.TranslateElement({
+        pageLanguage: 'en', 
+        includedLanguages: 'ko,en', 
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    }, 'google_translate_element');
 }
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
 <script>
 function checkPassword() {
