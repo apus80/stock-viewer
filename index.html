@@ -1880,18 +1880,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     </script>
     </div> 
-/////////
+
+
+
 <script>
-// 1. 여기에 실제 사용할 비밀번호를 입력하세요 (예: "1234")
-const PASSWORD = "9803"; 
+// 1. 설정 (여기에 실제 비밀번호를 꼭 입력하세요!)
+const PASSWORD = "보안"; 
 const SESSION_KEY = "isLoggedIn";
 
-// 2. 비밀번호 확인 함수
+/**
+ * 2. 비밀번호 확인 함수 (누락되었던 핵심 기능)
+ */
 function checkPassword() {
     const pwdInput = document.getElementById("passwordInput");
     const enteredPassword = pwdInput.value;
     
-    console.log("🔒 비밀번호 검증 시도 중...");
+    console.log("🔒 비밀번호 확인 시도...");
 
     if (enteredPassword === PASSWORD) {
         sessionStorage.setItem(SESSION_KEY, "true");
@@ -1903,15 +1907,18 @@ function checkPassword() {
     }
 }
 
-// 3. 메인 화면 표시 및 위젯 강제 실행
+/**
+ * 3. 메인 화면 표시 및 위젯 로딩
+ */
 function showMainContent() {
     console.log("🔥 메인 화면 전환 및 위젯 로딩");
 
+    // 화면 전환
     document.getElementById('passwordOverlay').style.display = 'none';
     const mainContent = document.getElementById('mainContent');
     mainContent.style.display = 'block';
 
-    // 위젯 레이아웃 강제 주입
+    // 위젯 레이아웃 강제 주입 (ID 충돌 방지)
     const chartSection = document.querySelector('.macro-tradingview');
     if (chartSection) {
         chartSection.innerHTML = `
@@ -1933,14 +1940,16 @@ function showMainContent() {
             </div>`;
     }
 
-    // 0.5초 지연 후 위젯 실행
+    // 0.5초 뒤 위젯 실행
     setTimeout(startTradingViewWidgets, 500);
 
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
 }
 
-// 4. 트레이딩뷰 위젯 생성
+/**
+ * 4. 트레이딩뷰 위젯 생성
+ */
 function startTradingViewWidgets() {
     const mc = document.getElementById('main-chart-wrapper');
     if(mc) {
@@ -1967,6 +1976,7 @@ function startTradingViewWidgets() {
 
     const area = document.getElementById('gauge-render-area');
     if(area) {
+        area.innerHTML = "";
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
         s.async = true;
@@ -1982,10 +1992,14 @@ function logout() {
     }
 }
 
-// 5. 초기 로드 및 버튼 연결
+/**
+ * 5. 초기 이벤트 리스너 연결 (반드시 필요)
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) loginBtn.onclick = checkPassword;
+    if (loginBtn) {
+        loginBtn.onclick = checkPassword; 
+    }
 
     const pwdInput = document.getElementById("passwordInput");
     if (pwdInput) {
