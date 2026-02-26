@@ -1004,6 +1004,31 @@
                     </div>
                 </div>
 
+                <!-- 시장 핵심 거시 지표 (Market Pulse) -->
+                <div class="card macro-pulse-card">
+                    <h3 class="section-title">🌐 시장 핵심 거시 지표 (Market Pulse)</h3>
+                    <div class="tradingview-widget-container" style="height: 450px;">
+                        <div class="tradingview-widget-container__widget"></div>
+                        <script type="text/javascript"
+                            src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+                                {
+                                    "width": "100%", "height": 450, "symbolsGroups": [
+                                        {
+                                            "name": "거시 경제 핵심", "symbols": [
+                                                { "name": "TVC:US10Y", "displayName": "미 국채 10년 금리" },
+                                                { "name": "TVC:VIX", "displayName": "VIX (공포지수)" },
+                                                { "name": "TVC:DXY", "displayName": "달러 인덱스" },
+                                                { "name": "TVC:US02Y", "displayName": "미 국채 2년 금리" },
+                                                { "name": "OANDA:XAUUSD", "displayName": "금 (Gold)" },
+                                                { "name": "TVC:USOIL", "displayName": "WTI 유가" }
+                                            ]
+                                        }
+                                    ], "showSymbolLogo": true, "colorTheme": "light", "isTransparent": false, "locale": "ko"
+                                }
+                            </script>
+                    </div>
+                </div>
+
                 <!-- 실시간 섹터 주도주 (Full Width Span) -->
                 <div class="card sector-card" style="grid-column: 1 / -1;">
                     <h3 class="section-title">🚀 실시간 섹터 주도주 (US)</h3>
