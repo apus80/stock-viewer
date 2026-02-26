@@ -704,8 +704,7 @@
         <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 실시간 글로벌 지표 및 시장 심리</h3>
         
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1.2; min-width: 320px; height: 400px;" id="main-chart-wrapper">
-                </div>
+            <div style="flex: 1.2; min-width: 320px; height: 400px;" id="main-chart-wrapper"></div>
 
             <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 10px;">
                 <div style="background: #fcfcfc; padding: 10px 15px; border-radius: 10px; border: 1px solid #eee; height: 100px;">
@@ -726,66 +725,6 @@
         </div>
     </div>
 </div>
-
-<script>
-/**
- * 트레이딩뷰 위젯 실행 함수
- */
-function startTradingViewWidgets() {
-    console.log("🚀 트레이딩뷰 위젯 실행...");
-
-    // 1. 메인 차트 (ID: main-chart-wrapper 가 있어야 함)
-    const mc = document.getElementById('main-chart-wrapper');
-    if(mc) {
-        mc.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
-        const s = document.createElement('script');
-        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
-        s.async = true;
-        s.innerHTML = JSON.stringify({
-            "colorTheme": "light", "dateRange": "12M", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
-            "showSymbolLogo": true,
-            "tabs": [{ "name": "지수/선물", "symbols": [ 
-                { "s": "NASDAQ:QQQ", "d": "나스닥100" }, { "s": "CME:NQ1!", "d": "나스닥선물" }, 
-                { "s": "AMEX:SPY", "d": "S&P500" }, { "s": "FOREXCOM:DJI", "d": "다우존스" } 
-            ]}]
-        });
-        mc.querySelector('.tradingview-widget-container').appendChild(s);
-    }
-
-    // 2. 환율 (ID: exchange-rate-wrapper 가 있어야 함)
-    const ex = document.getElementById('exchange-rate-wrapper');
-    if(ex) {
-        ex.innerHTML = '<div class="tradingview-widget-container"></div>';
-        const s = document.createElement('script');
-        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
-        s.async = true;
-        s.innerHTML = JSON.stringify({ "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" });
-        ex.querySelector('.tradingview-widget-container').appendChild(s);
-    }
-
-    // 3. 심리 초기화
-    initSenti('NASDAQ:QQQ', document.querySelector('.sent-btn'));
-}
-
-function initSenti(symbol, btn) {
-    const area = document.getElementById('gauge-render-area');
-    if(!area) return;
-    area.innerHTML = "";
-    const s = document.createElement('script');
-    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-    s.async = true;
-    s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 200, "isTransparent": true, "symbol": symbol, "showIntervalTabs": false, "locale": "ko", "colorTheme": "light" });
-    area.appendChild(s);
-    document.querySelectorAll('.sent-btn').forEach(b => b.style.background = '#fff');
-    if(btn) btn.style.background = '#eee';
-}
-
-// 5분 자동 갱신
-setInterval(function() {
-    const active = Array.from(document.querySelectorAll('.sent-btn')).find(b => b.style.background === 'rgb(238, 238, 238)');
-    if (active) active.click();
-}, 300000);
-</script>
 
 
 
@@ -1970,33 +1909,25 @@ function checkPassword() {
 }
 
 // 메인 화면 표시 함수
+
 function showMainContent() {
     console.log("🔥 showMainContent 실행됨");
 
-    // 1. 화면 먼저 보이게 하기
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 
-    // 2. 아주 짧은 시간(0.1초) 뒤에 위젯 그리기 (박스가 확실히 나타난 후 실행)
+    // 화면이 display: block으로 바뀐 후 위젯을 그려야 인식합니다.
     setTimeout(function() {
-        if (typeof startTradingViewWidgets === 'function') {
-            startTradingViewWidgets();
-        }
-    }, 150); 
+        startTradingViewWidgets();
+    }, 200);
 
-    // 3. 기존 리스트 및 뉴스 로드
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
-
-    // 4. 캘린더 그리기
     if (typeof drawCalendar === 'function') {
         drawCalendar(2, 'cal-feb');
         drawCalendar(3, 'cal-mar');
     }
-    
-    console.log("✅ 모든 데이터 로딩 완료");
 }
-
 
 function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
@@ -2048,6 +1979,52 @@ setInterval(function() {
         updateTradingViewMap();
     }
 }, 300000); // 300,000ms = 5분
+
+function startTradingViewWidgets() {
+    console.log("🚀 위젯 렌더링 시작");
+    
+    // 메인 차트
+    const mc = document.getElementById('main-chart-wrapper');
+    if(mc) {
+        mc.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
+        const s = document.createElement('script');
+        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
+        s.async = true;
+        s.innerHTML = JSON.stringify({
+            "colorTheme": "light", "showChart": true, "locale": "ko", "width": "100%", "height": 400,
+            "tabs": [{"name": "지수", "symbols": [{"s": "NASDAQ:QQQ", "d": "나스닥100"}, {"s": "CME:NQ1!", "d": "나스닥선물"}, {"s": "AMEX:SPY", "d": "S&P500"}]}]
+        });
+        mc.querySelector('.tradingview-widget-container').appendChild(s);
+    }
+
+    // 환율
+    const ex = document.getElementById('exchange-rate-wrapper');
+    if(ex) {
+        ex.innerHTML = '<div class="tradingview-widget-container"></div>';
+        const s = document.createElement('script');
+        s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
+        s.async = true;
+        s.innerHTML = JSON.stringify({ "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" });
+        ex.querySelector('.tradingview-widget-container').appendChild(s);
+    }
+
+    // 심리 초기화
+    initSenti('NASDAQ:QQQ', document.querySelector('.sent-btn'));
+}
+
+function initSenti(symbol, btn) {
+    const area = document.getElementById('gauge-render-area');
+    if(!area) return;
+    area.innerHTML = "";
+    const s = document.createElement('script');
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+    s.async = true;
+    s.innerHTML = JSON.stringify({ "interval": "1H", "width": "100%", "height": 200, "isTransparent": true, "symbol": symbol, "showIntervalTabs": false, "locale": "ko", "colorTheme": "light" });
+    area.appendChild(s);
+    document.querySelectorAll('.sent-btn').forEach(b => b.style.background = '#fff');
+    if(btn) btn.style.background = '#eee';
+}
+
 </script>
 
 </body>
