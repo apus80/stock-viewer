@@ -146,7 +146,7 @@
 
         .category-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
@@ -302,7 +302,7 @@
 
         .pdf-container {
             width: 100%;
-            height: 850px;
+            height: 1200px;
             border: 2px solid #e2e8f0;
             border-radius: var(--radius-small);
             overflow: hidden;
@@ -1004,10 +1004,10 @@
                     </div>
                 </div>
 
-                <!-- 실시간 섹터 주도주 -->
-                <div class="card sector-card">
+                <!-- 실시간 섹터 주도주 (Full Width Span) -->
+                <div class="card sector-card" style="grid-column: 1 / -1;">
                     <h3 class="section-title">🚀 실시간 섹터 주도주 (US)</h3>
-                    <div class="tradingview-widget-container" style="height: 450px;">
+                    <div class="tradingview-widget-container" style="height: 250px;">
                         <div class="tradingview-widget-container__widget"></div>
                         <script type="text/javascript"
                             src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
@@ -1015,9 +1015,11 @@
                                     "width": "100%", "height": "100%", "symbolsGroups": [
                                         {
                                             "name": "주요 섹터", "symbols": [
-                                                { "name": "AMEX:XLK", "displayName": "기술 (Technology)" }, { "name": "AMEX:XLV", "displayName": "헬스케어 (Healthcare)" },
-                                                { "name": "AMEX:XLF", "displayName": "금융 (Financials)" }, { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
-                                                { "name": "AMEX:XLY", "displayName": "소비재 (Consumer)" }, { "name": "AMEX:XLI", "displayName": "산업재 (Industrials)" }
+                                                { "name": "AMEX:XLK", "displayName": "기술 (Tech)" }, { "name": "AMEX:XLV", "displayName": "헬스 (Health)" },
+                                                { "name": "AMEX:XLF", "displayName": "금융 (Finance)" }, { "name": "AMEX:XLE", "displayName": "에너지 (Energy)" },
+                                                { "name": "AMEX:XLY", "displayName": "소비재 (Cons)" }, { "name": "AMEX:XLI", "displayName": "산업재 (Indus)" },
+                                                { "name": "AMEX:XLC", "displayName": "통신 (Comm)" }, { "name": "AMEX:XLB", "displayName": "소재 (Materials)" },
+                                                { "name": "AMEX:XLU", "displayName": "유틸리티 (Utils)" }, { "name": "AMEX:XLRE", "displayName": "리츠 (REITs)" }
                                             ]
                                         }
                                     ], "showSymbolLogo": true, "colorTheme": "light", "isTransparent": false, "locale": "ko"
@@ -1027,31 +1029,29 @@
                 </div>
             </div>
 
-            <!-- 뉴스 및 히트맵 그리드 -->
-            <div class="grid-dashboard" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
-                <!-- 실시간 시장 뉴스 -->
-                <div class="card news-dashboard">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
-                        <button onclick="refreshNews()" class="btn-load" style="padding:6px 15px; font-size:12px;">🔄
-                            새로고침</button>
-                    </div>
-                    <div class="news-grid" id="newsContainer"></div>
+            <!-- 뉴스 대시보드 (Full Width) -->
+            <div class="card news-dashboard" style="margin: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
+                    <button onclick="refreshNews()" class="btn-load" style="padding:6px 15px; font-size:12px;">🔄
+                        새로고침</button>
                 </div>
+                <div class="news-grid" id="newsContainer"></div>
+            </div>
 
-                <!-- 히트맵 섹션 -->
-                <div class="card heatmap-card" style="padding: 0; overflow: hidden;">
-                    <div
-                        style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #edf2f7;">
-                        <h3 class="section-title" style="border:none; padding:0; margin:0;">📊 Market Heat Map</h3>
-                        <select id="mapSelector" onchange="updateTradingViewMap()" class="search-input"
-                            style="width: auto; padding: 6px 12px;">
-                            <option value="sp500">S&P 500</option>
-                            <option value="nasdaq100">Nasdaq 100</option>
-                        </select>
-                    </div>
-                    <div id="tradingview_widget_container" style="width:100%; height:500px;"></div>
+            <!-- 히트맵 섹션 (Full Width) -->
+            <div class="card heatmap-card" style="margin: 20px; padding: 0; overflow: hidden;">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #edf2f7;">
+                    <h3 class="section-title" style="border:none; padding:0; margin:0;">📊 Market Heat Map</h3>
+                    <select id="mapSelector" onchange="updateTradingViewMap()" class="search-input"
+                        style="width: auto; padding: 6px 12px;">
+                        <option value="sp500">S&P 500</option>
+                        <option value="nasdaq100">Nasdaq 100</option>
+                    </select>
                 </div>
+                <!-- ID가 중복되지 않도록 확인 및 고정 높이 부여 -->
+                <div id="tradingview_heatmap_container" style="width:100%; height:600px;"></div>
             </div>
 
 
@@ -1257,21 +1257,13 @@
 
             function updateTradingViewMap() {
                 const selector = document.getElementById('mapSelector');
-                const container = document.getElementById('tradingview_widget_container');
-                const tvLink = document.getElementById('tvLink');
+                const container = document.getElementById('tradingview_heatmap_container');
 
                 // 1. 기존 위젯 비우기
                 container.innerHTML = '';
 
-                // 2. 선택된 맵에 따라 링크 주소 설정
-                let symbolSource = "";
-                if (selector.value === 'sp500') {
-                    symbolSource = "SPX";
-                    tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22S%26P500%22%7D";
-                } else {
-                    symbolSource = "NDX";
-                    tvLink.href = "https://www.tradingview.com/heatmap/stock/#%7B%22index%22%3A%22NASDAQ100%22%7D";
-                }
+                // 2. 선택된 맵에 따라 심볼 설정
+                let symbolSource = selector.value === 'sp500' ? "SPX" : "NDX";
 
                 // 3. 위젯 스크립트 생성 및 설정
                 const script = document.createElement('script');
@@ -1360,7 +1352,7 @@
                 </div>
             </div>
 
-            <!-- 상세 분석 도구 1 -->
+            <!-- 상세 분석 도구 (한 행 정렬) -->
             <div class="category-section">
                 <div class="category-header">
                     <div class="category-icon">💰</div>
@@ -1374,8 +1366,6 @@
                     <button class="btn-load" onclick="loadReport('analysis1')">🔍 분석</button>
                 </div>
             </div>
-
-            <!-- 상세 분석 도구 2 -->
             <div class="category-section">
                 <div class="category-header">
                     <div class="category-icon">📊</div>
@@ -1389,8 +1379,6 @@
                     <button class="btn-load" onclick="loadReport('analysis2')">🔍 분석</button>
                 </div>
             </div>
-
-            <!-- 상세 분석 도구 3 -->
             <div class="category-section">
                 <div class="category-header">
                     <div class="category-icon">👔</div>
@@ -1404,8 +1392,6 @@
                     <button class="btn-load" onclick="loadReport('analysis3')">🔍 분석</button>
                 </div>
             </div>
-
-            <!-- 상세 분석 도구 4 -->
             <div class="category-section">
                 <div class="category-header">
                     <div class="category-icon">🎯</div>
