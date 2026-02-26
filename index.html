@@ -704,7 +704,7 @@
         <h3 style="font-size: 14px; color: #333; margin-top: 0; margin-bottom: 12px; font-weight: bold;">📊 실시간 글로벌 지표 및 시장 심리</h3>
         
         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-            <div style="flex: 1.2; min-width: 320px; height: 400px; position: relative;" id="main-chart-wrapper">
+            <div style="flex: 1.2; min-width: 320px; height: 400px;" id="main-chart-wrapper">
                 </div>
 
             <div style="flex: 0.8; min-width: 300px; display: flex; flex-direction: column; gap: 10px;">
@@ -728,14 +728,16 @@
 </div>
 
 <script>
-// 위젯 생성 로직을 하나의 함수로 묶음
+/**
+ * 트레이딩뷰 위젯 실행 함수
+ */
 function startTradingViewWidgets() {
-    console.log("🚀 트레이딩뷰 위젯 렌더링 시작...");
+    console.log("🚀 트레이딩뷰 위젯 실행...");
 
-    // 1. 메인 차트 렌더링
-    const mainChart = document.getElementById('main-chart-wrapper');
-    if(mainChart) {
-        mainChart.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
+    // 1. 메인 차트 (ID: main-chart-wrapper 가 있어야 함)
+    const mc = document.getElementById('main-chart-wrapper');
+    if(mc) {
+        mc.innerHTML = '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div>';
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
         s.async = true;
@@ -747,21 +749,21 @@ function startTradingViewWidgets() {
                 { "s": "AMEX:SPY", "d": "S&P500" }, { "s": "FOREXCOM:DJI", "d": "다우존스" } 
             ]}]
         });
-        mainChart.querySelector('.tradingview-widget-container').appendChild(s);
+        mc.querySelector('.tradingview-widget-container').appendChild(s);
     }
 
-    // 2. 환율 렌더링
-    const exRate = document.getElementById('exchange-rate-wrapper');
-    if(exRate) {
-        exRate.innerHTML = '<div class="tradingview-widget-container"></div>';
+    // 2. 환율 (ID: exchange-rate-wrapper 가 있어야 함)
+    const ex = document.getElementById('exchange-rate-wrapper');
+    if(ex) {
+        ex.innerHTML = '<div class="tradingview-widget-container"></div>';
         const s = document.createElement('script');
         s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
         s.async = true;
         s.innerHTML = JSON.stringify({ "symbol": "FX_IDC:USDKRW", "width": "100%", "colorTheme": "light", "isTransparent": true, "locale": "ko" });
-        exRate.querySelector('.tradingview-widget-container').appendChild(s);
+        ex.querySelector('.tradingview-widget-container').appendChild(s);
     }
 
-    // 3. 시장 심리 초기화
+    // 3. 심리 초기화
     initSenti('NASDAQ:QQQ', document.querySelector('.sent-btn'));
 }
 
@@ -778,10 +780,12 @@ function initSenti(symbol, btn) {
     if(btn) btn.style.background = '#eee';
 }
 
-// 중요: 파일 하단의 showMainContent() 함수 안에 이 코드를 꼭 추가해야 합니다!
-// 기존 showMainContent 함수를 찾아서 마지막 줄에 startTradingViewWidgets(); 를 적어주세요.
+// 5분 자동 갱신
+setInterval(function() {
+    const active = Array.from(document.querySelectorAll('.sent-btn')).find(b => b.style.background === 'rgb(238, 238, 238)');
+    if (active) active.click();
+}, 300000);
 </script>
-
 
 
 
@@ -1969,23 +1973,30 @@ function checkPassword() {
 function showMainContent() {
     console.log("🔥 showMainContent 실행됨");
 
+    // 1. 화면 먼저 보이게 하기
     document.getElementById('passwordOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 
-startTradingViewWidgets(); 
+    // 2. 아주 짧은 시간(0.1초) 뒤에 위젯 그리기 (박스가 확실히 나타난 후 실행)
+    setTimeout(function() {
+        if (typeof startTradingViewWidgets === 'function') {
+            startTradingViewWidgets();
+        }
+    }, 150); 
 
-    // 1. 기본 리스트 및 뉴스 로드
+    // 3. 기존 리스트 및 뉴스 로드
     if (typeof loadDateList === 'function') loadDateList();
     if (typeof loadNews === 'function') loadNews();
 
-
-    // 3. 캘린더 그리기
+    // 4. 캘린더 그리기
     if (typeof drawCalendar === 'function') {
         drawCalendar(2, 'cal-feb');
         drawCalendar(3, 'cal-mar');
     }
+    
     console.log("✅ 모든 데이터 로딩 완료");
 }
+
 
 function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
