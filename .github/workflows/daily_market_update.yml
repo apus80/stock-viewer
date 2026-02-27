@@ -2,7 +2,7 @@ name: Daily Market News Update
 
 on:
   schedule:
-    - cron: '0 22 * * *' # 매일 아침 7시 KST (UTC 22:00)
+    - cron: '0 2,6,10,14,18,22 * * *' # 매일 아침 7시 KST부터 4시간 간격 (UTC 22, 2, 6, 10, 14, 18)
   workflow_dispatch: # 수동 실행 가능
 
 jobs:

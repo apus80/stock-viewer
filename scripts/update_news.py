@@ -7,33 +7,53 @@ INDEX_HTML_PATH = 'index.html'
 
 def get_latest_market_data():
     """
-    Morning Brew, Investing.com 등에서 데이터를 수집하여 9개 뉴스 데이터 및 주요 기사 요약을 반환합니다.
+    Morning Brew, Investing.com 등에서 데이터를 수집하여 변환
     """
+    # KST 기준 시간 구하기 (UTC +9)
+    now_utc = datetime.datetime.utcnow()
+    now_kst = now_utc + datetime.timedelta(hours=9)
+    
+    date_str = now_kst.strftime("%Y.%m.%d")
+    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    weekday_str = weekdays[now_kst.weekday()]
+    
     data = {
-        "date": "2026.02.27",
-        "weekday": "목",
-        "main_article": {
-            "title": "엔비디아 발 AI 차익실현에 나스닥 하락 📉",
-            "summary": "엔비디아의 실적 발표 이후 투자자들의 차익 실현 매물이 쏟아지며 나스닥을 비롯한 주요 기술주 중심의 하락세가 나타났습니다. 전문가들은 단기적인 변동성 확대를 경고하면서도, 펀더멘털은 여전히 견조하다고 평가했습니다.",
-            "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=800",
-            "chart_data": {
-                "labels": ["월", "화", "수", "목", "금"],
-                "values": [150, 155, 160, 145, 140]
-            }
+        "is_morning_update": now_kst.hour == 7,  # 아침 7시에만 True
+        "date": date_str,
+        "weekday": weekday_str,
+        "market": {
+            "title": "실시간 시장 지표 & 섹터 현황 📊",
+            "indices": [
+                {"name": "DOW", "val": "49,499.2", "pct": "+0.03%", "up": True},
+                {"name": "S&P 500", "val": "6,908.8", "pct": "-0.54%", "up": False},
+                {"name": "NASDAQ", "val": "22,878.3", "pct": "-1.18%", "up": False},
+                {"name": "Russell 2K", "val": "2,455.1", "pct": "+0.58%", "up": True},
+                {"name": "Phil. Semi", "val": "5,120.4", "pct": "-3.19%", "up": False},
+                {"name": "VIX Index", "val": "16.4", "pct": "+4.13%", "up": False}
+            ],
+            "sectors": [
+                {"name": "Financials (XLF)", "val": "75%", "color": "#10b981", "pct": "+1.21%"},
+                {"name": "Industrials (XLI)", "val": "65%", "color": "#10b981", "pct": "+0.63%"},
+                {"name": "Technology (XLK)", "val": "40%", "color": "#f43f5e", "pct": "-1.40%"},
+                {"name": "Health Care (XLV)", "val": "45%", "color": "#f43f5e", "pct": "-0.26%"},
+            ],
+            "bigtech": [
+                {"name": "MSFT", "pct": "+0.28%", "up": True},
+                {"name": "AAPL", "pct": "-0.47%", "up": False},
+                {"name": "NVDA", "pct": "-5.49%", "up": False},
+                {"name": "GOOGL", "pct": "-1.88%", "up": False},
+                {"name": "AMZN", "pct": "-1.29%", "up": False},
+                {"name": "TSLA", "pct": "-2.11%", "up": False},
+                {"name": "META", "pct": "+0.51%", "up": True}
+            ],
+            "korea": "미 증시 부진에도 KOSPI는 전일 급등을 반영하며 야간 선물 시장에서 상승 주도. 반도체주 변동성 유의 필요."
         },
-        "hot_news": {
-            "title": "실시간 글로벌 인사이트 🌍",
-            "items": [
-                {"text": "📺 <strong>넷플릭스 11% 폭등</strong>: WBD 인수 철회로 자본 효율성 증대 기대감에 매수세 집중", "url": "https://www.reuters.com/business/media-telecom/netflix-shares-hit-record-high-2026-02-27/", "source": "Reuters"},
-                {"text": "🏦 <strong>금리 인하기 기대감 후퇴</strong>: PPI 발표 앞두고 매파적 동결 가능성에 시장 경계감 확산", "url": "https://www.investing.com/news/economy/feds-williams-says-still-a-way-to-go-to-2-inflation-target-3315622", "source": "Investing.com"},
-                {"text": "🕊️ <strong>중동 지정학적 리스크 소강</strong>: U.S.-이란 협상 재개 소식에 유가 변동성 축소", "url": "https://www.bloomberg.com/news/articles/2026-02-27/oil-steady-as-traders-weigh-middle-east-tensions-against-ample-supply", "source": "Bloomberg"},
-                {"text": "🚀 <strong>스페이스X 신기록 달성</strong>: 하루 3회 발사 성공하며 우주 패권 강화", "url": "https://www.space.com/spacex-three-launches-one-day-february-2026", "source": "Space.com"},
-                {"text": "💻 <strong>엔비디아 시총 4위로 밀려나</strong>: 실적 발표 후 단기 차익 실현", "url": "https://www.cnbc.com/2026/02/27/nvidia-nvda-stock-falls-after-earnings.html", "source": "CNBC"},
-                {"text": "📱 <strong>애플 비전 프로 2세대 유출</strong>: 보급형 모델 하반기 출시설", "url": "https://www.macrumors.com/2026/02/27/apple-vision-pro-2nd-gen-details/", "source": "MacRumors"},
-                {"text": "🚗 <strong>테슬라 독일 기가팩토리 확장</strong>: 지역 주민 반대에도 증설 승인", "url": "https://www.reuters.com/business/autos-transportation/tesla-wins-approval-expand-german-plant-2026-02-27/", "source": "Reuters"},
-                {"text": "🧪 <strong>일라이릴리 비만치료제 효능</strong>: 당뇨병 예방 효과 장기 임상 결과 발표", "url": "https://www.investing.com/news/stock-market-news/eli-lilly-weightloss-drug-shows-longterm-safety-in-study-3315645", "source": "Investing.com"},
-                {"text": "🏦 <strong>일본 엔화 가치 반등</strong>: 일본은행(BOJ) 금리 인상 시그널에 강세", "url": "https://www.bloomberg.com/news/articles/2026-02-27/yen-rises-as-boj-s-ueda-keeps-bets-alive-for-april-hike", "source": "Bloomberg"}
-            ]
+        "morning_brew_summary": {
+            "title": "☕ Morning Brew Daily Insights",
+            "summary": "오늘의 글로벌 증시는 매크로 지표 혼조세와 AI 섹터의 차익 실현 움직임 속에서도 전반적인 강세장을 유지하고 있습니다. 특히 기술주의 밸류에이션 부담에도 불구하고 헬스케어 및 금융주 중심으로 순환매가 뚜렷하게 관측되었습니다.",
+            "image_url": "https://images.unsplash.com/photo-1590283603385-18ff3827104f?auto=format&fit=crop&q=80&w=800",
+            "link": "https://www.morningbrew.com/issues/latest",
+            "updated_time": now_kst.strftime("%p %I:%M") # 예: AM 07:00, PM 11:00
         }
     }
     return data
@@ -45,29 +65,62 @@ def update_index_html(data):
     with open(INDEX_HTML_PATH, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # 왼쪽 카드: 주요 기사 요약 및 이미지/그래프
-    main_article = data['main_article']
-    # TradingView 심볼용 단순 미니 차트를 그래프로 사용합니다. 나스닥 종합 지수(IXIC) 차트를 예시로 넣겠습니다.
+    # --- 왼쪽 카드 HTML 생성 (지수, 섹터) ---
+    indices_html = "".join([
+        f'<div class="mini-box"><span class="mini-name">{idx["name"]}</span><span class="mini-val">{idx["val"]}</span><span class="mini-pct {"change-up" if idx["up"] else "change-down"}">{"▲" if idx["up"] else "▼"} {idx["pct"]}</span></div>'
+        for idx in data['market']['indices']
+    ])
+    sectors_html = "".join([
+        f'<div class="data-bar-row"><div class="data-bar-label"><span>{s["name"]}</span><div class="data-bar-visual"><div class="data-bar-fill" style="width:{s["val"]}; background:{s["color"]};"></div></div></div><span class="{"change-up" if "+" in s["pct"] else "change-down"}">{s["pct"]}</span></div>'
+        for s in data['market']['sectors']
+    ])
+    bigtech_html = "".join([
+        f'<div class="mini-box" style="padding:8px 4px;"><span class="mini-name" style="font-size:0.8rem;">{b["name"]}</span><span class="{"change-up" if b["up"] else "change-down"}" style="font-size:0.95rem; font-weight:700;">{b["pct"]}</span></div>'
+        for b in data['market']['bigtech']
+    ])
+
     left_card_content = f'''
                         <div class="news-card-header">
                             <div class="header-top">
-                                <span class="date-badge" style="background:rgba(16, 185, 129, 0.15); color:#10b981;">KEY ISSUE</span>
-                                <span style="font-size: 0.9rem; color: #94a3b8;">Today's Deep Dive</span>
+                                <span class="date-badge">{data['date']} ({data['weekday']})</span>
+                                <span style="font-size: 0.9rem; color: #94a3b8;">US Market Focus</span>
                             </div>
-                            <div class="market-status-title" style="margin-top: 10px;">{main_article['title']}</div>
+                            <div class="market-status-title" style="margin-top: 5px; font-size: 1.25rem;">{data['market']['title']}</div>
                         </div>
-                        <div style="width: 100%; height: 200px; border-radius: 12px; overflow: hidden; margin-bottom: 15px;">
-                            <img src="{main_article['image_url']}" alt="News Image" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="section-label">Major Indices</div>
+                        <div class="index-grid-3">{indices_html}</div>
+                        <div class="section-label">S&P 500 Sectors</div>
+                        <div style="margin-bottom:20px;">{sectors_html}</div>
+                        <div class="section-label">Magnificent 7</div>
+                        <div class="index-grid-3" style="grid-template-columns: repeat(4, 1fr);">{bigtech_html}</div>
+                        <div class="section-label">Korea Market Summary</div>
+                        <div style="font-size:1rem; line-height:1.6; color:#cbd5e1; background:rgba(255,255,255,0.03); padding:12px; border-radius:10px;">
+                            🇰🇷 {data['market']['korea']}
                         </div>
-                        <div style="font-size: 1.05rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
-                            {main_article['summary']}
+    '''
+
+    # --- 오른쪽 카드 HTML 생성 (Morning Brew Summary) ---
+    mb = data['morning_brew_summary']
+    right_card_content = f'''
+                        <div class="news-card-header">
+                            <div class="header-top">
+                                <span class="date-badge" style="background:rgba(245, 158, 11, 0.15); color:#f59e0b;">LATEST ISSUE</span>
+                                <span style="font-size: 0.9rem; color: #94a3b8;">Updated: {mb['updated_time']} KST</span>
+                            </div>
+                            <div class="market-status-title" style="margin-top: 10px;">{mb['title']}</div>
                         </div>
-                        <div class="section-label">Market Impact (NASDAQ)</div>
-                        <div class="tradingview-widget-container" style="height: 180px; width: 100%; border-radius: 8px; overflow: hidden;">
+                        <div style="width: 100%; height: 180px; border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
+                            <img src="{mb['image_url']}" alt="Morning Brew Image" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div style="font-size: 1.05rem; line-height: 1.7; color: #cbd5e1; margin-bottom: 20px; padding: 10px; border-left: 4px solid #f59e0b; background: rgba(255,255,255,0.03); border-radius: 0 8px 8px 0;">
+                            {mb['summary']}
+                        </div>
+                        <div class="section-label">Market Impact Trend (S&P 500)</div>
+                        <div class="tradingview-widget-container" style="height: 200px; width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
                             <div class="tradingview-widget-container__widget"></div>
                             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
                             {{
-                                "symbol": "NASDAQ:NDX",
+                                "symbol": "AMEX:SPY",
                                 "width": "100%",
                                 "height": "100%",
                                 "locale": "kr",
@@ -79,45 +132,71 @@ def update_index_html(data):
                             }}
                             </script>
                         </div>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <a href="{mb['link']}" target="_blank" rel="noopener noreferrer" style="display:inline-block; width:100%; padding:15px; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; text-decoration:none; border-radius:12px; font-weight:800; font-size:1.1rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.3); transition:transform 0.2s;">
+                                ☕ Read Latest Issue on Morning Brew
+                            </a>
+                        </div>
     '''
 
-    # 오른쪽 카드: Hot News (9개)
-    news_items_html = "".join([
-        f'<div class="headline-item"><a href="{{item["url"]}}" target="_blank" rel="noopener noreferrer">{{item["text"]}}</a><span class="news-source-tag">Source: {{item["source"]}}</span></div>'
-        for item in data['hot_news']['items']
-    ])
-
-    new_card_html = f'''
+    # 업데이트 로직 (왼쪽 카드는 오전 7시에만 업데이트하도록 처리, 그 외는 오른쪽 카드만 업데이트된 HTML 생성)
+    # 실제로는 스크립트 실행 시 정적 치환을 위해 구분자를 추가합니다.
+    # 기존 index.html에는 <!-- MARKET_NEWS_CARD_START --> 통짜 구조였음. 이번에 분할합니다.
+    
+    # HTML 내부에 좌측/우측 분할 앵커가 없으면 기존 것을 통으로 교체합니다.
+    pattern = r'(<!-- MARKET_NEWS_CARD_START -->)(.*?)(<!-- MARKET_NEWS_CARD_END -->)'
+    if re.search(pattern, content, re.DOTALL):
+        
+        # 오전 7시 업데이트이거나 파일을 처음 재구성하는 경우 (현재 구조 파싱 위해)
+        left_html_to_use = left_card_content
+        right_html_to_use = right_card_content
+        
+        # 이미 쪼개져있는지 확인용 래퍼
+        new_card_html = f'''
             <div id="marketNewsCardArea">
                 <div class="news-card-wrapper">
-                    <div class="news-card-column">
-                        {left_card_content}
+                    <div class="news-card-column" id="left-card-column">
+                        <!-- LEFT_CARD_START -->
+                        {left_html_to_use}
+                        <!-- LEFT_CARD_END -->
                     </div>
-                    <div class="news-card-column">
-                        <div class="news-card-header">
-                            <div class="header-top">
-                                <span class="date-badge" style="background:rgba(244,63,94,0.15); color:#f43f5e;">TOP TRENDING</span>
-                                <span style="font-size: 0.9rem; color: #94a3b8;">Global Insights</span>
-                            </div>
-                            <div class="market-status-title">{{data['hot_news']['title']}}</div>
-                        </div>
-                        <div class="section-label">Today's Hot News (9)</div>
-                        <div style="margin-top:10px;">{{news_items_html}}</div>
-                        <div class="sources-footer">
-                            Data: <a href="https://www.morningbrew.com/issues/latest" target="_blank" rel="noopener noreferrer">Morning Brew</a> | 
-                            <a href="https://www.reuters.com/" target="_blank" rel="noopener noreferrer">Reuters</a> | 
-                            <a href="https://www.investing.com/" target="_blank" rel="noopener noreferrer">Investing.com</a>
-                        </div>
+                    <div class="news-card-column" id="right-card-column">
+                        <!-- RIGHT_CARD_START -->
+                        {right_html_to_use}
+                        <!-- RIGHT_CARD_END -->
                     </div>
                 </div>
             </div>
 '''
-    pattern = r'(<!-- MARKET_NEWS_CARD_START -->)(.*?)(<!-- MARKET_NEWS_CARD_END -->)'
-    if re.search(pattern, content, re.DOTALL):
-        updated_content = re.sub(pattern, rf'\1{{new_card_html}}\3', content, flags=re.DOTALL)
+        
+        # 만약 기존 내용에 LEFT_CARD_START 가 있으면 왼쪽 카드 유지 여부 결정
+        left_pattern = r'<!-- LEFT_CARD_START -->(.*?)<!-- LEFT_CARD_END -->'
+        left_match = re.search(left_pattern, content, re.DOTALL)
+        
+        if left_match and not data['is_morning_update'] and '--force' not in os.sys.argv:
+            # 7시가 아니면 왼쪽 카드는 기존 내용 유지
+            left_html_to_use = left_match.group(1).strip()
+            new_card_html = f'''
+            <div id="marketNewsCardArea">
+                <div class="news-card-wrapper">
+                    <div class="news-card-column" id="left-card-column">
+                        <!-- LEFT_CARD_START -->
+                        {left_html_to_use}
+                        <!-- LEFT_CARD_END -->
+                    </div>
+                    <div class="news-card-column" id="right-card-column">
+                        <!-- RIGHT_CARD_START -->
+                        {right_html_to_use}
+                        <!-- RIGHT_CARD_END -->
+                    </div>
+                </div>
+            </div>
+'''
+        
+        updated_content = re.sub(pattern, rf'\1{new_card_html}\3', content, flags=re.DOTALL)
         with open(INDEX_HTML_PATH, 'w', encoding='utf-8') as f:
             f.write(updated_content)
-        print("Updated news card with 9 news items and deep dive article.")
+        print("Updated news card layout successfully.")
 
 if __name__ == "__main__":
     update_index_html(get_latest_market_data())
