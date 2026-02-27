@@ -546,8 +546,8 @@
             margin: 40px 0;
         }
 
-        .footer {
-            background: #f8fafc;
+        .news-sector-row {
+            display: grid;
             padding: 40px 20px;
             border-top: 1px solid #e2e8f0;
             text-align: center;
@@ -935,10 +935,13 @@
             <div class="header">
                 <h1>📊 주식 분석 통합 리포트 뷰어</h1>
 
-                <div id="google_translate_element" style="margin-top: 10px;"></div>
-
-
                 <p>추천 종목부터 시장 분석까지, 모든 리포트를 한 곳에서</p>
+                <div
+                    style="margin-top: 15px; font-size: 0.9em; color: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    문의 사항 : aiinvestment@gmail.com
+                    <button onclick="copyToClipboard('aiinvestment@gmail.com')" class="btn-sm"
+                        style="padding: 2px 8px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1); color: white;">복사</button>
+                </div>
             </div>
 
             <!-- TradingView 실시간 전광판 -->
@@ -1105,7 +1108,10 @@
                 <!-- 뉴스 대시보드 -->
                 <div class="card news-dashboard" style="margin-bottom: 0;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <h3 class="section-title" style="border:none; padding:0; margin:0;">📰 실시간 시장 뉴스</h3>
+                            <div id="google_translate_element"></div>
+                        </div>
                         <button onclick="refreshNews()" class="btn-load" style="padding:4px 12px; font-size:11px;">🔄
                             새로고침</button>
                     </div>
@@ -1474,6 +1480,8 @@
                     <div class="category-title">
                         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                             <h3>주식 종목 리포트 <span class="badge">MAIN</span></h3>
+                            <a href="methodology.html" target="_blank" rel="noopener noreferrer" class="btn-sm"
+                                style="text-decoration: none;">📝 방법론</a>
                         </div>
                         <p>기술적 분석 및 매수 전략</p>
                     </div>
@@ -1607,8 +1615,6 @@
             </p>
         </div>
     </div>
-    </div>
-    </div>
 
     <script>
         console.log('==========================================');
@@ -1724,7 +1730,6 @@
         }
 
         // 실시간 뉴스 로딩
-        // 이 줄부터 아래 마지막 } 까지 전부 지우고 새 코드를 넣으세요
         async function loadNews() {
             const container = document.getElementById('newsContainer');
             if (!container) return;
@@ -2405,6 +2410,15 @@
                 includedLanguages: 'ko,en',
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
+        }
+
+        // 이메일 복사 함수
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('이메일 주소가 복사되었습니다: ' + text);
+            }).catch(err => {
+                console.error('복사 실패:', err);
+            });
         }
     </script>
 
