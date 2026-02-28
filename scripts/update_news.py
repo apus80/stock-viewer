@@ -1,63 +1,108 @@
 import os
 import re
 import datetime
+import urllib.request
+import xml.etree.ElementTree as ET
+try:
+    import yfinance as yf
+except ImportError:
+    yf = None
 
 # --- 설정 ---
 INDEX_HTML_PATH = 'index.html'
 
 def get_latest_market_data():
-    """
-    Morning Brew, Investing.com 등에서 데이터를 수집하여 변환
-    """
-    # KST 기준 시간 구하기 (UTC +9)
-    now_utc = datetime.datetime.utcnow()
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
     now_kst = now_utc + datetime.timedelta(hours=9)
-    
     date_str = now_kst.strftime("%Y.%m.%d")
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
     weekday_str = weekdays[now_kst.weekday()]
     
+    indices_map = {
+        "DOW": "^DJI",
+        "S&P 500": "^GSPC",
+        "NASDAQ": "^IXIC",
+        "Russell 2K": "^RUT",
+        "Phil. Semi": "^SOX",
+        "VIX Index": "^VIX"
+    }
+    sectors_map = {
+        "Financials (XLF)": "XLF",
+        "Industrials (XLI)": "XLI",
+        "Technology (XLK)": "XLK",
+        "Health Care (XLV)": "XLV"
+    }
+    bigtech_map = ["MSFT", "AAPL", "NVDA", "GOOGL", "AMZN", "TSLA", "META"]
+    
+    indices_data, sectors_data, bigtech_data = [], [], []
+    
+    if yf:
+        for name, tk in indices_map.items():
+            try:
+                hist = yf.Ticker(tk).history(period="5d")
+                curr, prev = hist['Close'].iloc[-1], hist['Close'].iloc[-2]
+                pct = ((curr - prev) / prev) * 100
+                indices_data.append({"name": name, "val": f"{curr:,.1f}", "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct>=0})
+            except Exception as e:
+                indices_data.append({"name": name, "val": "N/A", "pct": "0.00%", "up": True})
+                
+        for name, tk in sectors_map.items():
+            try:
+                hist = yf.Ticker(tk).history(period="5d")
+                curr, prev = hist['Close'].iloc[-1], hist['Close'].iloc[-2]
+                pct = ((curr - prev) / prev) * 100
+                col = "#10b981" if pct>=0 else "#f43f5e"
+                val_w = min(max(50 + pct*10, 10), 90)
+                sectors_data.append({"name": name, "val": f"{val_w:.0f}%", "color": col, "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%"})
+            except:
+                sectors_data.append({"name": name, "val": "50%", "color": "#10b981", "pct": "0.00%"})
+                
+        for tk in bigtech_map:
+            try:
+                hist = yf.Ticker(tk).history(period="5d")
+                curr, prev = hist['Close'].iloc[-1], hist['Close'].iloc[-2]
+                pct = ((curr - prev) / prev) * 100
+                bigtech_data.append({"name": tk, "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct>=0})
+            except:
+                bigtech_data.append({"name": tk, "pct": "0.00%", "up": True})
+    else:
+        indices_data = [{"name": n, "val": "로드실패", "pct": "0.00%", "up": True} for n in indices_map]
+        sectors_data = [{"name": n, "val": "50%", "color": "#10b981", "pct": "0.00%"} for n in sectors_map]
+        bigtech_data = [{"name": n, "pct": "0.00%", "up": True} for n in bigtech_map]
+
+    rss_url = "https://news.google.com/rss/search?q=%EA%B8%80%EB%A1%9C%EB%B2%8C+%EC%A6%9D%EC%8B%9C+%EA%B2%BD%EC%A0%9C&hl=ko&gl=KR&ceid=KR:ko"
+    news_html = ""
+    try:
+        req = urllib.request.Request(rss_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            xml_data = response.read()
+            root = ET.fromstring(xml_data)
+            colors = ["#facc15", "#38bdf8", "#10b981"]
+            for i, item in enumerate(root.findall('.//item')[:3]):
+                title = item.find('title').text.rsplit(" - ", 1)[0]
+                link = item.find('link').text
+                c = colors[i % len(colors)]
+                news_html += f"<div style='margin-bottom: 12px; padding: 12px; background: rgba(0,0,0,0.25); border-left: 4px solid {c}; border-radius: 6px;'><strong style='color:{c}; font-size: 0.9em;'>⚡ HOT TOPIC {i+1}</strong><br><a href='{link}' target='_blank' style='color: #fff; text-decoration: none; font-weight: bold; line-height: 1.4; display: block; margin-top: 6px;'>{title}</a></div>"
+    except Exception as e:
+        news_html = "<div style='color:#f87171;'>뉴스 데이터를 불러오는데 실패했습니다.</div>"
+
     data = {
-        "is_morning_update": now_kst.hour == 7,  # 아침 7시에만 True
+        "is_morning_update": now_kst.hour == 7,
         "date": date_str,
         "weekday": weekday_str,
         "market": {
             "title": "실시간 시장 지표 & 섹터 현황 📊",
-            "indices": [
-                {"name": "DOW", "val": "49,499.2", "pct": "+0.03%", "up": True},
-                {"name": "S&P 500", "val": "6,908.8", "pct": "-0.54%", "up": False},
-                {"name": "NASDAQ", "val": "22,878.3", "pct": "-1.18%", "up": False},
-                {"name": "Russell 2K", "val": "2,455.1", "pct": "+0.58%", "up": True},
-                {"name": "Phil. Semi", "val": "5,120.4", "pct": "-3.19%", "up": False},
-                {"name": "VIX Index", "val": "16.4", "pct": "+4.13%", "up": False}
-            ],
-            "sectors": [
-                {"name": "Financials (XLF)", "val": "75%", "color": "#10b981", "pct": "+1.21%"},
-                {"name": "Industrials (XLI)", "val": "65%", "color": "#10b981", "pct": "+0.63%"},
-                {"name": "Technology (XLK)", "val": "40%", "color": "#f43f5e", "pct": "-1.40%"},
-                {"name": "Health Care (XLV)", "val": "45%", "color": "#f43f5e", "pct": "-0.26%"},
-            ],
-            "bigtech": [
-                {"name": "MSFT", "pct": "+0.28%", "up": True},
-                {"name": "AAPL", "pct": "-0.47%", "up": False},
-                {"name": "NVDA", "pct": "-5.49%", "up": False},
-                {"name": "GOOGL", "pct": "-1.88%", "up": False},
-                {"name": "AMZN", "pct": "-1.29%", "up": False},
-                {"name": "TSLA", "pct": "-2.11%", "up": False},
-                {"name": "META", "pct": "+0.51%", "up": True}
-            ],
-            "korea": "미 증시 부진에도 KOSPI는 전일 급등을 반영하며 야간 선물 시장에서 상승 주도. 반도체주 변동성 유의 필요."
+            "indices": indices_data,
+            "sectors": sectors_data,
+            "bigtech": bigtech_data,
+            "korea": "실시간 글로벌 시장 변동에 따른 투자 심리 변화가 감지되고 있습니다. 주도 섹터 및 기관 수급 유입 상황을 주의 깊게 살펴보세요."
         },
         "morning_brew_summary": {
-            "title": "☕ Morning Brew Daily Insights",
-            "summary": """
-                <div style='margin-bottom: 12px;'><strong style='color:#facc15;'>📌 핵심 트렌드: AI 차익실현 및 헬스케어의 부상</strong><br>글로벌 증시는 매크로 지표 혼조세 속에서 AI 및 반도체 섹터의 차익 실현 움직임이 뚜렷하게 관측되고 있습니다. 넷플릭스 등 엔터주는 큰 폭의 랠리를 보인 반면, 엔비디아는 실적 발표 이후 단기 과열 부담에 조정을 받았습니다.</div>
-                <div style='margin-bottom: 12px;'><strong style='color:#facc15;'>📌 주요 거시 경제 이슈</strong><br>미 연준의 금리 인하 기대감이 다소 후퇴하며 채권 시장의 변동성이 확대되었습니다. PPI(생산자물가지수) 발표를 앞두고 관망세가 짙은 가운데, 금융주 및 산업재로의 자금 순환매가 이어지고 있습니다. 일각에서는 중동 지정학적 리스크 소강상태가 유가 안정에 기여하고 있다고 평가합니다.</div>
-                <div><strong style='color:#facc15;'>📌 혁신 기업 동향</strong><br>스페이스X가 하루 3회 발사 성공이라는 신기록을 세우며 우주 산업 주도권을 강화했고, 일라이릴리는 비만치료제의 장기 임상(당뇨병 예방 효과) 성공 결과를 발표했습니다. 반면 테슬라는 지역 반대에도 불구하고 독일 기가팩토리 확장 승인을 받아내는 등 주요 기업들의 개별 모멘텀 장세가 펼쳐지고 있습니다.</div>
-            """,
-            "image_url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-            "link": "https://www.morningbrew.com/issues/latest",
-            "updated_time": now_kst.strftime("%p %I:%M") # 예: AM 07:00, PM 11:00
+            "title": "📰 실시간 글로벌 헤드라인 브리핑",
+            "summary": f"<div style='margin-bottom:10px; font-size:0.95em; color:#cbd5e1;'>웹에서 수집된 최신 글로벌 경제 뉴스입니다. 클릭하여 원문을 확인하세요.</div>{news_html}",
+            "image_url": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&q=80&w=800",
+            "link": "https://news.google.com/search?q=%EA%B8%80%EB%A1%9C%EB%B2%8C+%EC%A6%9D%EC%8B%9C+%EA%B2%BD%EC%A0%9C",
+            "updated_time": now_kst.strftime("%p %I:%M")
         }
     }
     return data

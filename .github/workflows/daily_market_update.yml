@@ -8,6 +8,8 @@ on:
 jobs:
   update-news:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -19,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4
+          pip install requests beautifulsoup4 yfinance
 
       - name: Run update script
         run: python scripts/update_news.py
