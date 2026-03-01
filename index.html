@@ -380,84 +380,77 @@
             margin-bottom: 14px;
             font-size: 1.2em;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
-        .news-search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
+        .news-search-bar { display: flex; gap: 10px; margin-bottom: 6px; }
         .news-search-bar input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: var(--radius-small);
-            font-size: 1em;
-            transition: all 0.2s;
-            background: #f8fafc;
+            flex: 1; padding: 12px 16px;
+            border: 2px solid #e2e8f0; border-radius: var(--radius-small);
+            font-size: 1em; transition: all 0.2s; background: #f8fafc;
         }
         .news-search-bar input:focus {
-            outline: none;
-            border-color: #f59e0b;
-            background: #fff;
+            outline: none; border-color: #f59e0b; background: #fff;
             box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
         }
         .news-search-bar button {
             padding: 12px 24px;
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-small);
-            font-weight: 600;
-            font-size: 0.95em;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            color: #fff; border: none; border-radius: var(--radius-small);
+            font-weight: 600; font-size: 0.95em; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
         }
         .news-search-bar button:hover { opacity: 0.88; transform: translateY(-1px); }
-        .news-search-hint {
-            font-size: 0.78em;
-            color: #94a3b8;
-            margin-bottom: 14px;
+        .news-search-hint { font-size: 0.78em; color: #94a3b8; margin-bottom: 14px; }
+        /* 2-컬럼 결과 레이아웃 */
+        .ns-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 14px;
         }
-        /* 스켈레톤 애니메이션 */
+        .ns-col-header {
+            font-size: 0.9em; font-weight: 700; color: var(--primary-dark);
+            padding-bottom: 8px; margin-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .ns-trans-badge {
+            font-size: 0.72em; font-weight: 600;
+            background: #eff6ff; color: #3b82f6;
+            padding: 2px 7px; border-radius: 10px;
+            border: 1px solid #bfdbfe;
+        }
+        .ns-col-src { font-size: 0.72em; color: #94a3b8; margin-top: 6px; }
+        /* 스켈레톤 */
         @keyframes ns-shimmer {
-            0%   { background-position: -600px 0; }
-            100% { background-position:  600px 0; }
+            0%   { background-position: -400px 0; }
+            100% { background-position:  400px 0; }
         }
         .ns-skeleton {
             background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
-            background-size: 600px 100%;
-            animation: ns-shimmer 1.4s infinite linear;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            height: 72px;
+            background-size: 400px 100%;
+            animation: ns-shimmer 1.3s infinite linear;
+            border-radius: 6px; margin-bottom: 10px; height: 66px;
         }
         /* 결과 카드 */
-        #newsSearchResults { margin-top: 4px; }
         .ns-card {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 13px 16px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.18s;
-            background: #fafbff;
-            border-left: 4px solid #f59e0b;
+            display: flex; flex-direction: column; gap: 4px;
+            padding: 11px 14px; border: 1px solid #e2e8f0;
+            border-radius: 8px; margin-bottom: 9px;
+            text-decoration: none; color: inherit;
+            transition: all 0.18s; background: #fafbff;
         }
-        .ns-card:hover { background: #fff7ed; border-color: #f59e0b; transform: translateX(2px); box-shadow: 0 2px 8px rgba(245,158,11,0.12); }
-        .ns-title { font-size: 0.95em; font-weight: 700; color: #1e293b; line-height: 1.45; }
-        .ns-meta  { font-size: 0.76em; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; }
-        .ns-source { color: #f59e0b; font-weight: 600; }
-        .ns-empty  { color: #94a3b8; font-size: 0.9em; padding: 18px 0; text-align: center; }
-        .ns-api-note { font-size: 0.75em; color: #94a3b8; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
-        @media (max-width: 600px) {
+        .ns-card.kor { border-left: 4px solid #3b82f6; }
+        .ns-card.eng { border-left: 4px solid #f59e0b; }
+        .ns-card.kor:hover { background: #eff6ff; transform: translateX(2px); box-shadow: 0 2px 8px rgba(59,130,246,0.12); }
+        .ns-card.eng:hover { background: #fff7ed; transform: translateX(2px); box-shadow: 0 2px 8px rgba(245,158,11,0.12); }
+        .ns-title  { font-size: 0.9em; font-weight: 700; color: #1e293b; line-height: 1.45; }
+        .ns-meta   { font-size: 0.73em; color: #64748b; display: flex; gap: 8px; flex-wrap: wrap; }
+        .ns-source-kor { color: #3b82f6; font-weight: 600; }
+        .ns-source-eng { color: #f59e0b; font-weight: 600; }
+        .ns-empty  { color: #94a3b8; font-size: 0.85em; padding: 14px 0; text-align: center; }
+        .ns-api-note { font-size: 0.73em; color: #94a3b8; margin-top: 12px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+        @media (max-width: 680px) {
+            .ns-columns { grid-template-columns: 1fr; }
             .news-search-bar { flex-direction: column; }
             .news-search-bar button { width: 100%; }
         }
@@ -1357,16 +1350,35 @@
                 <h3>🔎 실시간 금융 뉴스 검색</h3>
                 <div class="news-search-bar">
                     <input type="text" id="nsInput"
-                        placeholder="키워드 입력 (예: 삼성전자, 금리, 엔비디아, Fed…)"
+                        placeholder="키워드 입력 (한글/영어 모두 지원 · 예: 삼성전자, 금리, NVDA)"
                         autocomplete="off"
                         onkeydown="if(event.key==='Enter') nsSearch()">
                     <button onclick="nsSearch()">🔍 검색</button>
                 </div>
-                <p class="news-search-hint">주식·증권·금융 뉴스를 실시간으로 검색합니다. 영어 키워드가 더 많은 결과를 반환합니다.</p>
-                <div id="newsSearchResults"></div>
+                <p class="news-search-hint">
+                    🇰🇷 한글 입력 시 국내 뉴스 3건 + 영어 자동 번역 후 해외 뉴스 3건 동시 검색
+                </p>
+                <div id="nsContainer" style="display:none;">
+                    <div class="ns-columns">
+                        <div class="ns-col">
+                            <div class="ns-col-header">🇰🇷 국내 뉴스</div>
+                            <div id="nsKorBox"></div>
+                            <div id="nsKorSrc" class="ns-col-src"></div>
+                        </div>
+                        <div class="ns-col">
+                            <div class="ns-col-header">
+                                🌐 해외 뉴스
+                                <span id="nsTransBadge" class="ns-trans-badge" style="display:none;"></span>
+                            </div>
+                            <div id="nsEngBox"></div>
+                            <div id="nsEngSrc" class="ns-col-src"></div>
+                        </div>
+                    </div>
+                </div>
                 <p class="ns-api-note">
-                    📡 데이터: <strong>GNews API</strong> (gnews.io) · 카테고리: business/finance ·
-                    <span id="ns-key-status">API 키 미설정 — 아래 JS 코드에서 키를 입력하세요</span>
+                    📡 국내: Naver Open API → Naver 검색 → 국내 RSS(MK·한경·연합) ·
+                    해외: GNews → The Guardian → Reuters/BBC RSS ·
+                    <span id="ns-key-status" style="color:#10b981;">fallback 모드 동작 중</span>
                 </p>
             </div>
 
@@ -2786,188 +2798,306 @@
                 });
             }
 
-            // ══════════════════════════════════════════════════════════
-            // 실시간 금융 뉴스 검색 (GNews API / NewsAPI.org)
-            // ══════════════════════════════════════════════════════════
+            // ══════════════════════════════════════════════════════════════
+            // 실시간 금융 뉴스 검색 v2 - 국내/해외 동시 검색 + 한글 자동 번역
+            // ══════════════════════════════════════════════════════════════
 
-            // ─── API 키 설정 ───────────────────────────────────────────
-            // GNews (https://gnews.io) 무료 플랜: 100건/일, CORS 지원
-            // 1) https://gnews.io 가입 → API 키 발급
-            // 2) 아래 NS_GNEWS_KEY 에 붙여넣기
-            var NS_GNEWS_KEY   = '';   // ← GNews API 키 여기 입력
+            // ─── API 키 설정 (선택사항 - 미설정 시 무료 fallback으로 동작) ───
+            // ① Naver Open API (국내 뉴스 1순위)
+            //    가입: https://developers.naver.com → 애플리케이션 등록 → 검색 API
+            var NS_NAVER_ID     = '';  // ← Client ID  여기 입력
+            var NS_NAVER_SECRET = '';  // ← Client Secret 여기 입력
 
-            // NewsAPI.org (https://newsapi.org) - 브라우저 직접 호출은 유료 플랜 필요
-            // 무료 플랜은 서버사이드(Node/Python 등)에서만 CORS 허용됨
-            // 사용하려면 아래 키 입력 후 nsSearchNewsAPI() 로 변경
-            var NS_NEWSAPI_KEY = '';   // ← NewsAPI 키 (선택, 유료 플랜)
-            // ──────────────────────────────────────────────────────────
+            // ② GNews (해외 뉴스 1순위, CORS 공식 지원)
+            //    가입: https://gnews.io → 무료 100건/일
+            var NS_GNEWS_KEY    = '';  // ← GNews API 키 여기 입력
+            // ────────────────────────────────────────────────────────────
 
-            var _nsDebounce = null;   // 디바운스 타이머
+            var _nsDebounce = null;
 
-            // 검색 진입점 (버튼 클릭 / Enter)
+            // ── 진입점: 버튼/Enter → 즉시, 타이핑 → 0.5s 디바운스 ──────
             function nsSearch() {
                 clearTimeout(_nsDebounce);
-                _nsDebounce = setTimeout(_nsDoSearch, 0);  // 즉시 실행 (Enter/버튼)
+                _nsDebounce = setTimeout(_nsDoSearch, 0);
             }
-
-            // 입력 중 디바운스 자동 검색 (0.5 s)
             document.addEventListener('DOMContentLoaded', function() {
                 var inp = document.getElementById('nsInput');
-                if (inp) {
-                    inp.addEventListener('input', function() {
-                        clearTimeout(_nsDebounce);
-                        _nsDebounce = setTimeout(_nsDoSearch, 500);
-                    });
-                }
+                if (inp) inp.addEventListener('input', function() {
+                    clearTimeout(_nsDebounce);
+                    _nsDebounce = setTimeout(_nsDoSearch, 500);
+                });
             });
 
+            // ── 메인 검색 오케스트레이터 ─────────────────────────────────
             async function _nsDoSearch() {
-                var q = (document.getElementById('nsInput') || {}).value || '';
-                q = q.trim();
-                var box = document.getElementById('newsSearchResults');
-                if (!box) return;
+                var q = ((document.getElementById('nsInput') || {}).value || '').trim();
+                var container = document.getElementById('nsContainer');
+                var korBox    = document.getElementById('nsKorBox');
+                var engBox    = document.getElementById('nsEngBox');
+                if (!korBox || !engBox) return;
+                if (!q) { if (container) container.style.display = 'none'; return; }
 
-                if (!q) { box.innerHTML = ''; return; }
+                if (container) container.style.display = 'block';
 
-                // 스켈레톤 UI
-                box.innerHTML = [1,2,3].map(function() {
-                    return '<div class="ns-skeleton"></div>';
-                }).join('') + '<p style="color:#94a3b8;font-size:0.82em;text-align:center;margin-top:-4px;">🔄 뉴스를 검색 중입니다...</p>';
+                // 스켈레톤 표시
+                var skel = '<div class="ns-skeleton"></div>'.repeat(3);
+                korBox.innerHTML = skel;
+                engBox.innerHTML = skel;
 
-                // ── GNews 시도 ──────────────────────────────────────────
+                // 한글 여부 감지 → 영어 번역
+                var isKorean = /[가-힣]/.test(q);
+                var qEng = q;
+                if (isKorean) {
+                    qEng = await _nsTranslate(q);
+                    var badge = document.getElementById('nsTransBadge');
+                    if (badge) { badge.textContent = '"' + qEng + '"'; badge.style.display = 'inline'; }
+                } else {
+                    var badge2 = document.getElementById('nsTransBadge');
+                    if (badge2) badge2.style.display = 'none';
+                }
+
+                // 국내 + 해외 병렬 실행
+                await Promise.all([
+                    _nsSearchKorean(q, korBox),
+                    _nsSearchEnglish(qEng, engBox)
+                ]);
+            }
+
+            // ── 한국어 번역 (MyMemory, 무료, 키 불필요) ──────────────────
+            async function _nsTranslate(text) {
+                try {
+                    var url = 'https://api.mymemory.translated.net/get?q=' +
+                        encodeURIComponent(text) + '&langpair=ko|en';
+                    var res  = await fetch(url);
+                    var json = await res.json();
+                    if (json.responseStatus === 200) {
+                        var t = json.responseData.translatedText || '';
+                        if (t && !t.includes('MYMEMORY WARNING')) return t;
+                    }
+                } catch(e) {}
+                return text;
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // 국내 뉴스 검색 체인 (1→2→3 순서로 시도)
+            // ════════════════════════════════════════════════════════════
+            async function _nsSearchKorean(q, box) {
+                var srcEl = document.getElementById('nsKorSrc');
+
+                // 1순위: Naver Open API (키 있을 때)
+                // docs: https://developers.naver.com/docs/serviceapi/search/news/news.md
+                if (NS_NAVER_ID && NS_NAVER_SECRET) {
+                    try {
+                        var url = 'https://openapi.naver.com/v1/search/news.json?' + [
+                            'query='   + encodeURIComponent(q),
+                            'display=3',
+                            'sort=date'
+                        ].join('&');
+                        var res  = await fetch(url, { headers: {
+                            'X-Naver-Client-Id':     NS_NAVER_ID,
+                            'X-Naver-Client-Secret': NS_NAVER_SECRET
+                        }});
+                        var json = await res.json();
+                        if (json.items && json.items.length) {
+                            _nsRender(json.items.slice(0,3).map(function(a) {
+                                return {
+                                    title: a.title.replace(/<[^>]+>/g,''),
+                                    url:   a.link || a.originallink,
+                                    source: a.source || '네이버',
+                                    publishedAt: a.pubDate
+                                };
+                            }), box, 'kor');
+                            if (srcEl) srcEl.textContent = '📡 출처: Naver Open API';
+                            return;
+                        }
+                    } catch(e) { console.log('Naver API 실패', e); }
+                }
+
+                // 2순위: allorigins.win + Naver 뉴스 검색 HTML 파싱 (키 불필요)
+                try {
+                    var naverUrl = 'https://search.naver.com/search.naver?where=news&query=' +
+                        encodeURIComponent(q) + '&sm=tab_jum&sort=1';
+                    var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(naverUrl);
+                    var res2 = await fetch(proxyUrl, { cache: 'no-store' });
+                    var json2 = await res2.json();
+                    if (json2.contents) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(json2.contents, 'text/html');
+                        var titleLinks = doc.querySelectorAll('a.news_tit, a[class*="news_tit"]');
+                        var arts = []; var seen = new Set();
+                        titleLinks.forEach(function(a) {
+                            if (arts.length >= 3) return;
+                            var t = a.textContent.trim();
+                            var h = a.getAttribute('href') || '';
+                            if (!t || t.length < 6 || seen.has(h)) return;
+                            seen.add(h);
+                            var par = a.closest('li') || a.closest('div.news_area');
+                            var src = '', date = '';
+                            if (par) {
+                                var press = par.querySelector('a.press, .info.press');
+                                if (press) src = press.textContent.trim();
+                                var info = par.querySelector('.info_group .info:last-child');
+                                if (info) date = info.textContent.trim();
+                            }
+                            arts.push({ title: t, url: h, source: src || '네이버뉴스', publishedAt: date });
+                        });
+                        if (arts.length > 0) {
+                            _nsRender(arts, box, 'kor');
+                            if (srcEl) srcEl.textContent = '📡 출처: Naver 검색 (allorigins 프록시)';
+                            return;
+                        }
+                    }
+                } catch(e) { console.log('Naver HTML 실패', e); }
+
+                // 3순위: rss2json + 국내 주요 RSS 피드 클라이언트 필터
+                // 피드: 매일경제 증권 → 한국경제 금융 → 연합뉴스 경제
+                var korFeeds = [
+                    { url: 'https://www.mk.co.kr/rss/40300001/', name: '매일경제' },
+                    { url: 'https://www.hankyung.com/feed/finance',  name: '한국경제' },
+                    { url: 'https://www.yna.co.kr/rss/economy.xml',  name: '연합뉴스' }
+                ];
+                var qLow = q.toLowerCase();
+                for (var fi = 0; fi < korFeeds.length; fi++) {
+                    try {
+                        var feed = korFeeds[fi];
+                        var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' +
+                            encodeURIComponent(feed.url) + '&count=30';
+                        var res3 = await fetch(apiUrl);
+                        var json3 = await res3.json();
+                        if (json3.status !== 'ok' || !json3.items) continue;
+                        var filtered = json3.items.filter(function(it) {
+                            return it.title && it.title.toLowerCase().includes(qLow);
+                        }).slice(0, 3);
+                        if (filtered.length > 0) {
+                            _nsRender(filtered.map(function(it) {
+                                return { title: it.title, url: it.link,
+                                         source: feed.name, publishedAt: it.pubDate };
+                            }), box, 'kor');
+                            if (srcEl) srcEl.textContent = '📡 출처: ' + feed.name + ' RSS (키워드 필터)';
+                            return;
+                        }
+                    } catch(e) {}
+                }
+
+                box.innerHTML = '<p class="ns-empty">😔 국내 뉴스 없음<br>다른 키워드로 시도해 보세요</p>';
+                if (srcEl) srcEl.textContent = '';
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // 해외 뉴스 검색 체인 (1→2→3 순서로 시도)
+            // ════════════════════════════════════════════════════════════
+            async function _nsSearchEnglish(q, box) {
+                var srcEl = document.getElementById('nsEngSrc');
+
+                // 1순위: GNews (키 있을 때)
+                // docs: https://gnews.io/docs/v4  · 무료: 100건/일, CORS 지원
                 if (NS_GNEWS_KEY) {
-                    var ok = await _nsGNews(q, box);
-                    if (ok) { _nsUpdateKeyStatus('GNews', true); return; }
-                    _nsUpdateKeyStatus('GNews', false);
+                    try {
+                        var url = 'https://gnews.io/api/v4/search?' + [
+                            'q='       + encodeURIComponent(q + ' finance OR stock OR market'),
+                            'lang=en', 'topic=business', 'max=3',
+                            'sortby=publishedAt',
+                            'apikey='  + NS_GNEWS_KEY
+                        ].join('&');
+                        var res = await fetch(url);
+                        var json = await res.json();
+                        if (json.articles && json.articles.length) {
+                            _nsRender(json.articles.slice(0,3).map(function(a) {
+                                return { title: a.title, url: a.url,
+                                         source: a.source ? a.source.name : 'GNews',
+                                         publishedAt: a.publishedAt };
+                            }), box, 'eng');
+                            if (srcEl) srcEl.textContent = '📡 출처: GNews API';
+                            return;
+                        }
+                    } catch(e) { console.log('GNews 실패', e); }
                 }
 
-                // ── NewsAPI 시도 ────────────────────────────────────────
-                if (NS_NEWSAPI_KEY) {
-                    var ok2 = await _nsNewsAPI(q, box);
-                    if (ok2) { _nsUpdateKeyStatus('NewsAPI', true); return; }
-                    _nsUpdateKeyStatus('NewsAPI', false);
-                }
-
-                // ── The Guardian fallback (무료, 키 불필요) ─────────────
-                var ok3 = await _nsGuardian(q, box);
-                if (!ok3) {
-                    box.innerHTML = '<p class="ns-empty">😔 검색 결과가 없습니다.<br>다른 키워드(영어 권장)로 다시 시도해 보세요.</p>';
-                }
-            }
-
-            // ── GNews API ─────────────────────────────────────────────
-            // 공식 문서: https://gnews.io/docs/v4
-            // 파라미터: q(검색어), lang(언어), country(국가), topic(business), max(건수)
-            async function _nsGNews(q, box) {
+                // 2순위: The Guardian (무료 test 키, CORS 지원)
+                // docs: https://open-platform.theguardian.com/documentation/
                 try {
-                    var url = 'https://gnews.io/api/v4/search?' + [
-                        'q='        + encodeURIComponent(q + ' finance OR stock OR market'),
-                        'lang=en',
-                        'country=us',
-                        'topic=business',          // business 카테고리 고정
-                        'max=9',
-                        'sortby=publishedAt',
-                        'apikey='   + NS_GNEWS_KEY
-                    ].join('&');
-
-                    var res  = await fetch(url);
-                    var json = await res.json();
-                    if (!json.articles || !json.articles.length) return false;
-
-                    _nsRender(json.articles.map(function(a) {
-                        return { title: a.title, url: a.url,
-                                 source: a.source ? a.source.name : 'GNews',
-                                 publishedAt: a.publishedAt };
-                    }), box, 'GNews');
-                    return true;
-                } catch(e) { console.log('GNews 실패', e); return false; }
-            }
-
-            // ── NewsAPI.org ───────────────────────────────────────────
-            // 공식 문서: https://newsapi.org/docs/endpoints/everything
-            // ⚠️ 브라우저 직접 호출은 Developer(무료) 플랜에서 CORS 차단됨
-            //    Business 이상 유료 플랜 또는 서버사이드에서 사용 권장
-            async function _nsNewsAPI(q, box) {
-                try {
-                    var url = 'https://newsapi.org/v2/everything?' + [
+                    var url2 = 'https://content.guardianapis.com/search?' + [
                         'q='         + encodeURIComponent(q),
-                        'language=en',
-                        'sortBy=publishedAt',
-                        'pageSize=9',
-                        'domains=reuters.com,bloomberg.com,cnbc.com,wsj.com,ft.com,marketwatch.com',
-                        'apiKey='    + NS_NEWSAPI_KEY
+                        'section=business', 'order-by=newest',
+                        'page-size=3', 'api-key=test'
                     ].join('&');
+                    var res2  = await fetch(url2);
+                    var json2 = await res2.json();
+                    var items2 = json2.response && json2.response.results;
+                    if (items2 && items2.length) {
+                        _nsRender(items2.slice(0,3).map(function(a) {
+                            return { title: a.webTitle, url: a.webUrl,
+                                     source: 'The Guardian', publishedAt: a.webPublicationDate };
+                        }), box, 'eng');
+                        if (srcEl) srcEl.textContent = '📡 출처: The Guardian (test key)';
+                        return;
+                    }
+                } catch(e) { console.log('Guardian 실패', e); }
 
-                    var res  = await fetch(url);
-                    var json = await res.json();
-                    if (json.status !== 'ok' || !json.articles || !json.articles.length) return false;
-
-                    _nsRender(json.articles.map(function(a) {
-                        return { title: a.title, url: a.url,
-                                 source: a.source ? a.source.name : 'NewsAPI',
-                                 publishedAt: a.publishedAt };
-                    }), box, 'NewsAPI');
-                    return true;
-                } catch(e) { console.log('NewsAPI 실패', e); return false; }
-            }
-
-            // ── The Guardian fallback (무료, test 키) ─────────────────
-            async function _nsGuardian(q, box) {
-                try {
-                    var url = 'https://content.guardianapis.com/search?' + [
-                        'q='        + encodeURIComponent(q),
-                        'section=business',
-                        'order-by=newest',
-                        'page-size=9',
-                        'show-fields=trailText',
-                        'api-key=test'
-                    ].join('&');
-
-                    var res  = await fetch(url);
-                    var json = await res.json();
-                    var items = json.response && json.response.results;
-                    if (!items || !items.length) return false;
-
-                    _nsRender(items.map(function(a) {
-                        return { title: a.webTitle, url: a.webUrl,
-                                 source: 'The Guardian',
-                                 publishedAt: a.webPublicationDate };
-                    }), box, 'The Guardian (fallback)');
-                    return true;
-                } catch(e) { console.log('Guardian fallback 실패', e); return false; }
-            }
-
-            // ── 결과 렌더링 ───────────────────────────────────────────
-            function _nsRender(articles, box, srcLabel) {
-                if (!articles.length) {
-                    box.innerHTML = '<p class="ns-empty">검색 결과가 없습니다.</p>';
-                    return;
+                // 3순위: rss2json + Reuters/BBC Business RSS 클라이언트 필터
+                var engFeeds = [
+                    { url: 'https://feeds.reuters.com/reuters/businessNews', name: 'Reuters' },
+                    { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', name: 'BBC Business' },
+                    { url: 'https://www.cnbc.com/id/10001147/device/rss/rss.html', name: 'CNBC' }
+                ];
+                var qLow2 = q.toLowerCase();
+                for (var fi2 = 0; fi2 < engFeeds.length; fi2++) {
+                    try {
+                        var feed2 = engFeeds[fi2];
+                        var apiUrl2 = 'https://api.rss2json.com/v1/api.json?rss_url=' +
+                            encodeURIComponent(feed2.url) + '&count=30';
+                        var res3 = await fetch(apiUrl2);
+                        var json3 = await res3.json();
+                        if (json3.status !== 'ok' || !json3.items) continue;
+                        var filtered2 = json3.items.filter(function(it) {
+                            return it.title && it.title.toLowerCase().includes(qLow2);
+                        }).slice(0, 3);
+                        if (filtered2.length > 0) {
+                            _nsRender(filtered2.map(function(it) {
+                                return { title: it.title, url: it.link,
+                                         source: feed2.name, publishedAt: it.pubDate };
+                            }), box, 'eng');
+                            if (srcEl) srcEl.textContent = '📡 출처: ' + feed2.name + ' RSS (키워드 필터)';
+                            return;
+                        }
+                        // 결과 없으면 최신 3건이라도 표시 (첫 번째 피드만)
+                        if (fi2 === 0 && json3.items.length > 0) {
+                            _nsRender(json3.items.slice(0,3).map(function(it) {
+                                return { title: it.title, url: it.link,
+                                         source: feed2.name, publishedAt: it.pubDate };
+                            }), box, 'eng');
+                            if (srcEl) srcEl.textContent = '📡 출처: ' + feed2.name + ' RSS (최신순, 키워드 매칭 없음)';
+                            return;
+                        }
+                    } catch(e) {}
                 }
+
+                box.innerHTML = '<p class="ns-empty">😔 해외 뉴스 없음<br>다른 키워드로 시도해 보세요</p>';
+                if (srcEl) srcEl.textContent = '';
+            }
+
+            // ── 공통 카드 렌더링 ──────────────────────────────────────────
+            function _nsRender(articles, box, side) {
+                if (!articles || !articles.length) {
+                    box.innerHTML = '<p class="ns-empty">결과 없음</p>'; return;
+                }
+                var cls = side === 'kor' ? 'ns-card kor' : 'ns-card eng';
+                var srcCls = side === 'kor' ? 'ns-source-kor' : 'ns-source-eng';
                 box.innerHTML = articles.map(function(a) {
-                    var t   = a.publishedAt ? new Date(a.publishedAt).toLocaleString('ko-KR') : '';
-                    var src = a.source || srcLabel;
-                    return '<a class="ns-card" href="' + a.url + '" target="_blank" rel="noopener">' +
+                    var t = a.publishedAt ? new Date(a.publishedAt).toLocaleString('ko-KR') : '';
+                    return '<a class="' + cls + '" href="' + _nsEsc(a.url) + '" target="_blank" rel="noopener">' +
                         '<span class="ns-title">' + _nsEsc(a.title) + '</span>' +
                         '<span class="ns-meta">' +
-                          '<span class="ns-source">' + _nsEsc(src) + '</span>' +
+                          '<span class="' + srcCls + '">' + _nsEsc(a.source || '') + '</span>' +
                           (t ? '<span>🕐 ' + t + '</span>' : '') +
-                        '</span>' +
-                        '</a>';
-                }).join('') +
-                '<p class="ns-api-note" style="margin-top:8px;">📡 출처: ' + srcLabel + ' · 총 ' + articles.length + '건</p>';
+                        '</span></a>';
+                }).join('');
             }
 
             function _nsEsc(s) {
-                return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-            }
-
-            function _nsUpdateKeyStatus(api, ok) {
-                var el = document.getElementById('ns-key-status');
-                if (!el) return;
-                el.textContent = ok
-                    ? api + ' ✅ 연결됨'
-                    : api + ' ❌ 키 오류 또는 할당량 초과';
-                el.style.color = ok ? '#10b981' : '#ef4444';
+                return String(s || '')
+                    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             }
 
             // ── MK RSS 카테고리별 URL ──────────────────────────────────
