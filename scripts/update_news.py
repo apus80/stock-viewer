@@ -184,7 +184,7 @@ def get_latest_market_data():
     all_arts, stock_arts = get_freezine_news(5)
 
     data = {
-        "is_morning_update": now_kst.hour == 7,
+        "is_morning_update": now_kst.hour in [7, 22],  # 오전 7시 + 오후 10시 KST
         "date": date_str,
         "weekday": weekday_str,
         "market": {
