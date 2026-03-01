@@ -532,7 +532,7 @@ def build_volatility_card_html(vm, updated_time):
                             <span class="vol-metric-label">SPY P/C (실시간)</span>
                             <span class="vol-metric-value">{spy_pcr_str} {spy_pcr_b}</span>
                         </div>
-                        <div style="margin-top:5px;font-size:0.64rem;color:#374151;">{pcr_date_str} CBOE / yfinance</div>
+                        <div style="margin-top:5px;font-size:0.64rem;color:#64748b;">{pcr_date_str} CBOE / yfinance</div>
                     </div>
 
                     <!-- ② 옵션 신호 & 금리 -->
@@ -579,11 +579,17 @@ def build_volatility_card_html(vm, updated_time):
                             <span class="vol-metric-label">실업률</span>
                             <span class="vol-metric-value">{unrate_str}%</span>
                         </div>
-                        <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);
-                                    font-size:0.63rem;color:#374151;line-height:1.9;">
-                            📌 P/C &lt;0.7 과열(빨강) · 0.7-1.0 중립(노랑) · &gt;1.0 방어(초록)<br>
-                            📌 VIX &lt;15 안정 · 15-20 보통 · 20-25 주의 · &gt;25 공포<br>
-                            📌 스프레드 양수=정상 · 음수=역전(침체신호)
+                        <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);
+                                    font-size:0.65rem;color:#94a3b8;line-height:2.0;">
+                            📌 P/C &lt;0.7 <span style="color:#f87171;font-weight:600;">과열</span>
+                            · 0.7-1.0 <span style="color:#facc15;font-weight:600;">중립</span>
+                            · &gt;1.0 <span style="color:#4ade80;font-weight:600;">방어</span><br>
+                            📌 VIX &lt;15 <span style="color:#4ade80;font-weight:600;">안정</span>
+                            · 15-20 <span style="color:#a3e635;font-weight:600;">보통</span>
+                            · 20-25 <span style="color:#facc15;font-weight:600;">주의</span>
+                            · &gt;25 <span style="color:#f87171;font-weight:600;">공포</span><br>
+                            📌 스프레드 양수=<span style="color:#4ade80;font-weight:600;">정상</span>
+                            · 음수=<span style="color:#f87171;font-weight:600;">역전(침체신호)</span>
                         </div>
                     </div>
 
