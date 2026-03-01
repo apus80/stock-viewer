@@ -1490,9 +1490,9 @@
                     </div>
                 </div>
                 <p class="ns-api-note">
-                    📡 국내: Naver Open API → Naver 검색 → 국내 RSS(MK·한경·연합) ·
+                    📡 국내: Google뉴스RSS → GNews → Naver API → 국내RSS(MK·연합·한경) ·
                     해외: GNews → The Guardian → Reuters/BBC RSS ·
-                    <span id="ns-key-status" style="color:#10b981;">fallback 모드 동작 중</span>
+                    <span id="ns-key-status" style="color:#10b981;">CORS 프록시 모드</span>
                 </p>
             </div>
 
@@ -2980,8 +2980,74 @@
             async function _nsSearchKorean(q, box) {
                 var srcEl = document.getElementById('nsKorSrc');
 
-                // ── 1순위: GNews API lang=ko (이미 보유한 키 재활용) ─────────
-                // gnews.io는 CORS 지원, 한국어 기사 직접 검색, 가장 신뢰성 높음
+                // ── RSS XML 파싱 헬퍼 (CORS 프록시 2개 순차 시도) ─────────────
+                async function _fetchRssXml(rssUrl, timeoutMs) {
+                    var proxies = [
+                        'https://corsproxy.io/?' + encodeURIComponent(rssUrl),
+                        'https://api.allorigins.win/raw?url=' + encodeURIComponent(rssUrl)
+                    ];
+                    for (var pi = 0; pi < proxies.length; pi++) {
+                        try {
+                            var ctrl = new AbortController();
+                            var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 7000);
+                            var res = await fetch(proxies[pi], { signal: ctrl.signal, cache: 'no-store' });
+                            clearTimeout(timer);
+                            if (!res.ok) continue;
+                            var text = await res.text();
+                            if (!text || text.trim().length < 50) continue;
+                            var doc = new DOMParser().parseFromString(text, 'text/xml');
+                            var parseErr = doc.querySelector('parsererror');
+                            if (parseErr) continue;
+                            return doc;
+                        } catch(e) { continue; }
+                    }
+                    return null;
+                }
+
+                // ── RSS item → 기사 객체 변환 ───────────────────────────────
+                function _rssItemToArt(it, sourceName) {
+                    var titleEl = it.getElementsByTagName('title')[0];
+                    var linkEl  = it.getElementsByTagName('link')[0];
+                    var guidEl  = it.getElementsByTagName('guid')[0];
+                    var pubEl   = it.getElementsByTagName('pubDate')[0];
+                    var srcEl2  = it.getElementsByTagName('source')[0];
+                    // <link> 가 XML에서 비어있을 경우 nodeValue 직접 탐색
+                    var link = '';
+                    if (linkEl) {
+                        link = linkEl.textContent.trim();
+                        if (!link) {
+                            var nx = linkEl.nextSibling;
+                            if (nx && nx.nodeType === 3) link = nx.nodeValue.trim();
+                        }
+                    }
+                    if (!link && guidEl) link = guidEl.textContent.trim();
+                    return {
+                        title:       titleEl ? titleEl.textContent.trim() : '',
+                        url:         link,
+                        source:      srcEl2 ? srcEl2.textContent.trim() : (sourceName || ''),
+                        publishedAt: pubEl  ? pubEl.textContent.trim()  : ''
+                    };
+                }
+
+                // ── 1순위: Google News RSS 한국어 검색 (CORS 프록시) ──────────
+                // Google News는 국내 언론사 기사를 가장 광범위하게 커버
+                // API 키 불필요, 어떤 키워드도 검색 가능
+                var gnRssUrl = 'https://news.google.com/rss/search?q=' +
+                    encodeURIComponent(q) + '&hl=ko&gl=KR&ceid=KR:ko';
+                var docGN = await _fetchRssXml(gnRssUrl, 9000);
+                if (docGN) {
+                    var itemsGN = Array.from(docGN.getElementsByTagName('item'));
+                    var artsGN = itemsGN.slice(0, 6).map(function(it) {
+                        return _rssItemToArt(it, '구글뉴스');
+                    }).filter(function(a) { return a.title && a.url; });
+                    if (artsGN.length > 0) {
+                        _nsRender(artsGN.slice(0, 3), box, 'kor');
+                        if (srcEl) srcEl.textContent = '📡 출처: Google 뉴스 (한국어)';
+                        return;
+                    }
+                }
+
+                // ── 2순위: GNews API lang=ko ──────────────────────────────────
                 if (NS_GNEWS_KEY) {
                     try {
                         var gUrl = 'https://gnews.io/api/v4/search?' + [
@@ -3006,7 +3072,7 @@
                     } catch(e) { console.log('GNews KO 실패', e); }
                 }
 
-                // ── 2순위: Naver Open API (키 등록 시) ───────────────────────
+                // ── 3순위: Naver Open API (키 등록 시) ───────────────────────
                 if (NS_NAVER_ID && NS_NAVER_SECRET) {
                     try {
                         var ctrl2 = new AbortController();
@@ -3032,9 +3098,8 @@
                     } catch(e) { console.log('Naver API 실패', e); }
                 }
 
-                // ── 3순위: 국내 주요 언론사 RSS 병렬 키워드 필터 ────────────
-                // 매일경제(전 섹션) + 연합뉴스(국제 포함) + 한국경제
-                // count=50으로 넉넉하게, 국제 섹션 추가로 "이란" 같은 외신 키워드 커버
+                // ── 4순위: 국내 언론사 RSS 직접 파싱 (CORS 프록시) ──────────
+                // rss2json.com 대신 corsproxy.io/allorigins 로 직접 fetch → XML 파싱
                 var korFeeds = [
                     { url: 'https://www.mk.co.kr/rss/30200030/', name: '매일경제 국제' },
                     { url: 'https://www.mk.co.kr/rss/40300001/', name: '매일경제 증권' },
@@ -3047,20 +3112,21 @@
                     { url: 'https://www.hankyung.com/feed/finance',        name: '한국경제 증권' }
                 ];
                 var qLow = q.toLowerCase();
-                var feedResults = await Promise.all(korFeeds.map(function(feed) {
-                    return _rss2json(feed.url, 50, 7000).then(function(json) {
-                        return { json: json, name: feed.name };
+                var feedDocs = await Promise.all(korFeeds.map(function(feed) {
+                    return _fetchRssXml(feed.url, 7000).then(function(doc) {
+                        return { doc: doc, name: feed.name };
                     });
                 }));
                 var allFiltered = [];
                 var seen = {};
-                feedResults.forEach(function(r) {
-                    if (!r.json || r.json.status !== 'ok' || !r.json.items) return;
-                    r.json.items.forEach(function(it) {
-                        if (it.title && it.title.toLowerCase().includes(qLow) && !seen[it.link]) {
-                            seen[it.link] = true;
-                            allFiltered.push({ title: it.title, url: it.link,
-                                               source: r.name, publishedAt: it.pubDate });
+                feedDocs.forEach(function(r) {
+                    if (!r.doc) return;
+                    var items = Array.from(r.doc.getElementsByTagName('item')).slice(0, 50);
+                    items.forEach(function(it) {
+                        var art = _rssItemToArt(it, r.name);
+                        if (art.title && art.url && art.title.toLowerCase().includes(qLow) && !seen[art.url]) {
+                            seen[art.url] = true;
+                            allFiltered.push(art);
                         }
                     });
                 });
@@ -3069,12 +3135,12 @@
                         return new Date(b.publishedAt) - new Date(a.publishedAt);
                     });
                     _nsRender(allFiltered.slice(0,3), box, 'kor');
-                    if (srcEl) srcEl.textContent = '📡 출처: 국내 RSS 키워드 검색 (매일경제·연합뉴스·한경)';
+                    if (srcEl) srcEl.textContent = '📡 출처: 국내 RSS (매일경제·연합뉴스·한경)';
                     return;
                 }
 
                 box.innerHTML = '<p class="ns-empty">😔 국내 뉴스 없음<br>' +
-                    '<span style="font-size:0.8em;color:#94a3b8;">영어 또는 더 일반적인 키워드로 시도해 보세요</span></p>';
+                    '<span style="font-size:0.8em;color:#94a3b8;">더 일반적인 키워드로 시도해 보세요</span></p>';
                 if (srcEl) srcEl.textContent = '';
             }
 
