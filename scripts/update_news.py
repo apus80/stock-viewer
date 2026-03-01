@@ -841,7 +841,7 @@ def update_index_html(data):
 
     upd_time   = nn['updated_time']
     reload_btn = (
-        '<button onclick="window.location.reload()" title="새로고침"'
+        '<button onclick="refreshRightCard()" title="새로고침"'
         ' style="margin-left:auto;background:rgba(255,255,255,0.08);'
         'border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:0.8rem;'
         'padding:3px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;"'
