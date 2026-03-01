@@ -96,7 +96,10 @@ def get_yahoo_finance_news(count=3):
 
 
 def get_freezine_section_news(section_code, count=3, source_name='프리진경제'):
-    """프리진경제 섹션 HTML 스크래핑 (BeautifulSoup)"""
+    """프리진경제 섹션 HTML 스크래핑 (BeautifulSoup)
+    URL: https://www.freezine.co.kr/news/articleList.html?sc_section_code=S1N1&view_type=sm
+    섹션 전용 기사 목록만 추출 (상단 featured/인기 기사 제외)
+    """
     url = (f"https://www.freezine.co.kr/news/articleList.html"
            f"?sc_section_code={section_code}&view_type=sm")
     source_url = "https://www.freezine.co.kr"
@@ -114,8 +117,30 @@ def get_freezine_section_news(section_code, count=3, source_name='프리진경�
 
         soup = BeautifulSoup(html, 'html.parser')
 
-        # 기사 링크: href에 articleView.html?idxno= 포함
-        for a_tag in soup.find_all('a', href=re.compile(r'articleView\.html\?idxno=')):
+        # ── 섹션 전용 기사 목록 컨테이너 탐색 ──────────────────────────────
+        # 한국 뉴스 CMS 공통 패턴: #section-list, .list-block, .article-list 등
+        # featured/인기 기사는 보통 다른 div에 있고 <li> 목록이 섹션 기사
+        container = (
+            soup.find('div', id='section-list') or
+            soup.find('div', id='article-list') or
+            soup.find('div', class_=re.compile(r'(article|news)[_\-]?list|list[_\-]?body', re.I)) or
+            soup.find('ul',  class_=re.compile(r'(article|news)[_\-]?list', re.I))
+        )
+
+        # 컨테이너 내 <li> 기사 링크 우선 (섹션 목록은 보통 <li> 구조)
+        if container:
+            a_tags = container.find_all('a', href=re.compile(r'articleView\.html\?idxno='))
+        else:
+            # 컨테이너를 못 찾으면 전체 <li> 안의 링크만 추출
+            a_tags = []
+            for li in soup.find_all('li'):
+                for a in li.find_all('a', href=re.compile(r'articleView\.html\?idxno=')):
+                    a_tags.append(a)
+            # 그래도 없으면 전체 페이지 (마지막 fallback)
+            if not a_tags:
+                a_tags = soup.find_all('a', href=re.compile(r'articleView\.html\?idxno='))
+
+        for a_tag in a_tags:
             title = a_tag.get_text(strip=True)
             href  = a_tag.get('href', '')
 
@@ -133,12 +158,11 @@ def get_freezine_section_news(section_code, count=3, source_name='프리진경�
                 continue
             seen_links.add(href)
 
-            # 날짜 탐색: 부모 <li> 또는 <div> 안에서 YYYY.MM.DD / YYYY-MM-DD 패턴
+            # 날짜: 부모 <li> 또는 <div> 안에서 YYYY.MM.DD / YYYY-MM-DD 패턴
             date = ''
-            container = a_tag.find_parent('li') or a_tag.find_parent('div')
-            if container:
-                text_in = container.get_text(' ')
-                m = re.search(r'(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})', text_in)
+            parent = a_tag.find_parent('li') or a_tag.find_parent('div')
+            if parent:
+                m = re.search(r'(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})', parent.get_text(' '))
                 if m:
                     date = f"{m.group(1)}-{m.group(2).zfill(2)}-{m.group(3).zfill(2)}"
 
@@ -153,7 +177,7 @@ def get_freezine_section_news(section_code, count=3, source_name='프리진경�
             if len(arts) >= count:
                 break
 
-        print(f"[{source_name}] {len(arts)}건 로드")
+        print(f"[{source_name}] {len(arts)}건 로드 (container={'found' if container else 'fallback'})")
     except Exception as e:
         print(f"[{source_name}] 실패: {e}")
 
