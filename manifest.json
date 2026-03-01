@@ -1,6 +1,6 @@
 {
-  "name": "주식 분석 통합 리포트",
-  "short_name": "주식 리포트",
+  "name": "InvestFlow",
+  "short_name": "InvestFlow",
   "description": "실시간 글로벌 시장 분석 및 뉴스 통합 리포트",
   "start_url": "./",
   "scope": "./",

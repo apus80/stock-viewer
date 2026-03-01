@@ -261,6 +261,7 @@ def update_index_html(data):
                             <div class="header-top">
                                 <span class="date-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">프리진경제</span>
                                 <span style="font-size:0.9rem;color:#94a3b8;">Updated: {fn['updated_time']} KST</span>
+                                <button onclick="window.location.reload()" title="새로고침" style="margin-left:auto;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:0.8rem;padding:3px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.color='#f8fafc'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#94a3b8'">⟳ 새로고침</button>
                             </div>
                             <div class="market-status-title" style="margin-top:10px;">📰 프리진경제 뉴스 브리핑</div>
                         </div>
