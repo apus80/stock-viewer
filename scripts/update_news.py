@@ -5,10 +5,24 @@ import html as html_lib
 import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
+
 try:
     import yfinance as yf
 except ImportError:
     yf = None
+
+try:
+    from deep_translator import GoogleTranslator
+    def translate_ko(text):
+        if not text:
+            return text
+        try:
+            return GoogleTranslator(source='auto', target='ko').translate(text[:500]) or text
+        except Exception:
+            return text
+except ImportError:
+    def translate_ko(text):
+        return text
 
 # --- 설정 ---
 INDEX_HTML_PATH = 'index.html'
@@ -16,6 +30,11 @@ INDEX_HTML_PATH = 'index.html'
 MONTH_MAP = {
     'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06',
     'Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'
+}
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                  'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
 def esc(text):
@@ -28,7 +47,7 @@ def parse_rfc2822_date(pub):
         if len(parts) >= 4:
             d, m, y = parts[1], parts[2], parts[3]
             return f"{y}-{MONTH_MAP.get(m, m)}-{d.zfill(2)}"
-    except:
+    except Exception:
         pass
     return ''
 
@@ -36,21 +55,48 @@ def truncate(text, n=90):
     text = re.sub(r'\s+', ' ', text).strip()
     return (text[:n] + '...') if len(text) > n else text
 
-# ─── freezine.co.kr 뉴스 수집 ────────────────────────────────────────────────
+# ─── 뉴스 수집 ────────────────────────────────────────────────────────────────
 
-def get_freezine_news(count=5):
-    """
-    전체 기사: RSS(gn_rss_allArticle.xml) — title, link, desc, date
-    주식/증권: HTML 스크래핑(sc_section_code=S1N1) — title, link, desc, date
-    """
-    BASE = "https://www.freezine.co.kr"
-    HEADERS = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
-    all_arts, stock_arts = [], []
+def fetch_rss_news(url, count, source_name, source_url, do_translate=False):
+    """범용 RSS 뉴스 수집 함수"""
+    arts = []
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=10) as r:
+            root = ET.fromstring(r.read())
+        for item in root.findall('.//item')[:count]:
+            title = (item.findtext('title') or '').strip()
+            link  = (item.findtext('link')  or '').strip()
+            desc  = truncate((item.findtext('description') or '').strip())
+            date  = parse_rfc2822_date(item.findtext('pubDate') or '')
+            if title and link:
+                arts.append({
+                    'title': translate_ko(title) if do_translate else title,
+                    'link': link, 'desc': desc, 'date': date,
+                    'source': source_name, 'source_url': source_url
+                })
+        print(f"[{source_name}] {len(arts)}건 로드")
+    except Exception as e:
+        print(f"[{source_name}] 실패: {e}")
+    return arts
 
-    # 1) 전체 기사 — RSS
+def get_yahoo_finance_news(count=3):
+    """Yahoo Finance RSS — 영어 기사 (한국어 번역)"""
+    return fetch_rss_news(
+        "https://finance.yahoo.com/news/rssindex", count,
+        "Yahoo Finance", "https://finance.yahoo.com", do_translate=True
+    )
+
+def get_cnbc_news(count=3):
+    """CNBC Markets RSS — 영어 기사 (한국어 번역)"""
+    return fetch_rss_news(
+        "https://www.cnbc.com/id/10000664/device/rss/rss.html", count,
+        "CNBC", "https://www.cnbc.com/markets/", do_translate=True
+    )
+
+def get_freezine_news(count=3):
+    """freezine.co.kr RSS — 한국어 기사"""
+    arts = []
     try:
         req = urllib.request.Request(
             "https://cdn.freezine.co.kr/rss/gn_rss_allArticle.xml", headers=HEADERS)
@@ -62,40 +108,14 @@ def get_freezine_news(count=5):
             desc  = truncate((item.findtext('description') or '').strip())
             date  = parse_rfc2822_date(item.findtext('pubDate') or '')
             if title and link:
-                all_arts.append({'title': title, 'link': link, 'desc': desc, 'date': date})
-        print(f"[freezine 전체기사] {len(all_arts)}건 로드")
+                arts.append({
+                    'title': title, 'link': link, 'desc': desc, 'date': date,
+                    'source': '프리진경제', 'source_url': 'https://www.freezine.co.kr'
+                })
+        print(f"[프리진경제] {len(arts)}건 로드")
     except Exception as e:
-        print(f"[freezine RSS] 실패: {e}")
-
-    # 2) 주식/증권 — HTML 스크래핑
-    try:
-        req = urllib.request.Request(
-            f"{BASE}/news/articleList.html?sc_section_code=S1N1&view_type=sm",
-            headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=10) as r:
-            html = r.read().decode('utf-8', errors='replace')
-
-        # view-cont 블록 추출
-        blocks = re.findall(
-            r'<div class="view-cont">(.*?)(?=<div class="view-cont"|<div[^>]*class="paging"|</ul>)',
-            html, re.DOTALL)
-        for blk in blocks[:count]:
-            tm = re.search(r'class="titles".*?href="([^"]+)"[^>]*>\s*([^<]+)', blk, re.DOTALL)
-            dm = re.search(r'<em>(\d{4}-\d{2}-\d{2})', blk)
-            lm = re.search(r'<p class="lead">.*?<a[^>]*>(.*?)</a>', blk, re.DOTALL)
-            if tm:
-                href  = tm.group(1).strip()
-                if href.startswith('/'): href = BASE + href
-                title = tm.group(2).strip()
-                date  = dm.group(1) if dm else ''
-                lead  = truncate(re.sub(r'\s+', ' ', lm.group(1)).strip()) if lm else ''
-                if title:
-                    stock_arts.append({'title': title, 'link': href, 'desc': lead, 'date': date})
-        print(f"[freezine 주식/증권] {len(stock_arts)}건 로드")
-    except Exception as e:
-        print(f"[freezine 주식] 실패: {e}")
-
-    return all_arts, stock_arts
+        print(f"[프리진경제] 실패: {e}")
+    return arts
 
 def build_news_items_html(arts, border='rgba(250,204,21,0.5)'):
     if not arts:
@@ -103,13 +123,20 @@ def build_news_items_html(arts, border='rgba(250,204,21,0.5)'):
     out = ''
     for a in arts:
         desc_html = (
-            f"<p style='color:#94a3b8;font-size:0.78em;margin:3px 0 0;"
-            f"line-height:1.5;'>{esc(a['desc'])}</p>"
+            f"<p style='color:#94a3b8;font-size:0.78em;margin:3px 0 0;line-height:1.5;'>{esc(a['desc'])}</p>"
         ) if a.get('desc') else ''
-        date_html = (
-            f"<span style='color:#64748b;font-size:0.73em;display:block;margin-top:2px;'>"
-            f"{esc(a['date'])}</span>"
-        ) if a.get('date') else ''
+        meta_parts = []
+        if a.get('date'):
+            meta_parts.append(esc(a['date']))
+        if a.get('source'):
+            meta_parts.append(
+                f"출처: <a href='{esc(a.get('source_url', '#'))}' target='_blank' rel='noopener'"
+                f" style='color:#94a3b8;text-decoration:underline;'>{esc(a['source'])}</a>"
+            )
+        meta_html = (
+            f"<span style='color:#64748b;font-size:0.72em;display:block;margin-top:3px;'>"
+            f"{'  ·  '.join(meta_parts)}</span>"
+        ) if meta_parts else ''
         out += (
             f"<div style='margin-bottom:9px;padding:9px 10px;"
             f"background:rgba(0,0,0,0.2);border-left:3px solid {border};"
@@ -117,7 +144,7 @@ def build_news_items_html(arts, border='rgba(250,204,21,0.5)'):
             f"<a href='{esc(a['link'])}' target='_blank' rel='noopener'"
             f" style='color:#f8fafc;text-decoration:none;font-size:0.87em;"
             f"font-weight:600;line-height:1.4;display:block;'>{esc(a['title'])}</a>"
-            f"{date_html}{desc_html}</div>"
+            f"{meta_html}{desc_html}</div>"
         )
     return out
 
@@ -180,8 +207,10 @@ def get_latest_market_data():
         sectors_data = [{"name": n, "val": "50%", "color": "#10b981", "pct": "0.00%"} for n in sectors_map]
         bigtech_data = [{"name": n, "pct": "0.00%", "up": True} for n in bigtech_map]
 
-    # freezine 뉴스 수집
-    all_arts, stock_arts = get_freezine_news(5)
+    # 뉴스 수집 (3 소스 × 3 기사 = 9개)
+    yahoo_arts    = get_yahoo_finance_news(3)
+    cnbc_arts     = get_cnbc_news(3)
+    freezine_arts = get_freezine_news(3)
 
     data = {
         "is_morning_update": now_kst.hour in [7, 22],  # 오전 7시 + 오후 10시 KST
@@ -194,9 +223,10 @@ def get_latest_market_data():
             "bigtech": bigtech_data,
             "korea": "실시간 글로벌 시장 변동에 따른 투자 심리 변화가 감지되고 있습니다. 주도 섹터 및 기관 수급 유입 상황을 주의 깊게 살펴보세요."
         },
-        "freezine": {
-            "all_arts":   all_arts,
-            "stock_arts": stock_arts,
+        "news": {
+            "yahoo":    yahoo_arts,
+            "cnbc":     cnbc_arts,
+            "freezine": freezine_arts,
             "updated_time": now_kst.strftime("%H:%M")
         }
     }
@@ -212,24 +242,35 @@ def update_index_html(data):
         content = f.read()
 
     # --- 왼쪽 카드 HTML ---
-    indices_html = "".join([
-        f'<div class="mini-box"><span class="mini-name">{idx["name"]}</span>'
-        f'<span class="mini-val">{idx["val"]}</span>'
-        f'<span class="mini-pct {"change-up" if idx["up"] else "change-down"}">'
-        f'{"▲" if idx["up"] else "▼"} {idx["pct"]}</span></div>'
-        for idx in data['market']['indices']
-    ])
-    sectors_html = "".join([
-        f'<div class="data-bar-row"><div class="data-bar-label"><span>{s["name"]}</span>'
-        f'<div class="data-bar-visual"><div class="data-bar-fill" style="width:{s["val"]}; background:{s["color"]};"></div></div></div>'
-        f'<span class="{"change-up" if "+" in s["pct"] else "change-down"}">{s["pct"]}</span></div>'
-        for s in data['market']['sectors']
-    ])
-    bigtech_html = "".join([
-        f'<div class="mini-box" style="padding:8px 4px;"><span class="mini-name" style="font-size:0.8rem;">{b["name"]}</span>'
-        f'<span class="{"change-up" if b["up"] else "change-down"}" style="font-size:0.95rem; font-weight:700;">{b["pct"]}</span></div>'
-        for b in data['market']['bigtech']
-    ])
+    indices_parts = []
+    for idx in data['market']['indices']:
+        cls   = 'change-up' if idx['up'] else 'change-down'
+        arrow = '▲' if idx['up'] else '▼'
+        indices_parts.append(
+            f'<div class="mini-box"><span class="mini-name">{idx["name"]}</span>'
+            f'<span class="mini-val">{idx["val"]}</span>'
+            f'<span class="mini-pct {cls}">{arrow} {idx["pct"]}</span></div>'
+        )
+    indices_html = ''.join(indices_parts)
+
+    sectors_parts = []
+    for s in data['market']['sectors']:
+        cls = 'change-up' if '+' in s['pct'] else 'change-down'
+        sectors_parts.append(
+            f'<div class="data-bar-row"><div class="data-bar-label"><span>{s["name"]}</span>'
+            f'<div class="data-bar-visual"><div class="data-bar-fill" style="width:{s["val"]}; background:{s["color"]};"></div></div></div>'
+            f'<span class="{cls}">{s["pct"]}</span></div>'
+        )
+    sectors_html = ''.join(sectors_parts)
+
+    bigtech_parts = []
+    for b in data['market']['bigtech']:
+        cls = 'change-up' if b['up'] else 'change-down'
+        bigtech_parts.append(
+            f'<div class="mini-box" style="padding:8px 4px;"><span class="mini-name" style="font-size:0.8rem;">{b["name"]}</span>'
+            f'<span class="{cls}" style="font-size:0.95rem; font-weight:700;">{b["pct"]}</span></div>'
+        )
+    bigtech_html = ''.join(bigtech_parts)
 
     left_card_content = f'''
                         <div class="news-card-header">
@@ -251,27 +292,32 @@ def update_index_html(data):
                         </div>
     '''
 
-    # --- 오른쪽 카드 HTML (freezine 뉴스 2섹션) ---
-    fn = data['freezine']
-    all_news_html   = build_news_items_html(fn['all_arts'],   border='rgba(250,204,21,0.5)')
-    stock_news_html = build_news_items_html(fn['stock_arts'], border='rgba(56,189,248,0.5)')
+    # --- 오른쪽 카드 HTML (3 소스 × 3 기사) ---
+    nn = data['news']
+    yahoo_html    = build_news_items_html(nn['yahoo'],    border='rgba(250,204,21,0.5)')
+    cnbc_html     = build_news_items_html(nn['cnbc'],     border='rgba(56,189,248,0.5)')
+    freezine_html = build_news_items_html(nn['freezine'], border='rgba(74,222,128,0.5)')
 
     right_card_content = f'''
                         <div class="news-card-header">
                             <div class="header-top">
-                                <span class="date-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">프리진경제</span>
-                                <span style="font-size:0.9rem;color:#94a3b8;">Updated: {fn['updated_time']} KST</span>
+                                <span class="date-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">글로벌 마켓 뉴스</span>
+                                <span style="font-size:0.9rem;color:#94a3b8;">Updated: {nn['updated_time']} KST</span>
                                 <button onclick="window.location.reload()" title="새로고침" style="margin-left:auto;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:0.8rem;padding:3px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.color='#f8fafc'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#94a3b8'">⟳ 새로고침</button>
                             </div>
-                            <div class="market-status-title" style="margin-top:10px;">📰 프리진경제 뉴스 브리핑</div>
+                            <div class="market-status-title" style="margin-top:10px;">🌐 실시간 글로벌 시장 뉴스</div>
                         </div>
                         <div style="margin-bottom:14px;">
-                            <strong style="color:#facc15;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(250,204,21,0.2);padding-bottom:4px;">📌 전체 기사</strong>
-                            {all_news_html}
+                            <strong style="color:#facc15;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(250,204,21,0.2);padding-bottom:4px;">📊 Yahoo Finance</strong>
+                            {yahoo_html}
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">📺 CNBC Markets</strong>
+                            {cnbc_html}
                         </div>
                         <div>
-                            <strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">📈 주식·증권</strong>
-                            {stock_news_html}
+                            <strong style="color:#4ade80;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(74,222,128,0.2);padding-bottom:4px;">🇰🇷 프리진경제</strong>
+                            {freezine_html}
                         </div>
     '''
 
