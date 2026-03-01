@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 deep-translator
+          pip install requests beautifulsoup4 yfinance deep-translator
 
       - name: Run update script
         run: python scripts/update_news.py

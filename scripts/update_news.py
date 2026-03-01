@@ -7,6 +7,12 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 try:
+    from bs4 import BeautifulSoup
+    BS4_OK = True
+except ImportError:
+    BS4_OK = False
+
+try:
     import yfinance as yf
 except ImportError:
     yf = None
@@ -80,6 +86,7 @@ def fetch_rss_news(url, count, source_name, source_url, do_translate=False):
         print(f"[{source_name}] 실패: {e}")
     return arts
 
+
 def get_yahoo_finance_news(count=3):
     """Yahoo Finance RSS — 영어 기사 (한국어 번역)"""
     return fetch_rss_news(
@@ -87,19 +94,81 @@ def get_yahoo_finance_news(count=3):
         "Yahoo Finance", "https://finance.yahoo.com", do_translate=True
     )
 
-def get_cnbc_news(count=3):
-    """CNBC Markets RSS — 영어 기사 (한국어 번역)"""
-    return fetch_rss_news(
-        "https://www.cnbc.com/id/10000664/device/rss/rss.html", count,
-        "CNBC", "https://www.cnbc.com/markets/", do_translate=True
-    )
 
-def get_marketwatch_news(count=3):
-    """MarketWatch RSS — 영어 기사 (한국어 번역)"""
-    return fetch_rss_news(
-        "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines", count,
-        "MarketWatch", "https://www.marketwatch.com", do_translate=True
-    )
+def get_freezine_section_news(section_code, count=3, source_name='프리진경제'):
+    """프리진경제 섹션 HTML 스크래핑 (BeautifulSoup)"""
+    url = (f"https://www.freezine.co.kr/news/articleList.html"
+           f"?sc_section_code={section_code}&view_type=sm")
+    source_url = "https://www.freezine.co.kr"
+    arts = []
+    seen_links = set()
+
+    if not BS4_OK:
+        print(f"[{source_name}] BeautifulSoup 없음, 건너뜀")
+        return arts
+
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15) as r:
+            html = r.read().decode('utf-8', errors='replace')
+
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # 기사 링크: href에 articleView.html?idxno= 포함
+        for a_tag in soup.find_all('a', href=re.compile(r'articleView\.html\?idxno=')):
+            title = a_tag.get_text(strip=True)
+            href  = a_tag.get('href', '')
+
+            # 너무 짧은 텍스트(네비·버튼 등) 제외
+            if not title or len(title) < 8:
+                continue
+
+            # 절대 URL 변환
+            if href.startswith('/'):
+                href = 'https://www.freezine.co.kr' + href
+            elif not href.startswith('http'):
+                href = 'https://www.freezine.co.kr/' + href.lstrip('/')
+
+            if href in seen_links:
+                continue
+            seen_links.add(href)
+
+            # 날짜 탐색: 부모 <li> 또는 <div> 안에서 YYYY.MM.DD / YYYY-MM-DD 패턴
+            date = ''
+            container = a_tag.find_parent('li') or a_tag.find_parent('div')
+            if container:
+                text_in = container.get_text(' ')
+                m = re.search(r'(\d{4})[.\-](\d{1,2})[.\-](\d{1,2})', text_in)
+                if m:
+                    date = f"{m.group(1)}-{m.group(2).zfill(2)}-{m.group(3).zfill(2)}"
+
+            arts.append({
+                'title': title,
+                'link':  href,
+                'desc':  '',
+                'date':  date,
+                'source': source_name,
+                'source_url': source_url
+            })
+            if len(arts) >= count:
+                break
+
+        print(f"[{source_name}] {len(arts)}건 로드")
+    except Exception as e:
+        print(f"[{source_name}] 실패: {e}")
+
+    return arts
+
+
+def get_freezine_stock_news(count=3):
+    """프리진경제 주식/증권 (S1N1)"""
+    return get_freezine_section_news('S1N1', count, '프리진경제 주식/증권')
+
+
+def get_freezine_intl_news(count=3):
+    """프리진경제 국제/IT (S1N6)"""
+    return get_freezine_section_news('S1N6', count, '프리진경제 국제/IT')
+
 
 def build_news_items_html(arts, border='rgba(250,204,21,0.5)'):
     if not arts:
@@ -165,7 +234,10 @@ def get_latest_market_data():
                 hist = yf.Ticker(tk).history(period="5d")
                 curr, prev = hist['Close'].iloc[-1], hist['Close'].iloc[-2]
                 pct = ((curr - prev) / prev) * 100
-                indices_data.append({"name": name, "val": f"{curr:,.1f}", "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct>=0})
+                indices_data.append({
+                    "name": name, "val": f"{curr:,.1f}",
+                    "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct >= 0
+                })
             except Exception:
                 indices_data.append({"name": name, "val": "N/A", "pct": "0.00%", "up": True})
         for name, tk in sectors_map.items():
@@ -175,7 +247,10 @@ def get_latest_market_data():
                 pct = ((curr - prev) / prev) * 100
                 col = "#10b981" if pct >= 0 else "#f43f5e"
                 val_w = min(max(50 + pct * 10, 10), 90)
-                sectors_data.append({"name": name, "val": f"{val_w:.0f}%", "color": col, "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct >= 0})
+                sectors_data.append({
+                    "name": name, "val": f"{val_w:.0f}%", "color": col,
+                    "pct": f"{'+' if pct>=0 else ''}{pct:.2f}%", "up": pct >= 0
+                })
             except Exception:
                 sectors_data.append({"name": name, "val": "50%", "color": "#10b981", "pct": "0.00%", "up": True})
         for tk in bigtech_map:
@@ -192,12 +267,12 @@ def get_latest_market_data():
         bigtech_data = [{"name": n, "pct": "0.00%", "up": True} for n in bigtech_map]
 
     # 뉴스 수집 (3 소스 × 3 기사 = 9개)
-    yahoo_arts       = get_yahoo_finance_news(3)
-    cnbc_arts        = get_cnbc_news(3)
-    marketwatch_arts = get_marketwatch_news(3)
+    yahoo_arts = get_yahoo_finance_news(3)
+    stock_arts = get_freezine_stock_news(3)   # 프리진경제 주식/증권
+    intl_arts  = get_freezine_intl_news(3)    # 프리진경제 국제/IT
 
     data = {
-        "is_morning_update": now_kst.hour in [7, 22],  # 오전 7시 + 오후 10시 KST
+        "is_morning_update": now_kst.hour in [7, 22],
         "date": date_str,
         "weekday": weekday_str,
         "market": {
@@ -209,8 +284,8 @@ def get_latest_market_data():
         },
         "news": {
             "yahoo":       yahoo_arts,
-            "cnbc":        cnbc_arts,
-            "marketwatch": marketwatch_arts,
+            "fz_stock":    stock_arts,
+            "fz_intl":     intl_arts,
             "updated_time": now_kst.strftime("%H:%M")
         }
     }
@@ -276,32 +351,32 @@ def update_index_html(data):
                         </div>
     '''
 
-    # --- 오른쪽 카드 HTML (3 소스 × 3 기사) ---
+    # --- 오른쪽 카드 HTML ---
     nn = data['news']
-    yahoo_html       = build_news_items_html(nn['yahoo'],       border='rgba(250,204,21,0.5)')
-    cnbc_html        = build_news_items_html(nn['cnbc'],        border='rgba(56,189,248,0.5)')
-    marketwatch_html = build_news_items_html(nn['marketwatch'], border='rgba(74,222,128,0.5)')
+    yahoo_html    = build_news_items_html(nn['yahoo'],    border='rgba(250,204,21,0.5)')
+    stock_html    = build_news_items_html(nn['fz_stock'], border='rgba(56,189,248,0.5)')
+    intl_html     = build_news_items_html(nn['fz_intl'],  border='rgba(74,222,128,0.5)')
 
     right_card_content = f'''
                         <div class="news-card-header">
                             <div class="header-top">
-                                <span class="date-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;">글로벌 마켓 뉴스</span>
+                                <span class="date-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">프리진경제</span>
                                 <span style="font-size:0.9rem;color:#94a3b8;">Updated: {nn['updated_time']} KST</span>
                                 <button onclick="window.location.reload()" title="새로고침" style="margin-left:auto;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#94a3b8;font-size:0.8rem;padding:3px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.color='#f8fafc'" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#94a3b8'">⟳ 새로고침</button>
                             </div>
-                            <div class="market-status-title" style="margin-top:10px;">🌐 실시간 글로벌 시장 뉴스</div>
+                            <div class="market-status-title" style="margin-top:10px;">📰 프리진경제 뉴스 브리핑</div>
                         </div>
                         <div style="margin-bottom:14px;">
                             <strong style="color:#facc15;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(250,204,21,0.2);padding-bottom:4px;">📊 Yahoo Finance</strong>
                             {yahoo_html}
                         </div>
                         <div style="margin-bottom:14px;">
-                            <strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">📺 CNBC Markets</strong>
-                            {cnbc_html}
+                            <strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">📈 프리진경제 주식/증권</strong>
+                            {stock_html}
                         </div>
                         <div>
-                            <strong style="color:#4ade80;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(74,222,128,0.2);padding-bottom:4px;">📰 MarketWatch</strong>
-                            {marketwatch_html}
+                            <strong style="color:#4ade80;font-size:0.82em;display:block;margin-bottom:8px;letter-spacing:0.03em;border-bottom:1px solid rgba(74,222,128,0.2);padding-bottom:4px;">🌐 프리진경제 국제/IT</strong>
+                            {intl_html}
                         </div>
     '''
 
@@ -311,7 +386,7 @@ def update_index_html(data):
         print("마커를 찾을 수 없습니다.")
         return
 
-    # 왼쪽 카드: 아침/저녁 업데이트 or --force 시에만 새 데이터로 교체
+    # 왼쪽 카드: 아침/저녁 업데이트 or --force 시에만 갱신
     left_html_to_use = left_card_content
     left_pattern = r'<!-- LEFT_CARD_START -->(.*?)<!-- LEFT_CARD_END -->'
     left_match = re.search(left_pattern, content, re.DOTALL)
