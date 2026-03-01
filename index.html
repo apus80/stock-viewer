@@ -366,6 +366,102 @@
             }
         }
 
+        /* ── 실시간 금융 뉴스 검색 ── */
+        .news-search-wrap {
+            background: #fff;
+            padding: 24px;
+            margin: 20px 0;
+            border-radius: var(--radius-small);
+            box-shadow: var(--shadow-main);
+            border-left: 5px solid #f59e0b;
+        }
+        .news-search-wrap h3 {
+            color: var(--primary-dark);
+            margin-bottom: 14px;
+            font-size: 1.2em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .news-search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .news-search-bar input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-small);
+            font-size: 1em;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+        .news-search-bar input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+        }
+        .news-search-bar button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-small);
+            font-weight: 600;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .news-search-bar button:hover { opacity: 0.88; transform: translateY(-1px); }
+        .news-search-hint {
+            font-size: 0.78em;
+            color: #94a3b8;
+            margin-bottom: 14px;
+        }
+        /* 스켈레톤 애니메이션 */
+        @keyframes ns-shimmer {
+            0%   { background-position: -600px 0; }
+            100% { background-position:  600px 0; }
+        }
+        .ns-skeleton {
+            background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+            background-size: 600px 100%;
+            animation: ns-shimmer 1.4s infinite linear;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            height: 72px;
+        }
+        /* 결과 카드 */
+        #newsSearchResults { margin-top: 4px; }
+        .ns-card {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 13px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.18s;
+            background: #fafbff;
+            border-left: 4px solid #f59e0b;
+        }
+        .ns-card:hover { background: #fff7ed; border-color: #f59e0b; transform: translateX(2px); box-shadow: 0 2px 8px rgba(245,158,11,0.12); }
+        .ns-title { font-size: 0.95em; font-weight: 700; color: #1e293b; line-height: 1.45; }
+        .ns-meta  { font-size: 0.76em; color: #64748b; display: flex; gap: 10px; flex-wrap: wrap; }
+        .ns-source { color: #f59e0b; font-weight: 600; }
+        .ns-empty  { color: #94a3b8; font-size: 0.9em; padding: 18px 0; text-align: center; }
+        .ns-api-note { font-size: 0.75em; color: #94a3b8; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+        @media (max-width: 600px) {
+            .news-search-bar { flex-direction: column; }
+            .news-search-bar button { width: 100%; }
+        }
+
         .earnings-search {
             background: #fff;
             padding: 24px;
@@ -1254,6 +1350,24 @@
                             }
                         </script>
                 </div>
+            </div>
+
+            <!-- 실시간 금융 뉴스 검색 -->
+            <div class="news-search-wrap">
+                <h3>🔎 실시간 금융 뉴스 검색</h3>
+                <div class="news-search-bar">
+                    <input type="text" id="nsInput"
+                        placeholder="키워드 입력 (예: 삼성전자, 금리, 엔비디아, Fed…)"
+                        autocomplete="off"
+                        onkeydown="if(event.key==='Enter') nsSearch()">
+                    <button onclick="nsSearch()">🔍 검색</button>
+                </div>
+                <p class="news-search-hint">주식·증권·금융 뉴스를 실시간으로 검색합니다. 영어 키워드가 더 많은 결과를 반환합니다.</p>
+                <div id="newsSearchResults"></div>
+                <p class="ns-api-note">
+                    📡 데이터: <strong>GNews API</strong> (gnews.io) · 카테고리: business/finance ·
+                    <span id="ns-key-status">API 키 미설정 — 아래 JS 코드에서 키를 입력하세요</span>
+                </p>
             </div>
 
             <!-- 실적발표 검색 -->
@@ -2670,6 +2784,190 @@
                 }).catch(err => {
                     console.error('복사 실패:', err);
                 });
+            }
+
+            // ══════════════════════════════════════════════════════════
+            // 실시간 금융 뉴스 검색 (GNews API / NewsAPI.org)
+            // ══════════════════════════════════════════════════════════
+
+            // ─── API 키 설정 ───────────────────────────────────────────
+            // GNews (https://gnews.io) 무료 플랜: 100건/일, CORS 지원
+            // 1) https://gnews.io 가입 → API 키 발급
+            // 2) 아래 NS_GNEWS_KEY 에 붙여넣기
+            var NS_GNEWS_KEY   = '';   // ← GNews API 키 여기 입력
+
+            // NewsAPI.org (https://newsapi.org) - 브라우저 직접 호출은 유료 플랜 필요
+            // 무료 플랜은 서버사이드(Node/Python 등)에서만 CORS 허용됨
+            // 사용하려면 아래 키 입력 후 nsSearchNewsAPI() 로 변경
+            var NS_NEWSAPI_KEY = '';   // ← NewsAPI 키 (선택, 유료 플랜)
+            // ──────────────────────────────────────────────────────────
+
+            var _nsDebounce = null;   // 디바운스 타이머
+
+            // 검색 진입점 (버튼 클릭 / Enter)
+            function nsSearch() {
+                clearTimeout(_nsDebounce);
+                _nsDebounce = setTimeout(_nsDoSearch, 0);  // 즉시 실행 (Enter/버튼)
+            }
+
+            // 입력 중 디바운스 자동 검색 (0.5 s)
+            document.addEventListener('DOMContentLoaded', function() {
+                var inp = document.getElementById('nsInput');
+                if (inp) {
+                    inp.addEventListener('input', function() {
+                        clearTimeout(_nsDebounce);
+                        _nsDebounce = setTimeout(_nsDoSearch, 500);
+                    });
+                }
+            });
+
+            async function _nsDoSearch() {
+                var q = (document.getElementById('nsInput') || {}).value || '';
+                q = q.trim();
+                var box = document.getElementById('newsSearchResults');
+                if (!box) return;
+
+                if (!q) { box.innerHTML = ''; return; }
+
+                // 스켈레톤 UI
+                box.innerHTML = [1,2,3].map(function() {
+                    return '<div class="ns-skeleton"></div>';
+                }).join('') + '<p style="color:#94a3b8;font-size:0.82em;text-align:center;margin-top:-4px;">🔄 뉴스를 검색 중입니다...</p>';
+
+                // ── GNews 시도 ──────────────────────────────────────────
+                if (NS_GNEWS_KEY) {
+                    var ok = await _nsGNews(q, box);
+                    if (ok) { _nsUpdateKeyStatus('GNews', true); return; }
+                    _nsUpdateKeyStatus('GNews', false);
+                }
+
+                // ── NewsAPI 시도 ────────────────────────────────────────
+                if (NS_NEWSAPI_KEY) {
+                    var ok2 = await _nsNewsAPI(q, box);
+                    if (ok2) { _nsUpdateKeyStatus('NewsAPI', true); return; }
+                    _nsUpdateKeyStatus('NewsAPI', false);
+                }
+
+                // ── The Guardian fallback (무료, 키 불필요) ─────────────
+                var ok3 = await _nsGuardian(q, box);
+                if (!ok3) {
+                    box.innerHTML = '<p class="ns-empty">😔 검색 결과가 없습니다.<br>다른 키워드(영어 권장)로 다시 시도해 보세요.</p>';
+                }
+            }
+
+            // ── GNews API ─────────────────────────────────────────────
+            // 공식 문서: https://gnews.io/docs/v4
+            // 파라미터: q(검색어), lang(언어), country(국가), topic(business), max(건수)
+            async function _nsGNews(q, box) {
+                try {
+                    var url = 'https://gnews.io/api/v4/search?' + [
+                        'q='        + encodeURIComponent(q + ' finance OR stock OR market'),
+                        'lang=en',
+                        'country=us',
+                        'topic=business',          // business 카테고리 고정
+                        'max=9',
+                        'sortby=publishedAt',
+                        'apikey='   + NS_GNEWS_KEY
+                    ].join('&');
+
+                    var res  = await fetch(url);
+                    var json = await res.json();
+                    if (!json.articles || !json.articles.length) return false;
+
+                    _nsRender(json.articles.map(function(a) {
+                        return { title: a.title, url: a.url,
+                                 source: a.source ? a.source.name : 'GNews',
+                                 publishedAt: a.publishedAt };
+                    }), box, 'GNews');
+                    return true;
+                } catch(e) { console.log('GNews 실패', e); return false; }
+            }
+
+            // ── NewsAPI.org ───────────────────────────────────────────
+            // 공식 문서: https://newsapi.org/docs/endpoints/everything
+            // ⚠️ 브라우저 직접 호출은 Developer(무료) 플랜에서 CORS 차단됨
+            //    Business 이상 유료 플랜 또는 서버사이드에서 사용 권장
+            async function _nsNewsAPI(q, box) {
+                try {
+                    var url = 'https://newsapi.org/v2/everything?' + [
+                        'q='         + encodeURIComponent(q),
+                        'language=en',
+                        'sortBy=publishedAt',
+                        'pageSize=9',
+                        'domains=reuters.com,bloomberg.com,cnbc.com,wsj.com,ft.com,marketwatch.com',
+                        'apiKey='    + NS_NEWSAPI_KEY
+                    ].join('&');
+
+                    var res  = await fetch(url);
+                    var json = await res.json();
+                    if (json.status !== 'ok' || !json.articles || !json.articles.length) return false;
+
+                    _nsRender(json.articles.map(function(a) {
+                        return { title: a.title, url: a.url,
+                                 source: a.source ? a.source.name : 'NewsAPI',
+                                 publishedAt: a.publishedAt };
+                    }), box, 'NewsAPI');
+                    return true;
+                } catch(e) { console.log('NewsAPI 실패', e); return false; }
+            }
+
+            // ── The Guardian fallback (무료, test 키) ─────────────────
+            async function _nsGuardian(q, box) {
+                try {
+                    var url = 'https://content.guardianapis.com/search?' + [
+                        'q='        + encodeURIComponent(q),
+                        'section=business',
+                        'order-by=newest',
+                        'page-size=9',
+                        'show-fields=trailText',
+                        'api-key=test'
+                    ].join('&');
+
+                    var res  = await fetch(url);
+                    var json = await res.json();
+                    var items = json.response && json.response.results;
+                    if (!items || !items.length) return false;
+
+                    _nsRender(items.map(function(a) {
+                        return { title: a.webTitle, url: a.webUrl,
+                                 source: 'The Guardian',
+                                 publishedAt: a.webPublicationDate };
+                    }), box, 'The Guardian (fallback)');
+                    return true;
+                } catch(e) { console.log('Guardian fallback 실패', e); return false; }
+            }
+
+            // ── 결과 렌더링 ───────────────────────────────────────────
+            function _nsRender(articles, box, srcLabel) {
+                if (!articles.length) {
+                    box.innerHTML = '<p class="ns-empty">검색 결과가 없습니다.</p>';
+                    return;
+                }
+                box.innerHTML = articles.map(function(a) {
+                    var t   = a.publishedAt ? new Date(a.publishedAt).toLocaleString('ko-KR') : '';
+                    var src = a.source || srcLabel;
+                    return '<a class="ns-card" href="' + a.url + '" target="_blank" rel="noopener">' +
+                        '<span class="ns-title">' + _nsEsc(a.title) + '</span>' +
+                        '<span class="ns-meta">' +
+                          '<span class="ns-source">' + _nsEsc(src) + '</span>' +
+                          (t ? '<span>🕐 ' + t + '</span>' : '') +
+                        '</span>' +
+                        '</a>';
+                }).join('') +
+                '<p class="ns-api-note" style="margin-top:8px;">📡 출처: ' + srcLabel + ' · 총 ' + articles.length + '건</p>';
+            }
+
+            function _nsEsc(s) {
+                return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            }
+
+            function _nsUpdateKeyStatus(api, ok) {
+                var el = document.getElementById('ns-key-status');
+                if (!el) return;
+                el.textContent = ok
+                    ? api + ' ✅ 연결됨'
+                    : api + ' ❌ 키 오류 또는 할당량 초과';
+                el.style.color = ok ? '#10b981' : '#ef4444';
             }
 
             // ── MK RSS 카테고리별 URL ──────────────────────────────────
