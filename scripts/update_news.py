@@ -130,8 +130,8 @@ def get_freezine_section_news(section_code, count=3, source_name='프리진경�
         # 한국 뉴스 CMS 공통 패턴: #section-list, .list-block, .article-list 등
         # featured/인기 기사는 보통 다른 div에 있고 <li> 목록이 섹션 기사
         container = (
-            soup.find('div', id='section-list') or
-            soup.find('div', id='article-list') or
+            soup.find(id='section-list') or          # <section id="section-list"> 포함
+            soup.find(id='article-list') or
             soup.find('div', class_=re.compile(r'(article|news)[_\-]?list|list[_\-]?body', re.I)) or
             soup.find('ul',  class_=re.compile(r'(article|news)[_\-]?list', re.I))
         )
