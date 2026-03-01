@@ -251,12 +251,15 @@ def get_fred_latest(series_id, units=None):
 
 def get_fred_history(series_id, months=24, units=None):
     """FRED 공개 CSV에서 히스토리 데이터 (API 키 불필요).
-    일별 데이터는 월별 마지막값으로 집계.
+    FRED CSV URL의 units 파라미터는 무시될 수 있으므로 수동 계산:
+      units='pc1': YoY 퍼센트 변화 = (현재/1년전 - 1) * 100
+      units='ch1': MoM 절대 변화  = 현재 - 전월  (비농업고용 등)
+      units=None : 원시값 그대로
     returns list of (YYYY-MM, float) tuples, 최근 months개월
     """
+    # pc1 계산을 위해 12개월치 여분 수집
+    fetch_extra = 13 if units == 'pc1' else 2 if units == 'ch1' else 0
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-    if units:
-        url += f"&units={units}"
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=20) as r:
@@ -270,11 +273,40 @@ def get_fred_history(series_id, months=24, units=None):
                     monthly[month] = float(parts[1].strip())
                 except ValueError:
                     pass
+
         sorted_months = list(sorted(monthly.keys()))
-        n = len(sorted_months)
-        start = max(0, n - months) if months else 0
-        recent = [sorted_months[i] for i in range(start, n)]
-        return [(mo, float(f"{monthly[mo]:.2f}")) for mo in recent]
+
+        if units == 'pc1':
+            # YoY 퍼센트 변화: (현재값 / 1년전값 - 1) * 100
+            result: list = []
+            for mo in sorted_months:
+                yr_ago = f"{int(mo[:4]) - 1}{mo[4:]}"   # 1년전 동월
+                if yr_ago in monthly and monthly[yr_ago] != 0:
+                    yoy = (monthly[mo] / monthly[yr_ago] - 1) * 100
+                    result.append((mo, float(f"{yoy:.2f}")))
+            n = len(result)
+            start = max(0, n - months) if months else 0
+            return [result[i] for i in range(start, n)]
+
+        elif units == 'ch1':
+            # MoM 절대 변화: 현재 - 전월 (비농업고용 등 월간 순변화)
+            result2: list = []
+            for i in range(1, len(sorted_months)):
+                mo   = sorted_months[i]
+                prev = sorted_months[i - 1]
+                chg  = monthly[mo] - monthly[prev]
+                result2.append((mo, float(f"{chg:.2f}")))
+            n2 = len(result2)
+            start2 = max(0, n2 - months) if months else 0
+            return [result2[i] for i in range(start2, n2)]
+
+        else:
+            # 원시값
+            n = len(sorted_months)
+            start = max(0, n - (months + fetch_extra)) if months else 0
+            recent = [sorted_months[i] for i in range(start, n)]
+            return [(mo, float(f"{monthly[mo]:.2f}")) for mo in recent]
+
     except Exception as e:
         print(f"[FRED history {series_id}] 실패: {e}")
         return []
