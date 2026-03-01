@@ -193,12 +193,7 @@ def get_freezine_section_news(section_code, count=3, source_name='프리진경�
     return arts
 
 
-def get_freezine_stock_news(count=3):
-    """프리진경제 주식/증권 (S1N1)"""
-    return get_freezine_section_news('S1N1', count, '프리진경제 주식/증권')
-
-
-def get_freezine_intl_news(count=3):
+def get_freezine_intl_news(count=5):
     """프리진경제 국제/IT (S1N6)"""
     return get_freezine_section_news('S1N6', count, '프리진경제 국제/IT')
 
@@ -744,13 +739,11 @@ def get_latest_market_data():
     # 변동성 & 매크로 수집
     vm_data = get_volatility_macro_data()
 
-    # MK RSS 섹션별 기사 수집
-    mk_data = get_mk_rss_all_sections(3)
+    # MK RSS 섹션별 기사 수집 (5건)
+    mk_data = get_mk_rss_all_sections(5)
 
-    # 뉴스 수집 (3 소스 × 3 기사 = 9개)
-    # Yahoo Finance 제거 (MK RSS 드롭다운으로 대체)
-    stock_arts = get_freezine_stock_news(3)   # 프리진경제 주식/증권
-    intl_arts  = get_freezine_intl_news(3)    # 프리진경제 국제/IT
+    # 뉴스 수집: 프리진경제 국제/IT 5건
+    intl_arts  = get_freezine_intl_news(5)    # 프리진경제 국제/IT
 
     data = {
         "is_morning_update": now_kst.hour in [7, 22],
@@ -766,7 +759,6 @@ def get_latest_market_data():
         "volatility": vm_data,
         "mk_data": mk_data,
         "news": {
-            "fz_stock":    stock_arts,
             "fz_intl":     intl_arts,
             "updated_time": now_kst.strftime("%H:%M")
         }
@@ -836,7 +828,6 @@ def update_index_html(data):
     # --- 오른쪽 카드 HTML ---
     nn = data['news']
     mk_dropdown_html = build_mk_dropdown_html(data.get('mk_data', {}))
-    stock_html    = build_news_items_html(nn['fz_stock'], border='rgba(56,189,248,0.5)')
     intl_html     = build_news_items_html(nn['fz_intl'],  border='rgba(74,222,128,0.5)')
 
     upd_time   = nn['updated_time']
@@ -863,14 +854,6 @@ def update_index_html(data):
         'letter-spacing:0.03em;border-bottom:1px solid rgba(251,191,36,0.2);padding-bottom:4px;">'
         '📰 매일경제</strong>'
         + mk_dropdown_html +
-        '</div>'
-        '<div style="margin-bottom:14px;">'
-        '<strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;'
-        'letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">'
-        '📈 프리진경제 주식/증권</strong>'
-        '<div id="fz-stock-box">'
-        + stock_html +
-        '</div>'
         '</div>'
         '<div>'
         '<strong style="color:#4ade80;font-size:0.82em;display:block;margin-bottom:8px;'
