@@ -2644,6 +2644,12 @@
                 // 5. MK 뉴스 기본 카테고리(증권) 표시
                 if (typeof mkShow === 'function') mkShow('증권');
 
+                // 6. 프리진경제 섹션 실시간 fetch (페이지 로드 시 최신 기사)
+                if (typeof freezineFetchLive === 'function') {
+                    freezineFetchLive('S1N1', 'fz-stock-box', 'rgba(56,189,248,0.5)');
+                    freezineFetchLive('S1N6', 'fz-intl-box',  'rgba(74,222,128,0.5)');
+                }
+
                 console.log("✅ 모든 데이터 로딩 완료");
             }
 
@@ -2702,11 +2708,58 @@
                 mkShow(cat);
             }
 
-            // 새로고침 버튼 핸들러 (현재 카테고리 기준 실시간 fetch)
+            // 프리진경제 섹션 실시간 fetch (allorigins.win CORS 프록시)
+            async function freezineFetchLive(sectionCode, boxId, borderColor) {
+                var box = document.getElementById(boxId);
+                if (!box) return;
+                box.innerHTML = '<p style="color:#94a3b8;font-size:0.82em;padding:4px 0;">⟳ 불러오는 중...</p>';
+
+                var fzUrl = 'https://www.freezine.co.kr/news/articleList.html?sc_section_code=' + sectionCode + '&view_type=sm';
+                var proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(fzUrl);
+
+                try {
+                    var res = await fetch(proxyUrl, { cache: 'no-store' });
+                    var json = await res.json();
+                    if (json.contents) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(json.contents, 'text/html');
+                        var container = doc.getElementById('section-list');
+                        if (container) {
+                            var allLinks = container.querySelectorAll('a[href*="articleView.html?idxno="]');
+                            var arts = [], seen = new Set();
+                            allLinks.forEach(function(a) {
+                                var t = a.textContent.trim();
+                                var h = a.getAttribute('href') || '';
+                                if (!t || t.length < 8) return;
+                                if (!h.startsWith('http')) h = 'https://www.freezine.co.kr' + h;
+                                if (seen.has(h)) return;
+                                seen.add(h);
+                                if (arts.length < 3) arts.push({ t: t, l: h });
+                            });
+                            if (arts.length > 0) {
+                                box.innerHTML = arts.map(function(a) {
+                                    return '<div style="margin-bottom:9px;padding:9px 10px;background:rgba(0,0,0,0.2);' +
+                                        'border-left:3px solid ' + borderColor + ';border-radius:0 6px 6px 0;">' +
+                                        '<a href="' + a.l + '" target="_blank" rel="noopener" ' +
+                                        'style="color:#f8fafc;text-decoration:none;font-size:0.87em;font-weight:600;line-height:1.4;display:block;">' +
+                                        a.t + '</a></div>';
+                                }).join('');
+                                return;
+                            }
+                        }
+                    }
+                } catch(e) { console.log('Freezine 실시간 실패', sectionCode, e); }
+
+                box.innerHTML = '<p style="color:#f87171;font-size:0.82em;">최신 기사를 불러올 수 없습니다.</p>';
+            }
+
+            // 새로고침 버튼 핸들러 (MK + 프리진경제 전체 갱신)
             function refreshRightCard() {
                 var sel = document.getElementById('mk-cat-sel');
                 var cat = sel ? sel.value : '증권';
                 mkFetchLive(cat);
+                freezineFetchLive('S1N1', 'fz-stock-box', 'rgba(56,189,248,0.5)');
+                freezineFetchLive('S1N6', 'fz-intl-box',  'rgba(74,222,128,0.5)');
             }
 
             // ── MK RSS 드롭다운 렌더링 ──────────────────────────────────

@@ -868,13 +868,17 @@ def update_index_html(data):
         '<strong style="color:#38bdf8;font-size:0.82em;display:block;margin-bottom:8px;'
         'letter-spacing:0.03em;border-bottom:1px solid rgba(56,189,248,0.2);padding-bottom:4px;">'
         '📈 프리진경제 주식/증권</strong>'
+        '<div id="fz-stock-box">'
         + stock_html +
+        '</div>'
         '</div>'
         '<div>'
         '<strong style="color:#4ade80;font-size:0.82em;display:block;margin-bottom:8px;'
         'letter-spacing:0.03em;border-bottom:1px solid rgba(74,222,128,0.2);padding-bottom:4px;">'
         '🌐 프리진경제 국제/IT</strong>'
+        '<div id="fz-intl-box">'
         + intl_html +
+        '</div>'
         '</div>'
     )
 
