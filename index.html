@@ -556,6 +556,42 @@
             gap: 5px;
         }
 
+        /* ── 기업 요약정보 검색 ── */
+        .company-search {
+            background: #fff;
+            padding: 24px;
+            margin: 20px 0;
+            border-radius: var(--radius-small);
+            box-shadow: var(--shadow-main);
+            border-left: 5px solid #10b981;
+        }
+        .company-search h3 { color: var(--primary-dark); margin-bottom: 15px; font-size: 1.2em; font-weight: 700; }
+        .co-card { background: #f8faff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-top: 12px; }
+        .co-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .co-logo { width: 42px; height: 42px; border-radius: 8px; object-fit: contain; background: #fff; border: 1px solid #e2e8f0; padding: 3px; }
+        .co-name { font-size: 1.08rem; font-weight: 700; color: #1e293b; }
+        .co-ticker { background: #3b82f6; color: #fff; font-size: 0.76rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; letter-spacing: 0.05em; margin-right: 4px; }
+        .co-exchange { font-size: 0.76rem; color: #64748b; }
+        .co-price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .co-price { font-size: 1.55rem; font-weight: 800; color: #1e293b; }
+        .co-chg-up { color: #10b981; font-size: 0.93rem; font-weight: 600; }
+        .co-chg-dn { color: #ef4444; font-size: 0.93rem; font-weight: 600; }
+        .co-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .co-metric { background: #fff; border: 1px solid #e8eef8; border-radius: 8px; padding: 8px 10px; }
+        .co-metric-lbl { font-size: 0.70rem; color: #64748b; margin-bottom: 2px; }
+        .co-metric-val { font-size: 0.93rem; font-weight: 700; color: #1e293b; }
+        .co-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+        .co-tag { background: #eff6ff; color: #3b82f6; font-size: 0.74rem; padding: 3px 9px; border-radius: 20px; font-weight: 500; }
+        .co-links { display: flex; gap: 8px; flex-wrap: wrap; }
+        .co-link { font-size: 0.78rem; padding: 5px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: opacity 0.15s; }
+        .co-link:hover { opacity: 0.82; }
+        .co-link.yf  { background: #6001d2; color: #fff; }
+        .co-link.mw  { background: #c0392b; color: #fff; }
+        .co-link.fv  { background: #155724; color: #fff; }
+        .co-link.ws  { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+        .co-offline  { color: #ef4444; font-weight: 600; font-size: 0.9rem; padding: 10px 0; }
+        @media (max-width: 600px) { .co-metrics { grid-template-columns: repeat(2, 1fr); } }
+
         /* 뉴스 대시보드 */
         .news-dashboard {
             padding: 24px;
@@ -1613,6 +1649,20 @@ var ECON_DATA = {
                     해외: GNews → The Guardian → Reuters/BBC RSS ·
                     <span id="ns-key-status" style="color:#10b981;">Naver API 연결됨</span>
                 </p>
+            </div>
+
+            <!-- 기업 요약정보 검색 -->
+            <div class="company-search">
+                <h3>🏢 기업 요약정보 검색</h3>
+                <div class="search-box">
+                    <input type="text" id="companyInput" class="search-input"
+                        placeholder="티커·영문명·한글명 입력 (예: AAPL, Apple, 애플, NVDA, 엔비디아, Tesla)"
+                        onkeypress="if(event.key==='Enter') searchCompanyInfo()">
+                    <button class="search-btn" onclick="searchCompanyInfo()"
+                        style="background:linear-gradient(135deg,#10b981,#059669);">🔍 검색</button>
+                </div>
+                <div id="companyResult"></div>
+                <div class="update-note">ℹ️ <strong>데이터:</strong> Finnhub API (실시간) | <strong>지표:</strong> 주가·시총·P/E·EPS·배당·52주범위·베타 | <strong>지원:</strong> 티커·영문명·한글명</div>
             </div>
 
             <!-- 실적발표 검색 -->
@@ -2789,6 +2839,126 @@ var ECON_DATA = {
                     "revenue_avg": 2206965170
                 }
             };
+
+            // ════════════════════════════════════════════════════════════
+            // 기업 요약정보 검색 (Finnhub 실시간)
+            // ════════════════════════════════════════════════════════════
+            async function searchCompanyInfo() {
+                var input     = document.getElementById('companyInput');
+                var resultDiv = document.getElementById('companyResult');
+                var query     = (input ? input.value : '').trim();
+
+                if (!query) {
+                    resultDiv.innerHTML = '<div class="search-result empty">🔍 회사명 또는 티커를 입력하세요</div>';
+                    return;
+                }
+
+                // 네트워크 연결 확인
+                if (!navigator.onLine) {
+                    resultDiv.innerHTML = '<p class="co-offline">📡 인터넷 연결이 없습니다. 네트워크를 확인해 주세요.</p>';
+                    return;
+                }
+
+                resultDiv.innerHTML = '<div class="search-result">🔄 검색 중… (' + query + ')</div>';
+
+                try {
+                    // 티커 확정 (기존 _resolveToTicker 재활용)
+                    var ticker = await _resolveToTicker(query);
+                    if (!ticker) throw new Error('회사를 찾을 수 없습니다: ' + query);
+
+                    // 프로필·실시간 시세·재무지표 병렬 조회
+                    var results = await Promise.all([
+                        _fhFetch('stock/profile2', { symbol: ticker }),
+                        _fhFetch('quote',          { symbol: ticker }),
+                        _fhFetch('stock/metric',   { symbol: ticker, metric: 'all' })
+                    ]);
+                    var profile = results[0], quote = results[1], metricRes = results[2];
+
+                    if (!profile || !profile.name) throw new Error('기업 정보를 찾을 수 없습니다: ' + ticker);
+
+                    // ── 가격 ─────────────────────────────────────────────
+                    var price     = (quote.c != null) ? '$' + quote.c.toFixed(2) : 'N/A';
+                    var chgAmt    = (quote.d  != null) ? quote.d.toFixed(2)  : null;
+                    var chgPct    = (quote.dp != null) ? quote.dp.toFixed(2) : null;
+                    var isUp      = chgAmt !== null && parseFloat(chgAmt) >= 0;
+                    var chgHtml   = chgAmt !== null
+                        ? '<span class="' + (isUp ? 'co-chg-up' : 'co-chg-dn') + '">'
+                          + (isUp ? '▲' : '▼') + ' $' + Math.abs(chgAmt) + ' (' + Math.abs(chgPct) + '%)</span>'
+                        : '';
+
+                    // ── 시가총액 ─────────────────────────────────────────
+                    var mc  = profile.marketCapitalization;   // 단위: 백만 달러
+                    var mcStr = mc == null ? 'N/A'
+                        : mc >= 1e6  ? '$' + (mc / 1e6).toFixed(2)  + 'T'
+                        : mc >= 1e3  ? '$' + (mc / 1e3).toFixed(1)  + 'B'
+                        : '$' + mc.toFixed(0) + 'M';
+
+                    // ── 재무지표 ─────────────────────────────────────────
+                    var m   = (metricRes && metricRes.metric) ? metricRes.metric : {};
+                    var pe  = m['peBasicExclExtraTTM']      ? m['peBasicExclExtraTTM'].toFixed(1)      : 'N/A';
+                    var eps = m['epsBasicExclExtraAnnual']   ? '$' + m['epsBasicExclExtraAnnual'].toFixed(2) : 'N/A';
+                    var beta= m['beta']                      ? m['beta'].toFixed(2)                    : 'N/A';
+                    var div = m['dividendYieldIndicatedAnnual'] ? m['dividendYieldIndicatedAnnual'].toFixed(2) + '%' : '없음';
+                    var roe = m['roeTTM']                    ? m['roeTTM'].toFixed(1) + '%'             : 'N/A';
+                    var w52h= m['52WeekHigh'] ? '$' + m['52WeekHigh'].toFixed(2) : 'N/A';
+                    var w52l= m['52WeekLow']  ? '$' + m['52WeekLow'].toFixed(2)  : 'N/A';
+
+                    // ── 로고 ──────────────────────────────────────────────
+                    var logoHtml = profile.logo
+                        ? '<img class="co-logo" src="' + profile.logo + '" alt="' + ticker + '" onerror="this.style.display=\'none\'">'
+                        : '';
+
+                    // ── 외부 링크 ─────────────────────────────────────────
+                    var t    = encodeURIComponent(ticker);
+                    var tLow = ticker.toLowerCase();
+                    var links =
+                        '<a class="co-link yf" href="https://finance.yahoo.com/quote/' + t + '" target="_blank" rel="noopener">Yahoo Finance</a>' +
+                        '<a class="co-link mw" href="https://www.marketwatch.com/investing/stock/' + tLow + '" target="_blank" rel="noopener">MarketWatch</a>' +
+                        '<a class="co-link fv" href="https://finviz.com/quote.ashx?t=' + t + '" target="_blank" rel="noopener">Finviz</a>' +
+                        (profile.weburl ? '<a class="co-link ws" href="' + profile.weburl + '" target="_blank" rel="noopener">🌐 공식 사이트</a>' : '');
+
+                    // ── 태그 ─────────────────────────────────────────────
+                    var tags = '';
+                    if (profile.finnhubIndustry) tags += '<span class="co-tag">🏭 ' + profile.finnhubIndustry + '</span>';
+                    if (profile.country)         tags += '<span class="co-tag">🌍 ' + profile.country + '</span>';
+                    if (profile.ipo)             tags += '<span class="co-tag">📅 IPO: ' + profile.ipo + '</span>';
+                    if (profile.currency)        tags += '<span class="co-tag">💱 ' + profile.currency + '</span>';
+
+                    resultDiv.innerHTML =
+                        '<div class="co-card">' +
+                            '<div class="co-header">' +
+                                logoHtml +
+                                '<div>' +
+                                    '<div class="co-name">' + profile.name + '</div>' +
+                                    '<span class="co-ticker">' + ticker + '</span>' +
+                                    '<span class="co-exchange">' + (profile.exchange || '') + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="co-price-row">' +
+                                '<span class="co-price">' + price + '</span>' +
+                                chgHtml +
+                                '<span style="font-size:0.72rem;color:#94a3b8;margin-left:4px;">실시간</span>' +
+                            '</div>' +
+                            '<div class="co-metrics">' +
+                                '<div class="co-metric"><div class="co-metric-lbl">시가총액</div><div class="co-metric-val">' + mcStr + '</div></div>' +
+                                '<div class="co-metric"><div class="co-metric-lbl">P/E Ratio (TTM)</div><div class="co-metric-val">' + pe + '</div></div>' +
+                                '<div class="co-metric"><div class="co-metric-lbl">EPS (연간)</div><div class="co-metric-val">' + eps + '</div></div>' +
+                                '<div class="co-metric"><div class="co-metric-lbl">배당 수익률</div><div class="co-metric-val">' + div + '</div></div>' +
+                                '<div class="co-metric"><div class="co-metric-lbl">베타</div><div class="co-metric-val">' + beta + '</div></div>' +
+                                '<div class="co-metric"><div class="co-metric-lbl">52주 범위</div><div class="co-metric-val">' + w52l + ' – ' + w52h + '</div></div>' +
+                            '</div>' +
+                            (tags ? '<div class="co-tags">' + tags + '</div>' : '') +
+                            '<div class="co-links">' + links + '</div>' +
+                        '</div>';
+
+                } catch(e) {
+                    // 오프라인 이중 체크
+                    var msg = !navigator.onLine
+                        ? '📡 인터넷 연결이 없습니다. 네트워크를 확인해 주세요.'
+                        : '⚠️ ' + e.message;
+                    resultDiv.innerHTML = '<div class="search-result empty">' + msg + '</div>';
+                }
+            }
 
             async function searchEarningsAPI() {
                 var input = document.getElementById('earningsSearchInput');
