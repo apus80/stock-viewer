@@ -327,13 +327,195 @@ ORDER_KEYS = ['fedfunds','cpi','core_cpi','core_pce','payems','unrate',
               'dgs10','spread','mfg_pmi','svc_pmi','retail','umcsent']
 
 
+def generate_econ_analysis(fred_data, pmi_preserve):
+    """12개 경제지표를 종합해 1문장 요약 + 2~3문장 분석 반환 (규칙 기반).
+    returns dict: {summary, detail, situation, score, color}
+    """
+    def val(key):
+        d = fred_data.get(key)
+        return d['current'] if isinstance(d, dict) else None
+
+    fed   = val('fedfunds')
+    cpi   = val('cpi')
+    cpce  = val('core_pce')
+    unr   = val('unrate')
+    dgs10 = val('dgs10')
+    spr   = val('spread')
+    ret   = val('retail')
+    sent  = val('umcsent')
+    mfg   = pmi_preserve.get('mfg_pmi', {}).get('current')
+    svc   = pmi_preserve.get('svc_pmi', {}).get('current')
+    if cpce is None and cpi is not None:
+        cpce = cpi
+
+    # ── 인플레이션 평가 ─────────────────────────────────────────────
+    if cpi is not None:
+        if cpi > 4.0:
+            inf_word = f"CPI {cpi:.1f}%로 인플레이션이 심각하게 높은 수준"
+            inf_fut  = "연준은 추가 긴축 또는 고금리 장기화를 선택할 가능성이 높다"
+        elif cpi > 3.0:
+            inf_word = f"CPI {cpi:.1f}%로 인플레이션이 여전히 높은 수준"
+            inf_fut  = "금리인하 시점이 뒤로 밀릴 가능성이 크다"
+        elif cpi > 2.5:
+            inf_word = f"CPI {cpi:.1f}%로 인플레이션이 둔화되고 있으나 연준 목표(2%)를 상회"
+            inf_fut  = "연준은 신중한 금리인하 기조를 유지할 전망이다"
+        elif cpi > 1.5:
+            inf_word = f"CPI {cpi:.1f}%로 인플레이션이 연준 목표(2%)에 근접"
+            inf_fut  = "연준의 금리인하 여건이 성숙되고 있다"
+        else:
+            inf_word = f"CPI {cpi:.1f}%로 인플레이션이 목표 이하로 하락"
+            inf_fut  = "연준은 경기부양을 위한 금리인하를 가속화할 수 있다"
+    else:
+        inf_word = "인플레이션 데이터 확인 필요"
+        inf_fut  = "인플레이션 동향에 따라 통화정책 방향이 결정될 것이다"
+
+    # ── 고용 평가 ────────────────────────────────────────────────────
+    if unr is not None:
+        if unr < 3.7:
+            emp_word = f"실업률 {unr:.1f}%로 고용이 과열에 가까운 수준"
+            emp_fut  = "임금 상승 압력이 인플레이션 재점화 위험을 높이고 있다"
+        elif unr < 4.2:
+            emp_word = f"실업률 {unr:.1f}%로 고용이 건강한 수준"
+            emp_fut  = "소비 기반이 견조해 경기 연착륙 가능성을 높이고 있다"
+        elif unr < 4.8:
+            emp_word = f"실업률 {unr:.1f}%로 고용이 완만히 냉각 중"
+            emp_fut  = "점진적 고용 냉각이 인플레이션 억제에 기여하고 있다"
+        elif unr < 5.5:
+            emp_word = f"실업률 {unr:.1f}%로 고용이 눈에 띄게 둔화"
+            emp_fut  = "소비 위축 가능성이 커져 경기 하방 리스크가 증가하고 있다"
+        else:
+            emp_word = f"실업률 {unr:.1f}%로 고용이 크게 악화"
+            emp_fut  = "경기침체 가능성이 현실화되고 있다"
+    else:
+        emp_word = "고용 데이터 확인 필요"
+        emp_fut  = ""
+
+    # ── 기준금리 실질 수준 평가 ──────────────────────────────────────
+    if fed is not None:
+        real_rate = fed - (cpi or 0)
+        if real_rate > 2.0:
+            rate_word = f"기준금리 {fed:.2f}%(실질금리 +{real_rate:.1f}%p)가 매우 제약적인 수준"
+        elif real_rate > 0.5:
+            rate_word = f"기준금리 {fed:.2f}%(실질금리 +{real_rate:.1f}%p)가 제약적인 수준"
+        elif real_rate > -0.5:
+            rate_word = f"기준금리 {fed:.2f}%가 중립 수준"
+        else:
+            rate_word = f"기준금리 {fed:.2f}%가 완화적인 수준"
+    else:
+        rate_word = "기준금리 데이터 확인 필요"
+
+    # ── 장단기 스프레드 ──────────────────────────────────────────────
+    if spr is not None:
+        if spr < -0.5:
+            curve_word = f"장단기 금리 역전({spr:.2f}%p)이 깊어 침체 선행신호를 발생"
+        elif spr < 0:
+            curve_word = f"장단기 금리가 소폭 역전({spr:.2f}%p)되어 경기 불확실성 반영"
+        elif spr < 0.5:
+            curve_word = f"장단기 스프레드(+{spr:.2f}%p)가 거의 플랫으로 경기 전환 신호"
+        else:
+            curve_word = f"장단기 스프레드(+{spr:.2f}%p)가 정상화되어 경기 확장 기대 반영"
+    else:
+        curve_word = ""
+
+    # ── PMI 평가 ────────────────────────────────────────────────────
+    pmi_parts = []
+    if mfg is not None:
+        if mfg < 48:   pmi_parts.append(f"제조업 PMI({mfg:.1f}) 뚜렷한 수축")
+        elif mfg < 50: pmi_parts.append(f"제조업 PMI({mfg:.1f}) 위축")
+        elif mfg < 52: pmi_parts.append(f"제조업 PMI({mfg:.1f}) 소폭 확장")
+        else:          pmi_parts.append(f"제조업 PMI({mfg:.1f}) 견조한 확장")
+    if svc is not None:
+        if svc < 48:   pmi_parts.append(f"서비스 PMI({svc:.1f}) 수축")
+        elif svc < 50: pmi_parts.append(f"서비스 PMI({svc:.1f}) 위축")
+        elif svc < 52: pmi_parts.append(f"서비스 PMI({svc:.1f}) 완만한 확장")
+        else:          pmi_parts.append(f"서비스 PMI({svc:.1f}) 강한 확장")
+    pmi_word = ", ".join(pmi_parts)
+
+    # ── 소비자심리 ───────────────────────────────────────────────────
+    if sent is not None:
+        if sent > 90:   sent_word = f"소비자심리({sent:.1f}) 매우 낙관적"
+        elif sent > 80: sent_word = f"소비자심리({sent:.1f}) 낙관적"
+        elif sent > 70: sent_word = f"소비자심리({sent:.1f}) 중립"
+        elif sent > 60: sent_word = f"소비자심리({sent:.1f}) 다소 위축"
+        else:           sent_word = f"소비자심리({sent:.1f}) 크게 위축"
+    else:
+        sent_word = ""
+
+    # ── 종합 점수 계산 ───────────────────────────────────────────────
+    score = 0.0
+    if cpi is not None:
+        score += 1.5 if cpi <= 2.0 else 0.5 if cpi <= 2.5 else -0.5 if cpi <= 3.5 else -1.5
+    if unr is not None:
+        score += 1.0 if unr < 4.0 else 0.5 if unr < 4.5 else -0.5 if unr < 5.5 else -1.5
+    if mfg is not None and svc is not None:
+        avg_pmi = (mfg + svc) / 2
+        score += 1.0 if avg_pmi > 53 else 0.3 if avg_pmi > 51 else -0.3 if avg_pmi > 49 else -1.0
+    if sent is not None:
+        score += 0.5 if sent > 80 else 0.0 if sent > 65 else -0.5
+    if spr is not None:
+        score += 0.5 if spr > 1.0 else 0.2 if spr > 0 else -0.5 if spr > -0.5 else -1.0
+    if ret is not None:
+        score += 0.3 if ret > 3.0 else 0.1 if ret > 0 else -0.3
+
+    if score > 2.5:   situation, color = "강한 확장 국면",        "#10b981"
+    elif score > 1.0: situation, color = "안정적 성장 국면",       "#22c55e"
+    elif score > 0:   situation, color = "완만한 성장세",          "#84cc16"
+    elif score > -1.0: situation, color = "경기 불확실성 확대",     "#f59e0b"
+    elif score > -2.0: situation, color = "경기 둔화 국면",        "#f97316"
+    else:              situation, color = "경기 위축·침체 위험",    "#ef4444"
+
+    # ── 1문장 요약 ───────────────────────────────────────────────────
+    summary = f"{inf_word}이며, {emp_word}으로 현재 미국 경제는 '{situation}'에 위치해 있다."
+
+    # ── 상세 분석 2~3문장 ────────────────────────────────────────────
+    s1 = f"{rate_word}이며, {inf_fut}."
+    parts2: list = []
+    if pmi_word:     parts2.append(str(pmi_word))
+    if sent_word:    parts2.append(str(sent_word))
+    if curve_word:   parts2.append(str(curve_word))
+    s2 = ("이며, ".join(parts2) + "이다.") if parts2 else ""
+
+    # 전망 문장
+    if score > 1.5:
+        s3 = ("인플레이션 안정과 견조한 고용이 공존하는 '골디락스' 환경에 근접해 있으며, "
+              "연준의 점진적 금리인하가 가시화될 경우 주식과 채권 모두 우호적인 흐름이 예상된다.")
+    elif score > 0:
+        if spr is not None and spr > 0:
+            s3 = ("장단기 스프레드 정상화는 침체 우려가 완화되고 있음을 시사하나, "
+                  "소비자심리 회복 여부와 연준의 금리 경로가 향후 3~6개월 시장 방향성을 결정하는 핵심 변수가 될 것이다.")
+        else:
+            s3 = ("성장 모멘텀이 유지되고 있으나 고금리 장기화에 따른 소비·부동산의 지연 효과가 "
+                  "하반기 잠재적 리스크로 작용할 수 있어 선별적 투자 접근이 필요한 시점이다.")
+    elif score > -1.0:
+        s3 = ("불확실성이 높은 국면으로, 연준의 정책 전환(피벗) 여부와 고용지표 방향성이 시장 변동성을 좌우할 것이며, "
+              "방어주·단기채권으로의 분산 투자가 유효한 전략이 될 수 있다.")
+    else:
+        if spr is not None and spr < 0:
+            s3 = ("장단기 금리 역전은 역사적으로 6~18개월 이내 경기침체의 전조 신호로, "
+                  "경기방어 자산 비중 확대와 리스크 관리가 중요하며 연준의 신속한 정책 대응 여부가 핵심 변수다.")
+        else:
+            s3 = ("경기 하방 압력이 가시화되고 있으며, 연준의 완화적 정책 전환과 기업 이익 전망 수정이 "
+                  "시장 회복의 핵심 전제 조건으로 부각될 것이다.")
+
+    detail = " ".join(filter(None, [s1, s2, s3]))
+    return {
+        'summary':   summary,
+        'detail':    detail,
+        'situation': situation,
+        'score':     float(f"{score:.2f}"),
+        'color':     color,
+    }
+
+
 def build_econ_dashboard_script(existing_html):
     """ECON_DATA_START/END 사이의 기존 스크립트에서 PMI 값을 보존하면서
     FRED 최신 데이터로 덮어쓴 전체 <script> 블록 반환.
     FRED 수집 실패 시 기존 HTML의 값을 그대로 유지.
+    분석 문장은 월 1회만 재생성.
     """
     import re as _re
-    today_str = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+    today_str  = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+    this_month = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m')
 
     # 기존 HTML에서 PMI 값 추출 (FRED에 없으므로 보존)
     pmi_preserve = {}
@@ -361,7 +543,7 @@ def build_econ_dashboard_script(existing_html):
             values = [r[1] for r in rows]
             current = values[-1]
             prev    = values[-2] if len(values) >= 2 else current
-            change  = round(current - prev, 2)
+            change  = float(f"{current - prev:.2f}")
             fred_data[key] = {'current': current, 'prev': prev, 'change': change,
                               'dates': dates, 'values': values}
             print(f"[ECON] {key}: 현재={current} ({len(rows)}개월)")
@@ -425,11 +607,48 @@ def build_econ_dashboard_script(existing_html):
             f'dates:{dates_js},values:{values_js}}}'
         )
 
+    # ── 월별 분석 생성 (월 1회만 재생성, 나머지는 기존 보존) ───────────
+    existing_month_m = _re.search(r'analysisMonth:\s*"([^"]*)"', existing_html)
+    existing_month   = existing_month_m.group(1) if existing_month_m else ''
+
+    if existing_month == this_month:
+        # 이번 달 분석 이미 생성됨 → 기존 텍스트 보존
+        ex_sum = _re.search(r'analysisSummary:\s*"((?:[^"\\]|\\.)*)"', existing_html)
+        ex_det = _re.search(r'analysisDetail:\s*"((?:[^"\\]|\\.)*)"', existing_html)
+        ex_sit = _re.search(r'analysisSituation:\s*"([^"]*)"',         existing_html)
+        ex_col = _re.search(r'analysisColor:\s*"([^"]*)"',             existing_html)
+        ex_scr = _re.search(r'analysisScore:\s*([\d.\-]+)',            existing_html)
+        analysis = {
+            'summary':   ex_sum.group(1) if ex_sum else '',
+            'detail':    ex_det.group(1) if ex_det else '',
+            'situation': ex_sit.group(1) if ex_sit else '',
+            'color':     ex_col.group(1) if ex_col else '#84cc16',
+            'score':     float(ex_scr.group(1)) if ex_scr else 0.0,
+        }
+        print(f"[ECON] 분석 보존 (이미 {this_month} 생성됨)")
+    else:
+        # 새 달 → 새 분석 생성
+        analysis = generate_econ_analysis(fred_data, pmi_preserve)
+        print(f"[ECON] 신규 분석 생성: {analysis['situation']} (점수={analysis['score']})")
+
+    # JSON 직렬화로 특수문자 안전 처리
+    ana_summary   = json.dumps(analysis['summary'],   ensure_ascii=False)
+    ana_detail    = json.dumps(analysis['detail'],    ensure_ascii=False)
+    ana_situation = json.dumps(analysis['situation'], ensure_ascii=False)
+    ana_color     = json.dumps(analysis['color'],     ensure_ascii=False)
+    ana_score     = analysis['score']
+
     ind_block = ',\n'.join(ind_parts)
     script = (
         '<script>\n'
         'var ECON_DATA = {\n'
         f'  lastUpdated: "{today_str}",\n'
+        f'  analysisMonth: "{this_month}",\n'
+        f'  analysisSummary: {ana_summary},\n'
+        f'  analysisDetail: {ana_detail},\n'
+        f'  analysisSituation: {ana_situation},\n'
+        f'  analysisColor: {ana_color},\n'
+        f'  analysisScore: {ana_score},\n'
         '  indicators: {\n'
         f'{ind_block}\n'
         '  }\n'

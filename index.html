@@ -489,6 +489,13 @@
         @media (max-width:920px) { .econ-grid { grid-template-columns:repeat(3,1fr); } }
         @media (max-width:620px) { .econ-grid { grid-template-columns:repeat(2,1fr); } }
         @media (max-width:400px) { .econ-stats { grid-template-columns:repeat(2,1fr); } }
+        /* 경제 분석 요약 */
+        .econ-analysis { margin-top:16px; padding:16px 18px; border-radius:10px; border:1px solid #bfdbfe; background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%); }
+        .econ-ana-hdr  { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
+        .econ-ana-badge { font-size:0.72rem; font-weight:700; padding:2px 10px; border-radius:20px; color:#fff; }
+        .econ-ana-date  { font-size:0.70rem; color:#94a3b8; }
+        .econ-ana-sum   { font-size:0.94rem; font-weight:700; color:#1e293b; line-height:1.55; margin-bottom:8px; }
+        .econ-ana-det   { font-size:0.83rem; color:#475569; line-height:1.7; margin:0; }
 
         .earnings-search {
             background: #fff;
@@ -1596,6 +1603,17 @@ var ECON_DATA = {
                 </div>
                 <div class="econ-grid" id="econGrid">
                     <!-- JS 렌더링 -->
+                </div>
+                <!-- 경제 분석 요약 (월 1회 자동 생성) -->
+                <div class="econ-analysis" id="econAnalysis" style="display:none;">
+                    <div class="econ-ana-hdr">
+                        <span>
+                            <span class="econ-ana-badge" id="econAnaBadge" style="background:#84cc16;">📊 경제 분석</span>
+                        </span>
+                        <span class="econ-ana-date" id="econAnaDate"></span>
+                    </div>
+                    <p class="econ-ana-sum" id="econAnaSum"></p>
+                    <p class="econ-ana-det" id="econAnaDet"></p>
                 </div>
             </div>
 
@@ -3603,6 +3621,25 @@ var ECON_DATA = {
                 var grid = document.getElementById('econGrid');
                 var updEl = document.getElementById('econUpdated');
                 if (updEl && D.lastUpdated) updEl.textContent = '출처: FRED·ISM·BLS·BEA | 업데이트: ' + D.lastUpdated;
+
+                // ── 경제 분석 요약 렌더링 ────────────────────────────────
+                (function() {
+                    var anaBox  = document.getElementById('econAnalysis');
+                    var anaBadge= document.getElementById('econAnaBadge');
+                    var anaDate = document.getElementById('econAnaDate');
+                    var anaSum  = document.getElementById('econAnaSum');
+                    var anaDet  = document.getElementById('econAnaDet');
+                    if (!anaBox || !D.analysisSummary) return;
+                    anaSum.textContent  = D.analysisSummary;
+                    anaDet.textContent  = D.analysisDetail || '';
+                    if (anaBadge) {
+                        anaBadge.style.background = D.analysisColor || '#84cc16';
+                        anaBadge.textContent = '📊 ' + (D.analysisSituation || '경제 분석');
+                    }
+                    if (anaDate && D.analysisMonth)
+                        anaDate.textContent = D.analysisMonth + ' 기준 · 월 1회 업데이트';
+                    anaBox.style.display = 'block';
+                })();
 
                 var ORDER = ['fedfunds','cpi','core_cpi','core_pce','payems','unrate','dgs10','spread','mfg_pmi','svc_pmi','retail','umcsent'];
 
