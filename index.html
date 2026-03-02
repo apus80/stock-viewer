@@ -1994,13 +1994,16 @@ var ECON_DATA = {
             <!-- 경제 캘린더 섹션 -->
             <div class="card calendar-card" style="padding: 24px;">
                 <h3 class="section-title">📅 실시간 경제 캘린더</h3>
+                <p style="margin:4px 0 12px; font-size:0.78rem; color:#94a3b8;">
+                    ℹ️ 날짜·국가·지표명은 한국어로 표시됩니다. 지표 클릭 시 나오는 상세 설명은 TradingView 서버에 영어로만 저장되어 자동번역이 불가합니다.
+                </p>
                 <div class="tradingview-widget-container" style="height: 600px;">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript"
                         src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
                             {
                                 "colorTheme": "light", "isTransparent": false,
-                                "width": "100%", "height": 600, "locale": "en",
+                                "width": "100%", "height": 600, "locale": "ko",
                                 "importanceFilter": "0,1",
                                 "currencyFilter": "USD,EUR,JPY,KRW,CNY,GBP"
                             }
