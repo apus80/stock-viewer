@@ -227,23 +227,55 @@ def get_cboe_pc_ratio(filename):
 def get_fred_latest(series_id, units=None):
     """FRED 공개 CSV에서 최신값 (API 키 불필요)
     예: DFF(Fed금리), CPIAUCSL(CPI), UNRATE(실업률)
-    units='pc1' → YoY % 변화율
+    units='pc1' → YoY % 수동 계산 (FRED URL 파라미터 무시됨)
+    units='ch1' → MoM 절대 변화 수동 계산
     """
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-    if units:
-        url += f"&units={units}"
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=15) as r:
             content = r.read().decode('utf-8', errors='replace')
-        lines = [l.strip() for l in content.strip().split('\n') if l.strip()]
-        for line in reversed(lines[1:]):      # 헤더 스킵
+        lines: list = [l.strip() for l in content.strip().split('\n') if l.strip()]
+
+        # 원시값 파싱 (날짜별 dict, 첫줄 헤더 스킵)
+        monthly: dict = {}
+        for i, line in enumerate(lines):
+            if i == 0:
+                continue  # 헤더 스킵
             parts = line.split(',')
             if len(parts) >= 2 and parts[1].strip() not in ('', '.'):
                 try:
-                    return float(parts[1].strip()), parts[0].strip()
+                    date_str = parts[0].strip()[:7]  # YYYY-MM
+                    monthly[date_str] = float(parts[1].strip())
                 except ValueError:
                     continue
+
+        if not monthly:
+            return None, None
+
+        sorted_months = sorted(monthly.keys())
+        latest_mo     = sorted_months[-1]
+        latest_val    = monthly[latest_mo]
+
+        if units == 'pc1':
+            # YoY % = (현재 / 1년전 - 1) * 100
+            yr_ago = f"{int(latest_mo[:4]) - 1}{latest_mo[4:]}"
+            if yr_ago in monthly and monthly[yr_ago] != 0:
+                yoy = (latest_val / monthly[yr_ago] - 1) * 100
+                return float(f"{yoy:.2f}"), latest_mo
+            return None, None
+
+        elif units == 'ch1':
+            # MoM 절대 변화
+            if len(sorted_months) >= 2:
+                prev_val = monthly[sorted_months[-2]]
+                chg = latest_val - prev_val
+                return float(f"{chg:.2f}"), latest_mo
+            return None, None
+
+        else:
+            return latest_val, latest_mo
+
     except Exception as e:
         print(f"[FRED {series_id}] 실패: {e}")
     return None, None
@@ -594,7 +626,7 @@ def build_econ_dashboard_script(existing_html):
         return m.group(1) if m else '[]'
 
     # 각 지표별 JS 객체 생성
-    ind_parts = []
+    ind_parts: list = []
     for key in ORDER_KEYS:
         meta = ECON_META.get(key, {})
         dyn  = fred_data.get(key)
@@ -643,25 +675,33 @@ def build_econ_dashboard_script(existing_html):
     existing_month_m = _re.search(r'analysisMonth:\s*"([^"]*)"', existing_html)
     existing_month   = existing_month_m.group(1) if existing_month_m else ''
 
-    if existing_month == this_month:
-        # 이번 달 분석 이미 생성됨 → 기존 텍스트 보존
+    ex_scr_m      = _re.search(r'analysisScore:\s*([\d.\-]+)', existing_html)
+    existing_score = float(ex_scr_m.group(1)) if ex_scr_m else None
+
+    # 항상 신규 점수 계산 (시황 변화 감지용)
+    new_analysis = generate_econ_analysis(fred_data, pmi_preserve)
+    new_score    = float(new_analysis['score'])
+    score_delta  = abs(new_score - existing_score) if existing_score is not None else 99.0
+
+    if existing_month == this_month and score_delta < 1.5:
+        # 같은 달 + 점수 변화 없음 → 기존 텍스트 보존
         ex_sum = _re.search(r'analysisSummary:\s*"((?:[^"\\]|\\.)*)"', existing_html)
         ex_det = _re.search(r'analysisDetail:\s*"((?:[^"\\]|\\.)*)"', existing_html)
         ex_sit = _re.search(r'analysisSituation:\s*"([^"]*)"',         existing_html)
         ex_col = _re.search(r'analysisColor:\s*"([^"]*)"',             existing_html)
-        ex_scr = _re.search(r'analysisScore:\s*([\d.\-]+)',            existing_html)
         analysis = {
             'summary':   ex_sum.group(1) if ex_sum else '',
             'detail':    ex_det.group(1) if ex_det else '',
             'situation': ex_sit.group(1) if ex_sit else '',
             'color':     ex_col.group(1) if ex_col else '#84cc16',
-            'score':     float(ex_scr.group(1)) if ex_scr else 0.0,
+            'score':     existing_score if existing_score is not None else 0.0,
         }
-        print(f"[ECON] 분석 보존 (이미 {this_month} 생성됨)")
+        print(f"[ECON] 분석 보존 ({this_month}, 점수변화 {score_delta:.2f}pt < 1.5)")
     else:
-        # 새 달 → 새 분석 생성
-        analysis = generate_econ_analysis(fred_data, pmi_preserve)
-        print(f"[ECON] 신규 분석 생성: {analysis['situation']} (점수={analysis['score']})")
+        # 새 달 OR 점수 변화 큼 → 새 분석 채택
+        analysis = new_analysis
+        reason   = f"새달({this_month})" if existing_month != this_month else f"점수변화 {score_delta:.2f}pt"
+        print(f"[ECON] 분석 재생성 ({reason}): {analysis['situation']} (점수={analysis['score']})")
 
     # JSON 직렬화로 특수문자 안전 처리
     ana_summary   = json.dumps(analysis['summary'],   ensure_ascii=False)
@@ -749,7 +789,7 @@ def get_spy_options_pcr():
 
 def get_volatility_macro_data():
     """변동성(VIX), P/C 비율(CBOE), 매크로(FRED/yfinance) 통합 수집"""
-    vm = {
+    vm: dict = {
         'vix': None, 'vix_prev': None, 'vix_52h': None, 'vix_52l': None,
         'total_pcr': None, 'equity_pcr': None, 'index_pcr': None, 'pcr_date': None,
         'spy_pcr': None,

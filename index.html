@@ -489,6 +489,26 @@
         @media (max-width:920px) { .econ-grid { grid-template-columns:repeat(3,1fr); } }
         @media (max-width:620px) { .econ-grid { grid-template-columns:repeat(2,1fr); } }
         @media (max-width:400px) { .econ-stats { grid-template-columns:repeat(2,1fr); } }
+        /* ── vol-macro 아코디언 ── */
+        .vol-macro-header { cursor:pointer; user-select:none; }
+        .vol-macro-body { overflow:hidden; transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease; }
+        .vol-macro-body.vm-open   { max-height:2000px; opacity:1; }
+        .vol-macro-body.vm-closed { max-height:0; opacity:0; pointer-events:none; margin:0; }
+        .vol-acc-btn { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.13); color:#94a3b8; font-size:0.69rem; padding:3px 11px; border-radius:6px; cursor:pointer; transition:all 0.2s; white-space:nowrap; line-height:1.5; }
+        .vol-acc-btn:hover { background:rgba(255,255,255,0.16); color:#e2e8f0; }
+        /* ── 지표 카드 하단 정보 ── */
+        .econ-card-info { margin-top:7px; padding-top:7px; border-top:1px solid #e8eef8; }
+        .econ-card-st   { display:flex; align-items:center; gap:5px; margin-bottom:3px; }
+        .econ-sdot      { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        .econ-sdot.bull    { background:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,0.2); }
+        .econ-sdot.neutral { background:#f59e0b; box-shadow:0 0 0 2px rgba(245,158,11,0.2); }
+        .econ-sdot.bear    { background:#ef4444; box-shadow:0 0 0 2px rgba(239,68,68,0.2);  }
+        .econ-stxt.bull    { font-size:0.68em; font-weight:700; color:#16a34a; }
+        .econ-stxt.neutral { font-size:0.68em; font-weight:700; color:#d97706; }
+        .econ-stxt.bear    { font-size:0.68em; font-weight:700; color:#dc2626; }
+        .econ-card-def  { font-size:0.62em; color:#94a3b8; margin-left:auto; }
+        .econ-card-sum  { font-size:0.67em; color:#334155; line-height:1.45; margin:3px 0 2px; display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .econ-card-thr  { font-size:0.61em; color:#94a3b8; line-height:1.4; }
         /* 경제 분석 요약 */
         .econ-analysis { margin-top:16px; padding:16px 18px; border-radius:10px; border:1px solid #bfdbfe; background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%); }
         .econ-ana-hdr  { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
@@ -1426,10 +1446,16 @@
 
             <!-- VOLATILITY_CARD_START -->
             <div class="vol-macro-card">
-                <div class="vol-macro-header">
-                    <span class="vol-macro-title">📊 시장 심리 &amp; 매크로 현황</span>
-                    <span style="font-size:0.7rem;color:#475569;">Updated: 11:37 KST · 매시 자동갱신 · CBOE / FRED / yfinance</span>
+                <div class="vol-macro-header" onclick="toggleVolMacro()">
+                    <span class="vol-macro-title">📊 시장 심리 &amp; 매크로 현황
+                        <span style="font-size:0.63em;color:#64748b;font-weight:400;margin-left:6px;">아래 경제지표 대시보드와 일부 중복 · 상세 확인 시 펼치기</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.7rem;color:#475569;">Updated: 02:16 KST · 매시 자동갱신 · CBOE / FRED / yfinance</span>
+                        <button class="vol-acc-btn" id="volAccBtn" onclick="event.stopPropagation();toggleVolMacro()">▾ 펼치기</button>
+                    </span>
                 </div>
+                <div class="vol-macro-body vm-closed" id="volMacroBody">
                 <div class="vol-macro-grid">
 
                     <!-- ① 변동성 & 공포 지표 -->
@@ -1533,6 +1559,7 @@
                     </div>
 
                 </div>
+                </div><!-- /vol-macro-body -->
             </div>
             <!-- VOLATILITY_CARD_END -->
 
@@ -1542,12 +1569,12 @@
 <script>
 var ECON_DATA = {
   lastUpdated: "2026-03-02",
-  analysisMonth: "2026-03",
-  analysisSummary: "CPI 326.6%로 인플레이션이 심각하게 높은 수준이며, 실업률 4.3%로 고용이 완만히 냉각 중으로 현재 미국 경제는 '경기 둔화 국면'에 위치해 있다.",
-  analysisDetail: "기준금리 3.64%가 완화적인 수준이며, 연준은 추가 긴축 또는 고금리 장기화를 선택할 가능성이 높다. 제조업 PMI(50.3) 소폭 확장, 서비스 PMI(51.4) 완만한 확장이며, 소비자심리(56.4) 크게 위축이며, 장단기 스프레드(+0.59%p)가 정상화되어 경기 확장 기대 반영이다. 경기 하방 압력이 가시화되고 있으며, 연준의 완화적 정책 전환과 기업 이익 전망 수정이 시장 회복의 핵심 전제 조건으로 부각될 것이다.",
-  analysisSituation: "경기 둔화 국면",
-  analysisColor: "#f97316",
-  analysisScore: -1.3,
+  analysisMonth: "reset",
+  analysisSummary: "",
+  analysisDetail: "",
+  analysisSituation: "",
+  analysisColor: "#94a3b8",
+  analysisScore: 0,
   indicators: {
     fedfunds: {label:"기준금리",icon:"🏦",unit:"%",freq:"FOMC",isHighGood:false,threshold:2.0,thresholdLabel:"중립금리 추정",color:"#3b82f6",current:3.64,prev:3.72,change:-0.08,dates:["2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01"],values:[5.33, 5.33, 5.33, 5.33, 5.33, 5.33, 5.33, 5.13, 4.83, 4.64, 4.48, 4.33, 4.33, 4.33, 4.33, 4.33, 4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64]},
     cpi: {label:"CPI (YoY)",icon:"📈",unit:"%",freq:"월간·BLS",isHighGood:false,threshold:2.0,thresholdLabel:"Fed 목표 2%",color:"#ef4444",current:2.39,prev:2.65,change:-0.26,dates:["2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-11", "2025-12", "2026-01"],values:[3.09, 3.16, 3.49, 3.36, 3.24, 2.97, 2.94, 2.61, 2.43, 2.58, 2.72, 2.87, 2.99, 2.8, 2.38, 2.33, 2.38, 2.68, 2.74, 2.94, 3.02, 2.7, 2.65, 2.39]},
@@ -3175,6 +3202,17 @@ var ECON_DATA = {
             var _nsDebounce = null;
 
             // ── 진입점: 버튼/Enter → 즉시, 타이핑 → 0.5s 디바운스 ──────
+            // ── vol-macro 아코디언 (기본: 닫힘) ─────────────────────────
+            function toggleVolMacro() {
+                var body = document.getElementById('volMacroBody');
+                var btn  = document.getElementById('volAccBtn');
+                if (!body) return;
+                var isOpen = body.classList.contains('vm-open');
+                body.classList.toggle('vm-open',   !isOpen);
+                body.classList.toggle('vm-closed',  isOpen);
+                if (btn) btn.textContent = isOpen ? '▾ 펼치기' : '▴ 접기';
+            }
+
             function nsSearch() {
                 clearTimeout(_nsDebounce);
                 _nsDebounce = setTimeout(_nsDoSearch, 0);
@@ -3583,6 +3621,84 @@ var ECON_DATA = {
             }
 
             // ════════════════════════════════════════════════════════════
+            // 경제지표 상태 메타데이터 (정의·한줄요약·기준치)
+            // ════════════════════════════════════════════════════════════
+            var ECON_STATUS = {
+                fedfunds: {
+                    def: '중앙은행의 정책 금리',
+                    thrStr: '기준: <3%🟢 / 3~4.5%🟡 / >4.5%🔴',
+                    status: function(v) { return v < 3.0 ? 'bull' : v < 4.5 ? 'neutral' : 'bear'; },
+                    summary: { bull:'Fed 금리 완화 구간 진입, 유동성 확대로 주식·채권 동반 우호적 환경', neutral:'Fed 금리 인하 사이클 진행 중, 3%대 진입 시 강세 전환 기대', bear:'고금리 긴축 구간, 대출 부담 증가로 소비·투자 억제 위험' }
+                },
+                cpi: {
+                    def: '소비자 물가 상승률',
+                    thrStr: '기준: <2.5%🟢 / 2.5~3.5%🟡 / >3.5%🔴',
+                    status: function(v) { return v < 2.5 ? 'bull' : v < 3.5 ? 'neutral' : 'bear'; },
+                    summary: { bull:'물가안정세 뚜렷, Fed 목표(2%) 근접하며 금리인하 가속 여건 성숙', neutral:'인플레이션 둔화 중이나 목표 상회, 연준 신중한 금리인하 기조 유지', bear:'물가 과열 구간, 연준 추가 긴축 또는 금리인하 지연 가능성' }
+                },
+                core_cpi: {
+                    def: '변동성 제외 근원 물가',
+                    thrStr: '기준: <2.5%🟢 / 2.5~3.5%🟡 / >3.5%🔴',
+                    status: function(v) { return v < 2.5 ? 'bull' : v < 3.5 ? 'neutral' : 'bear'; },
+                    summary: { bull:'에너지·식품 제외 물가도 안정, 기조적 인플레이션 해소 확인', neutral:'에너지·식품 제외 물가도 하락 중, 추세 유지 여부 관찰 필요', bear:'근원 물가 고착화 위험, 연준의 긴축 유지 명분 강화' }
+                },
+                core_pce: {
+                    def: '연준 중점 물가 지표',
+                    thrStr: '기준: <2.5%🟢 / 2.5~3.5%🟡 / >3.5%🔴',
+                    status: function(v) { return v < 2.5 ? 'bull' : v < 3.5 ? 'neutral' : 'bear'; },
+                    summary: { bull:'연준 목표치 달성, 금리인하 사이클 가속화 기대', neutral:'타 지표 대비 다소 높아 반등 기미 관찰 필요, 금리인하 속도 조절', bear:'Fed 핵심 물가지표 상승 반전, 금리인하 속도 제동 우려' }
+                },
+                payems: {
+                    def: '신규 일자리 창출 수',
+                    thrStr: '기준: >150K🟢 / 75~150K🟡 / <75K🔴',
+                    status: function(v) { return v > 150 ? 'bull' : v > 75 ? 'neutral' : 'bear'; },
+                    summary: { bull:'강한 고용 성장, 소비 기반 견조로 경기 연착륙 가능성 상승', neutral:'급증세는 꺾였으나 적정 수준의 고용 유지, 소프트랜딩 구간', bear:'고용 급랭, 소비 위축과 경기침체 가능성 경고 신호' }
+                },
+                unrate: {
+                    def: '경제활동 인구 중 실업자',
+                    thrStr: '기준: <4.0%🟢 / 4.0~5.0%🟡 / >5.0%🔴',
+                    status: function(v) { return v < 4.0 ? 'bull' : v < 5.0 ? 'neutral' : 'bear'; },
+                    summary: { bull:'완전고용 수준, 노동시장 과열 주의하나 소비 기반 견조', neutral:'완전고용 초과, 노동시장 냉각 중이나 아직 위험 수준 아님', bear:'실업률 급등, 소비 위축과 경기침체 신호 경계' }
+                },
+                dgs10: {
+                    def: '시장 장기 금리 가이드',
+                    thrStr: '기준: <4.0%🟢 / 4.0~4.5%🟡 / >4.5%🔴',
+                    status: function(v) { return v < 4.0 ? 'bull' : v < 4.5 ? 'neutral' : 'bear'; },
+                    summary: { bull:'금리 하락으로 주식 밸류에이션 부담 완화, 성장주 유리한 환경', neutral:'금리 안정 구간, 시장 금리 상단이 낮아지며 채권 시장 안정화', bear:'장기금리 고공행진, 주식 밸류에이션 압박·채권 매력 증가' }
+                },
+                spread: {
+                    def: '경기 침체 예고 지표 (10Y-2Y)',
+                    thrStr: '기준: >0.5%🟢 / 0~0.5%🟡 / <0🔴',
+                    status: function(v) { return v > 0.5 ? 'bull' : v >= 0 ? 'neutral' : 'bear'; },
+                    summary: { bull:'역전 해소 완료, 경기침체 신호 소멸되며 정상화 국면 진입', neutral:'플러스(+) 권역 유지로 경기침체 우려 해소 중, 경기 전환 신호 주시', bear:'장단기 금리 역전 지속, 역사적으로 침체 6~18개월 전 신호' }
+                },
+                mfg_pmi: {
+                    def: '제조업 경기 확장 지수',
+                    thrStr: '기준: >52🟢 / 50~52🟡 / <50🔴',
+                    status: function(v) { return v > 52 ? 'bull' : v >= 50 ? 'neutral' : 'bear'; },
+                    summary: { bull:'제조업 강한 확장, 글로벌 교역 회복과 설비투자 확대 기대', neutral:'기준선 50 턱걸이하며 경기 위축 국면 탈출 시도, 모멘텀 확인 필요', bear:'제조업 수축 국면, 재고 조정과 글로벌 수요 둔화 신호' }
+                },
+                svc_pmi: {
+                    def: '서비스업 경기 확장 지수',
+                    thrStr: '기준: >53🟢 / 50~53🟡 / <50🔴',
+                    status: function(v) { return v > 53 ? 'bull' : v >= 50 ? 'neutral' : 'bear'; },
+                    summary: { bull:'서비스업 강한 확장, 소비·고용 견조로 GDP 성장 견인', neutral:'확장세 유지 중이나 성장 속도 둔화, GDP 주요 버팀목 약화 주시', bear:'서비스업 수축 진입, 미국 경제 주요 엔진 약화 신호' }
+                },
+                retail: {
+                    def: '소비 시장의 활력도',
+                    thrStr: '기준: >4%🟢 / 2~4%🟡 / <2%🔴',
+                    status: function(v) { return v > 4 ? 'bull' : v >= 2 ? 'neutral' : 'bear'; },
+                    summary: { bull:'강한 소비 성장, 인플레이션 감안해도 실질 소비 증가 확인', neutral:'소비 증가세 유지하나 둔화, 인플레이션 감안 시 실질 소비는 정체 수준', bear:'전월 대비 하락폭이 커 소비 심리 위축 우려, 경기 둔화 신호 경계' }
+                },
+                umcsent: {
+                    def: '향후 경기에 대한 기대감',
+                    thrStr: '기준: >70🟢 / 55~70🟡 / <55🔴',
+                    status: function(v) { return v > 70 ? 'bull' : v >= 55 ? 'neutral' : 'bear'; },
+                    summary: { bull:'소비자 낙관론 우세, 소비 지출 확대와 경기 회복 기대', neutral:'반등했으나 낙관 기준(70) 미달, 소비 불안 심리 잔존', bear:'심리 비관 구간, 소비 위축과 경기 하방 압력 경고 단계' }
+                }
+            };
+
+            // ════════════════════════════════════════════════════════════
             // 주요 경제지표 대시보드
             // ════════════════════════════════════════════════════════════
             (function() {
@@ -3655,6 +3771,10 @@ var ECON_DATA = {
                     var arrow  = chg > 0 ? '▲' : chg < 0 ? '▼' : '─';
                     var chgTxt = chg !== 0 ? arrow + Math.abs(chg).toFixed(1) + ind.unit + ' 전월比' : '─ 전월 동일';
 
+                    var meta = ECON_STATUS[key];
+                    var st   = meta ? meta.status(cur === null || cur === undefined ? 0 : cur) : 'neutral';
+                    var stLbl = st === 'bull' ? '강세' : st === 'bear' ? '주의' : '중립';
+
                     var card = document.createElement('div');
                     card.className = 'econ-card';
                     card.innerHTML =
@@ -3665,6 +3785,15 @@ var ECON_DATA = {
                         '<div class="econ-card-val">'+valStr+'</div>' +
                         '<div class="econ-card-chg '+chgCls+'">'+chgTxt+'</div>' +
                         sparkSvg(ind.values, ind.threshold, ind.color || '#3b82f6') +
+                        '<div class="econ-card-info">' +
+                          '<div class="econ-card-st">' +
+                            '<span class="econ-sdot '+st+'"></span>' +
+                            '<span class="econ-stxt '+st+'">'+stLbl+'</span>' +
+                            (meta ? '<span class="econ-card-def">'+meta.def+'</span>' : '') +
+                          '</div>' +
+                          (meta ? '<div class="econ-card-sum">'+(meta.summary[st]||'')+'</div>' : '') +
+                          (meta ? '<div class="econ-card-thr">'+meta.thrStr+'</div>' : '') +
+                        '</div>' +
                         '<div class="econ-card-frq">'+ind.freq+'</div>';
                     card.addEventListener('click', function() { openEconModal(key); });
                     grid.appendChild(card);

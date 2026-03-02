@@ -2,9 +2,17 @@ name: Daily Market News Update
 
 on:
   schedule:
-    # 매 시간 정각 실행 (오른쪽 뉴스 카드 업데이트)
-    # 오전 7시(UTC 22) + 오후 10시(UTC 13) KST에는 왼쪽 카드도 함께 업데이트
+    # ── 뉴스 카드: 매 시간 정각 ──────────────────────────────
     - cron: '0 * * * *'
+    # ── 주요 경제지표 발표 직후 추가 트리거 ──────────────────
+    # 13:35 UTC (ET 8:35am) : CPI·Core CPI·PCE·고용·소매판매 발표 후
+    #   → BLS(매월 2~3주차 수), BEA, Census 등 8:30am ET 발표 지표
+    - cron: '35 13 * * *'
+    # 15:05 UTC (ET 10:05am) : ISM PMI(제조/서비스)·UMich 소비심리 발표 후
+    #   → 10:00am ET 발표 지표
+    - cron: '5 15 * * *'
+    # 19:05 UTC (ET 14:05pm) : FOMC 금리 결정 발표 후 (수요일)
+    - cron: '5 19 * * 3'
   workflow_dispatch: # 수동 실행 가능
 
 jobs:
