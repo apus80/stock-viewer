@@ -133,6 +133,61 @@
             color: var(--primary);
         }
 
+        /* PWA 설치 버튼 */
+        #pwaInstallBtn {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.45);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.82em;
+            font-weight: 600;
+            transition: all 0.25s;
+            backdrop-filter: blur(6px);
+            white-space: nowrap;
+            z-index: 10;
+        }
+        #pwaInstallBtn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* 방문자 카운터 */
+        #visitorCounter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            font-size: 0.72em;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.4;
+            z-index: 10;
+        }
+        #visitorCounter .vc-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #visitorCounter .vc-label {
+            opacity: 0.7;
+            font-size: 0.85em;
+        }
+        #visitorCounter .vc-num {
+            font-weight: 700;
+            font-size: 1.05em;
+            color: #fff;
+        }
+
         /* 레이아웃 시스템 */
         .grid-dashboard {
             display: grid;
@@ -704,7 +759,7 @@
             }
 
             .header {
-                padding: 30px 15px;
+                padding: 55px 15px 30px;
             }
 
             .header h1 {
@@ -713,6 +768,19 @@
 
             .header p {
                 font-size: 0.9em;
+            }
+
+            #pwaInstallBtn {
+                font-size: 0.75em;
+                padding: 5px 10px;
+                top: 12px;
+                left: 12px;
+            }
+
+            #visitorCounter {
+                top: 12px;
+                right: 12px;
+                font-size: 0.68em;
             }
 
             .grid-dashboard {
@@ -1429,6 +1497,23 @@
     <div id="mainContent" class="main-content">
         <div class="container">
             <div class="header">
+                <!-- PWA 홈 화면 추가 버튼 (좌측 상단) -->
+                <button id="pwaInstallBtn" onclick="pwaInstall()" title="홈 화면에 앱으로 추가">
+                    📱 홈 화면에 추가
+                </button>
+
+                <!-- 방문자 카운터 (우측 상단) -->
+                <div id="visitorCounter">
+                    <div class="vc-row">
+                        <span class="vc-label">오늘</span>
+                        <span class="vc-num" id="vcToday">-</span>
+                    </div>
+                    <div class="vc-row">
+                        <span class="vc-label">누적</span>
+                        <span class="vc-num" id="vcTotal">-</span>
+                    </div>
+                </div>
+
                 <h1>📊 주식 분석 통합 리포트 뷰어</h1>
 
                 <p>추천 종목부터 시장 분석까지, 모든 리포트를 한 곳에서</p>
@@ -3713,6 +3798,90 @@ var ECON_DATA = {
             }
         </script>
 
+
+    <!-- PWA 설치 + 방문자 카운터 -->
+    <script>
+        // ── PWA 설치 프롬프트 ──────────────────────────────────────────────
+        var _pwaPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            _pwaPrompt = e;
+            var btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        window.addEventListener('appinstalled', function() {
+            var btn = document.getElementById('pwaInstallBtn');
+            if (btn) btn.style.display = 'none';
+            _pwaPrompt = null;
+        });
+
+        function pwaInstall() {
+            if (_pwaPrompt) {
+                // Android / Chrome: 시스템 설치 프롬프트
+                _pwaPrompt.prompt();
+                _pwaPrompt.userChoice.then(function(result) {
+                    if (result.outcome === 'accepted') {
+                        var btn = document.getElementById('pwaInstallBtn');
+                        if (btn) btn.style.display = 'none';
+                    }
+                    _pwaPrompt = null;
+                });
+            } else {
+                // iOS Safari: 수동 안내 팝업
+                alert('홈 화면에 추가하는 방법:\n\niOS Safari: 하단 공유 버튼(□↑) → "홈 화면에 추가"\nAndroid: 브라우저 메뉴(⋮) → "홈 화면에 추가"');
+            }
+        }
+
+        // iOS에서도 버튼 표시 (beforeinstallprompt 미지원)
+        (function() {
+            var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            var isInApp = window.navigator.standalone;
+            if (isIOS && !isInApp) {
+                var btn = document.getElementById('pwaInstallBtn');
+                if (btn) btn.style.display = 'inline-flex';
+            }
+        })();
+
+        // ── 방문자 카운터 (countapi.xyz) ──────────────────────────────────
+        (function() {
+            var ns = 'investflow-apus80';
+            var today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            // 같은 세션에서 중복 카운트 방지
+            var counted = sessionStorage.getItem('vc_counted');
+
+            function fmt(n) {
+                return Number(n).toLocaleString('ko-KR');
+            }
+
+            function updateDisplay(todayVal, totalVal) {
+                var t = document.getElementById('vcToday');
+                var v = document.getElementById('vcTotal');
+                if (t) t.textContent = fmt(todayVal);
+                if (v) v.textContent = fmt(totalVal);
+            }
+
+            if (!counted) {
+                // 최초 방문: 두 카운터 모두 증가
+                sessionStorage.setItem('vc_counted', '1');
+                Promise.all([
+                    fetch('https://api.countapi.xyz/hit/' + ns + '/total').then(function(r){ return r.json(); }),
+                    fetch('https://api.countapi.xyz/hit/' + ns + '/day-' + today).then(function(r){ return r.json(); })
+                ]).then(function(results) {
+                    updateDisplay(results[1].value, results[0].value);
+                }).catch(function() {});
+            } else {
+                // 재방문(같은 세션): 증가 없이 조회만
+                Promise.all([
+                    fetch('https://api.countapi.xyz/get/' + ns + '/total').then(function(r){ return r.json(); }),
+                    fetch('https://api.countapi.xyz/get/' + ns + '/day-' + today).then(function(r){ return r.json(); })
+                ]).then(function(results) {
+                    updateDisplay(results[1].value, results[0].value);
+                }).catch(function() {});
+            }
+        })();
+    </script>
 
     <!-- PWA Service Worker 등록 -->
     <script>
